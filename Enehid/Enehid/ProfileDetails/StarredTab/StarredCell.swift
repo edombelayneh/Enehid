@@ -8,5 +8,5 @@
 import UIKit
 
 class StarredCell: UICollectionViewCell {
-    
+    @IBOutlet weak var starredImageView: UIImageView!
 }

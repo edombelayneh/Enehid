@@ -7,11 +7,26 @@
 
 import UIKit
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 20
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        <#code#>
+    }
+    
 
     @IBAction func didTapSettings(_ sender: Any) {
         performSegue(withIdentifier: "SettingsSegue", sender: nil)
     }
+    @IBAction func didTapAddStory(_ sender: Any) {
+    }
+    @IBOutlet weak var recommendCounterLabel: UILabel!
+    @IBOutlet weak var starCounterLabel: UILabel!
+    @IBOutlet weak var memoryCounterLabel: UILabel!
+    @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var profilePicImageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
 

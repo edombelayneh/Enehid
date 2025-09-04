@@ -48,7 +48,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MemoryCell" id="sId-jV-Pdf">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MemoryCell" id="sId-jV-Pdf" customClass="MemoryCell" customModule="Enehid" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="xES-So-aeJ">
@@ -61,6 +61,9 @@
                                                 </imageView>
                                             </subviews>
                                         </collectionViewCellContentView>
+                                        <connections>
+                                            <outlet property="memoryImageView" destination="hbE-4N-oGW" id="Hp3-Ea-ePB"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
@@ -73,9 +76,6 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="Vgy-zO-sQP"/>
-                    <connections>
-                        <outlet property="memoryPostImageView" destination="hbE-4N-oGW" id="KKZ-4t-gPJ"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JjI-jf-GHP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -100,7 +100,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="1Bv-Wi-vCc">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="1Bv-Wi-vCc" customClass="ReviewsCell" customModule="Enehid" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="LUf-ja-fFH">
@@ -113,6 +113,9 @@
                                                 </imageView>
                                             </subviews>
                                         </collectionViewCellContentView>
+                                        <connections>
+                                            <outlet property="reviewsImageView" destination="IVy-RV-3FI" id="m4v-Jo-JL5"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
@@ -125,9 +128,6 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="FIX-db-PWg"/>
-                    <connections>
-                        <outlet property="reviewsPostImageView" destination="IVy-RV-3FI" id="EDC-Qo-Myj"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Ld-pj-daD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -152,7 +152,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="tKF-DQ-xQy">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="tKF-DQ-xQy" customClass="StarredCell" customModule="Enehid" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="6Sv-AY-qSW">
@@ -165,6 +165,9 @@
                                                 </imageView>
                                             </subviews>
                                         </collectionViewCellContentView>
+                                        <connections>
+                                            <outlet property="starredImageView" destination="CZo-69-Z2k" id="ImR-zd-agr"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
@@ -177,9 +180,6 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="k18-DL-JQL"/>
-                    <connections>
-                        <outlet property="starredPostImageView" destination="CZo-69-Z2k" id="YK6-LE-Ldg"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DEI-I4-zyU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -292,9 +292,6 @@
                     </navigationItem>
                     <connections>
                         <segue destination="gLB-gZ-9Jl" kind="presentation" id="boD-P4-bBg"/>
-                        <segue destination="QxG-Zq-YZH" kind="show" id="24L-eD-Niq"/>
-                        <segue destination="1tA-o5-ZXD" kind="show" id="FUc-mL-axg"/>
-                        <segue destination="UAx-7p-CBO" kind="show" id="7za-ai-szV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dWF-fx-nl4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -982,6 +979,9 @@
                                 <color key="tintColor" red="0.29803921570000003" green="0.0" blue="0.1960784314" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="plus.circle.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="didTapAddStory:" destination="jdj-3M-C34" eventType="touchUpInside" id="6AJ-UW-BAX"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="3" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bg8-id-jKt">
                                 <rect key="frame" x="317" y="294" width="13" height="24"/>
@@ -1011,7 +1011,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="E2Q-tP-tRr">
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" selected="YES" contentHorizontalAlignment="center" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="E2Q-tP-tRr">
                                 <rect key="frame" x="0.0" y="367" width="393" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
@@ -1043,6 +1043,11 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="memoryCounterLabel" destination="9sT-2o-1qC" id="MVD-ce-4Ig"/>
+                        <outlet property="profilePicImageView" destination="Mmm-7b-Aag" id="EdX-6m-wLl"/>
+                        <outlet property="recommendCounterLabel" destination="Bg8-id-jKt" id="gIn-SU-HrK"/>
+                        <outlet property="starCounterLabel" destination="f2Q-Pr-BpL" id="cNR-8a-D4U"/>
+                        <outlet property="usernameLabel" destination="htf-4T-wdi" id="dE0-Be-jIb"/>
                         <segue destination="U5h-PI-sW0" kind="show" identifier="SettingsSegue" id="R6C-8j-4ns"/>
                     </connections>
                 </viewController>
