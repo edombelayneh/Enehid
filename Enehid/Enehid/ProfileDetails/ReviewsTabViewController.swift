@@ -1,17 +1,15 @@
 //
-//  PlansViewController.swift
+//  ReviewsTabViewController.swift
 //  Enehid
 //
-//  Created by Edom Belayneh on 4/8/25.
+//  Created by Edom Belayneh on 9/4/25.
 //
 
 import UIKit
 
-class ProfileViewController: UIViewController {
+class ReviewsTabViewController: UIViewController {
 
-    @IBAction func didTapSettings(_ sender: Any) {
-        performSegue(withIdentifier: "SettingsSegue", sender: nil)
-    }
+    @IBOutlet weak var reviewsPostImageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
