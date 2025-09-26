@@ -1,13 +1,13 @@
 //
-//  MemoriesViewController.swift
+//  SettingsViewController.swift
 //  Enehid
 //
-//  Created by Edom Belayneh on 8/28/25.
+//  Created by Edom Belayneh on 9/5/25.
 //
 
 import UIKit
 
-class MemoriesViewController: UIViewController {
+class SettingsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

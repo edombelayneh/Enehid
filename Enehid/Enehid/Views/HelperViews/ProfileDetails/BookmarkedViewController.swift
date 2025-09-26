@@ -1,16 +1,14 @@
 //
-//  MemoriesTabViewController.swift
+//  BookmarkedViewController.swift
 //  Enehid
 //
-//  Created by Edom Belayneh on 9/4/25.
+//  Created by Edom Belayneh on 9/5/25.
 //
 
 import UIKit
 
-class MemoriesTabViewController: UIViewController {
+class BookmarkedViewController: UIViewController {
 
-    
-    @IBOutlet weak var memoryPostImageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
 

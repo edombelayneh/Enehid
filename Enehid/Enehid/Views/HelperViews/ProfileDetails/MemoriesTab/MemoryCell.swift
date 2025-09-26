@@ -8,5 +8,6 @@
 import UIKit
 
 class MemoryCell: UICollectionViewCell {
+    
     @IBOutlet weak var memoryImageView: UIImageView!
 }
