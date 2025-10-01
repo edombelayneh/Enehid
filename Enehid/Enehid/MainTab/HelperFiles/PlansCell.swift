@@ -26,11 +26,22 @@ class PlansCell: UITableViewCell {
     var onAccept: (() -> Void)?
     var onDecline: (() -> Void)?
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // Reset everything so reuse can’t leak state
+        ownerControlsView?.isHidden = true
+        inviteeStatusView?.isHidden = false
+        acceptButton?.isHidden = true
+        declineButton?.isHidden = true
+    }
+    
     @IBAction func didTapAcceptButton(_ sender: UIButton) {
+        print("✅ accept tapped")
         onAccept?()
     }
  
     @IBAction func didTapDeclineButton(_ sender: UIButton) {
+        print("❌ decline tapped")
         onDecline?()
     }
     override func awakeFromNib() {

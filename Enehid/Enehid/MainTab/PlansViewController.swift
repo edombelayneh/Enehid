@@ -24,7 +24,8 @@ class PlansViewController: UIViewController, UITableViewDelegate, UITableViewDat
         cell.dateLabel.text         = plan.date
         cell.createdBy.text    = plan.createdByIsMe ? "Organizer: YOU"
                                                              : "@\(plan.createdBy)"
-
+        print("🫵🏽\(plan.activityName) is_me \(plan.createdByIsMe)")
+        
         if plan.createdByIsMe {
             cell.ownerControlsView?.isHidden  = false
             cell.inviteeStatusView?.isHidden  = true

@@ -48,9 +48,7 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
         collectionView.delegate = self
         // Do any additional setup after loading the view.
         collectionView.reloadData()
-
-//        self.memories = memories
         
-            }
+        }
     
 }
