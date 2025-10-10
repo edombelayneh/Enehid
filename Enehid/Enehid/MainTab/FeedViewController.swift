@@ -15,6 +15,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     
     var post: [Post] = mockPosts
     var story : [Story] = mockStories
+    var selectedStory: Story?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,9 +29,13 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         storyCollectionView.reloadData()
     }
     
+    
+    
 }
 
-extension FeedViewController: UITableViewDataSource {
+extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource {
+   
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.post.count
     }
@@ -42,10 +47,7 @@ extension FeedViewController: UITableViewDataSource {
         cell.configure(with: post[indexPath.row])
         return cell
     }
-
-}
-
-extension FeedViewController: UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.story.count
     }
@@ -57,4 +59,34 @@ extension FeedViewController: UICollectionViewDataSource {
             cell.configure(with: story[indexPath.item])
             return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectedStory = story[indexPath.item]
+        performSegue(withIdentifier: "ShowStorySegue", sender: self)
+    }
+
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowPostSegue" {
+            let destinationVC = segue.destination as! PostDetailViewController
+            
+            // If segue triggered by tapping the entire cell
+            if let indexPath = feedTableView.indexPathForSelectedRow {
+                let selectedPost = post[indexPath.row]
+                destinationVC.post = selectedPost
+                print("✅ Passing post to PostVC via cell tap: \(selectedPost)")
+            }
+        }
+        else if segue.identifier == "ShowStorySegue" {
+            let destinationVC = segue.destination as! StoryDetailsViewController
+            if let selectedStory = selectedStory {
+                destinationVC.story = selectedStory
+                print("✅ Passing story to StoryDetailVC via cell tap: \(selectedStory)")
+            } else {
+                print("⚠️ No story selected.")
+            }
+        }
+    }
+
 }
+

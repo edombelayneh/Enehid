@@ -21,4 +21,5 @@ let mockPosts: [Post] = [
     Post(id: "fr_1", username: "john_doe", caption: "Here is the caption for now...just testing", image:  UIImage(systemName: "person.circle")),
     Post(id: "fr_2", username: "jane_doe", caption: "Here is the caption for now...just testing", image:  UIImage(systemName: "person.circle")),
     Post(id: "fr_3", username: "jannet", caption: "Here is the caption for now...just testing", image:  UIImage(systemName: "person.circle")),
+    Post(id: "fr_4", username: "lila", caption: "Here is the caption for now...just testing", image:  UIImage(systemName: "person.circle")),
 ]

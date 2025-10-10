@@ -33,5 +33,10 @@ class FeedCell: UITableViewCell {
 //            dateLabel.text = DateFormatter.postFormatter.string(from: date)
 //        }
     }
-
+    
+    
+    @IBAction func onTapBookmarkButton(_ sender: UIButton) {
+        bookmarkButton.isSelected.toggle()
+    }
+    
 }
