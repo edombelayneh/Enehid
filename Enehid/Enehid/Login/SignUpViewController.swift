@@ -60,50 +60,67 @@ class SignUpViewController: UIViewController {
             
             return
         }
-
-
-        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+        
+        let db = Firestore.firestore()
+        
+        db.collection("users").whereField("username", isEqualTo: username).getDocuments{ (snapshot, error) in
             if let error = error {
-                // Handle specific errors (e.g., weak password, email already in use)
                 let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
-                print("Error creating user: \(error.localizedDescription)")
+                print("❌ Error saving user data: \(error.localizedDescription)")
+            }
+            
+            if let snapshot = snapshot, !snapshot.isEmpty {
+                self.shake(view: self.usernameTextField)
+                self.usernameTextField.becomeFirstResponder()
+                let alert = UIAlertController(title: "Username Taken", message: "Please choose a different username.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
                 return
-            } else {
-                // User account created successfully
-                guard let uid = authResult?.user.uid else { return }
-                
-                let db = Firestore.firestore()
-                db.collection("users").document(uid).setData([
-                    "username": username,
-                    "email": email
-                ]) { error in
-                    if let error = error {
-                        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-                        
+            }
+            
+            // Sign in if it is a unique username
+            Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+                if let error = error {
+                    // Handle specific errors (e.g., weak password, email already in use)
+                    let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                    print("Error creating user: \(error.localizedDescription)")
+                    return
+                } else {
+                    // User account created successfully
+                    guard let uid = authResult?.user.uid else { return }
+                    
+                    
+                    
+                    db.collection("users").document(uid).setData([
+                        "username": username,
+                        "email": email
+                    ]) { error in
+                        if let error = error {
+                            let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                            self.present(alert, animated: true, completion: nil)
+                            print("❌ Error saving user data: \(error.localizedDescription)")
+                        } else {
+                            print("✅ User signed up and username saved")
+                            // User account created successfully
+                            print("User created: \(authResult?.user.email ?? "N/A")")
                             
-                        }))
-                        self.present(alert, animated: true, completion: nil)
-                        self.present(alert, animated: true, completion: nil)
-                        print("❌ Error saving user data: \(error.localizedDescription)")
-                    } else {
-                        print("✅ User signed up and username saved")
-                        // User account created successfully
-                        print("User created: \(authResult?.user.email ?? "N/A")")
-                        
-                        // Navigate to the next screen or update UI
-                        // ✅ Show success alert
-                        let alert = UIAlertController(title: "Success", message: "Account created successfully!", preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "Enehid", style: .default, handler: { _ in
-                            // ✅ Navigate to TabBarController after OK
-                            if let tabBarVC = self.storyboard?.instantiateViewController(withIdentifier: "MainTabBarController") {
-                                tabBarVC.modalPresentationStyle = .fullScreen
-                                self.present(tabBarVC, animated: true, completion: nil)
-                            }
-                        }))
-                        self.present(alert, animated: true, completion: nil)
+                            // Navigate to the next screen or update UI
+                            // ✅ Show success alert
+                            let alert = UIAlertController(title: "Success", message: "Account created successfully!", preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "Enehid", style: .default, handler: { _ in
+                                // ✅ Navigate to TabBarController after OK
+                                if let tabBarVC = self.storyboard?.instantiateViewController(withIdentifier: "MainTabBarController") {
+                                    tabBarVC.modalPresentationStyle = .fullScreen
+                                    self.present(tabBarVC, animated: true, completion: nil)
+                                }
+                            }))
+                            self.present(alert, animated: true, completion: nil)
+                        }
                     }
                 }
             }
