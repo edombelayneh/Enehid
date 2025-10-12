@@ -7,6 +7,7 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 class LoginViewController: UIViewController {
 
@@ -19,18 +20,60 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func onTappedLogin(_ sender: UIButton) {
-        guard let username = usernameTextField.text, let password = passwordTextField.text else { return }
+        guard let username = usernameTextField.text, !username.isEmpty,
+            let password = passwordTextField.text, !password.isEmpty else {
+            let alert = UIAlertController(title: "Error", message: "Please enter both username and password.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+//            present(alert, animated: true)
+            self.present(alert, animated: true, completion: nil)
+            return
+        }
         
-        Auth.auth().signIn(withEmail: username, password: password) { authResult, error in
-            if let error = error {
-                print("Login failed: \(error.localizedDescription)")
-            } else {
-                print("User logged in: \(authResult?.user.username ?? "")")
-                // Perform segue or show main screen
+        let db = Firestore.firestore()
+        
+        db.collection("users").whereField("username", isEqualTo: username)
+            .getDocuments { (snapshot, error) in
+                if let error = error {
+                    print("❌ Error fetching user: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let documents = snapshot?.documents, !documents.isEmpty else {
+                    let alert = UIAlertController(title: "Error", message: "Username not found.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+//                    present(alert, animated: true)
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
+
+                let userData = documents[0].data()
+                guard let email = userData["email"] as? String else {
+                    let alert = UIAlertController(title: "Error", message: "Could not retrieve email for user.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+//                    present(alert, animated: true)
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
+
+                // Step 2: Sign in with retrieved email and password
+                Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+                    if let error = error {
+                        let alert = UIAlertController(title: "Login Failed", message: error.localizedDescription, preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .default))
+//                        present(alert, animated: true)
+                        self.present(alert, animated: true, completion: nil)
+                        return
+                    }
+                    
+                    print("✅ User logged in: \(email)")
+                    // Navigate to your main app (e.g., TabBarController)
+                    if let tabBarVC = self.storyboard?.instantiateViewController(withIdentifier: "MainTabBarController") {
+                        tabBarVC.modalPresentationStyle = .fullScreen
+                        self.present(tabBarVC, animated: true)
+                    }
+                }
             }
         }
-                
-    }
     
     /*
     // MARK: - Navigation
@@ -41,5 +84,10 @@ class LoginViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+
+    func showAlert(title: String, message: String) {
+        
+    }
+
 
 }

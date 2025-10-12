@@ -15,20 +15,20 @@
         <!--Login View Controller-->
         <scene sceneID="yzC-pz-VDe">
             <objects>
-                <viewController id="gNA-2R-tXf" customClass="LoginViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LoginViewController" id="gNA-2R-tXf" customClass="LoginViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="BrN-d6-XHV">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="enehid launch" translatesAutoresizingMaskIntoConstraints="NO" id="Bkb-Aa-99f">
-                                <rect key="frame" x="27" y="70" width="339" height="322"/>
+                                <rect key="frame" x="27" y="110" width="338" height="322"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="322" id="ds0-2D-Bcb"/>
                                     <constraint firstAttribute="width" constant="338" id="qoe-5H-MGB"/>
                                 </constraints>
                             </imageView>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="username" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="j50-3K-ZBu">
-                                <rect key="frame" x="40" y="402" width="313" height="34"/>
+                                <rect key="frame" x="40" y="442" width="312" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="aVM-5a-QDh"/>
                                 </constraints>
@@ -36,15 +36,15 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Kgl-tk-UkF">
-                                <rect key="frame" x="40" y="456" width="313" height="34"/>
+                                <rect key="frame" x="40" y="496" width="312" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="34" id="Y7z-gf-bu2"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9PD-KU-oq1">
-                                <rect key="frame" x="60" y="510" width="273" height="35"/>
+                                <rect key="frame" x="60" y="550" width="272" height="35"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="35" id="5YC-v5-bGn"/>
                                 </constraints>
@@ -57,16 +57,16 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RMF-j6-d5q">
-                                <rect key="frame" x="60" y="560" width="273" height="41"/>
+                                <rect key="frame" x="60" y="600" width="272" height="41"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Haven't Joined Yet?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bdI-WJ-0h2">
-                                        <rect key="frame" x="19" y="9" width="153" height="21"/>
+                                        <rect key="frame" x="19" y="9" width="152" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vin-UJ-9wr">
-                                        <rect key="frame" x="174" y="3" width="84" height="34.333333333333336"/>
+                                        <rect key="frame" x="173" y="3" width="84" height="34.333333333333336"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="34.329999999999998" id="kfX-MJ-BKw"/>
                                             <constraint firstAttribute="width" constant="84" id="pcg-DC-aGo"/>
@@ -124,10 +124,10 @@
             </objects>
             <point key="canvasLocation" x="-1019.0839694656488" y="-799.29577464788736"/>
         </scene>
-        <!--Sign In View Controller-->
+        <!--Sign Up View Controller-->
         <scene sceneID="cyw-cb-NVs">
             <objects>
-                <viewController id="K3K-Uz-ERI" customClass="SignInViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="K3K-Uz-ERI" customClass="SignUpViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="suB-FD-TD1">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -146,7 +146,7 @@
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="FOZ-Y1-NXj">
                                 <rect key="frame" x="40" y="277" width="313" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="sA7-ra-8E7">
                                 <rect key="frame" x="40" y="331" width="313" height="34"/>
@@ -164,6 +164,9 @@
                                 <buttonConfiguration key="configuration" style="gray" title="Create Account">
                                     <color key="baseForegroundColor" red="0.88627451660000001" green="0.55686277149999996" blue="0.32941177490000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="onTappedCreateAccount:" destination="K3K-Uz-ERI" eventType="touchUpInside" id="o0y-wl-ojv"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="eku-cf-Vbp"/>
@@ -187,6 +190,12 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" style="browser" id="Nwd-Mg-wQd"/>
+                    <connections>
+                        <outlet property="createAccountButton" destination="pYt-fT-bEz" id="Zjf-3v-Q3h"/>
+                        <outlet property="emailTextField" destination="sA7-ra-8E7" id="sYY-LG-mbQ"/>
+                        <outlet property="passwordTextField" destination="FOZ-Y1-NXj" id="hGR-NQ-nQR"/>
+                        <outlet property="usernameTextField" destination="E0q-Z7-07t" id="4V3-WX-Su8"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F6Z-kE-0Nz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -415,9 +424,15 @@
                                 <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Logout"/>
+                                <connections>
+                                    <action selector="onTappedLogout:" destination="E13-FG-zi0" eventType="touchUpInside" id="VT6-78-l80"/>
+                                </connections>
                             </button>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="logoutButton" destination="5nc-R3-3CW" id="yGC-ZR-qRd"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="h0L-WK-tLp" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -549,7 +564,7 @@
         <!--Tab Bar Controller-->
         <scene sceneID="7w6-uX-k04">
             <objects>
-                <tabBarController id="3Fw-Te-ehs" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="MainTabBarController" id="3Fw-Te-ehs" sceneMemberID="viewController">
                     <tabBar key="tabBar" clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" itemPositioning="centered" id="qYH-i6-WPj">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
