@@ -7,6 +7,8 @@
 
 
 import UIKit
+import FirebaseFirestore
+import FirebaseAuth
 
 class ProfileViewController: UIViewController {
     
@@ -53,11 +55,44 @@ class ProfileViewController: UIViewController {
         return [memoriesVC, starsVC, reviewsVC]
     }()
     
+    let db = Firestore.firestore()
+    let currentUID = Auth.auth().currentUser?.uid ?? ""
+    
+    func fetchUser(completion: @escaping (User?) -> Void) {
+        self.db.collection("users").document(self.currentUID).getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching user: \(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+            
+            guard let data = snapshot?.data() else {
+                print("User not found")
+                completion(nil)
+                return
+            }
+            
+            let user = User (
+                id: self.currentUID,
+                username: data["username"] as? String ?? "",
+                email: data["email"] as? String ?? "",
+                friends: data["friends"] as? [String] ?? [],
+            )
+            
+            completion(user)
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPageViewController()
         
         // Do any additional setup after loading the view.
+        fetchUser { user in
+            guard let user = user else { return }
+            self.usernameLabel.text = user.username
+        }
+        
         postSegmentedControl.selectedSegmentIndex = 0
     }
     

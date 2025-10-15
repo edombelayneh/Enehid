@@ -23,7 +23,7 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
 
         // 3. Set the image on the cell's image view.
         // Make sure the image name matches your asset catalog!
-        cell.memoryImageView.image = UIImage(named: memory.imageName)
+//        cell.memoryImageView.image = UIImage(named: memory.imageName)
 
         return cell
     }
@@ -41,7 +41,7 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
         return CGSize(width: cellWidth, height: cellWidth)
     }
     
-    var memories: [Memory] = sampleMemory
+    var memories: [Memory] = []
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = self

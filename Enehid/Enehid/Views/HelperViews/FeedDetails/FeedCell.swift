@@ -11,11 +11,10 @@ class FeedCell: UITableViewCell {
     
     @IBOutlet weak var sharedPostImage: UIImageView!
     
+    @IBOutlet weak var reecommendButton: UIButton!
     @IBOutlet weak var bookmarkButton: UIButton!
     @IBOutlet weak var mapsButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
-    
-    @IBOutlet weak var fixMEImageLabel: UILabel!
     
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
@@ -24,10 +23,10 @@ class FeedCell: UITableViewCell {
         // Initialization code
     }
 
-    func configure(with post: Post?) {
-        usernameLabel.text = post?.username ?? "Unknown"
-        detailsLabel.text = post?.caption ?? ""
-        sharedPostImage.image = post?.image
+    func configure(with feedMemories: Memory?) {
+        usernameLabel.text = feedMemories?.ownerId ?? "Unknown"
+        detailsLabel.text = feedMemories?.caption ?? ""
+//        sharedPostImage.image = feedMemories?.image
         
 //        if let date = comment?.commentDate {
 //            dateLabel.text = DateFormatter.postFormatter.string(from: date)
@@ -35,8 +34,10 @@ class FeedCell: UITableViewCell {
     }
     
     
+    @IBAction func onTapRecommendButton(_ sender: UIButton) {
+    }
+    
     @IBAction func onTapBookmarkButton(_ sender: UIButton) {
-        bookmarkButton.isSelected.toggle()
     }
     
 }

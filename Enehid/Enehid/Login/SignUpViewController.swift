@@ -93,11 +93,11 @@ class SignUpViewController: UIViewController {
                     // User account created successfully
                     guard let uid = authResult?.user.uid else { return }
                     
-                    
-                    
                     db.collection("users").document(uid).setData([
                         "username": username,
-                        "email": email
+                        "email": email,
+                        "profilePictureUrl": NSNull(),
+                        "friends": []
                     ]) { error in
                         if let error = error {
                             let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)

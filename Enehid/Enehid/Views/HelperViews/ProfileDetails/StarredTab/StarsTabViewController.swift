@@ -21,7 +21,7 @@ class StarsTabViewController: UIViewController, UICollectionViewDelegate, UIColl
 
         // 3. Set the image on the cell's image view.
         // Make sure the image name matches your asset catalog!
-        cell.starredImageView.image = UIImage(named: starred.imageName)
+//        cell.starredImageView.image = UIImage(named: starred.imageName)
 
         return cell
     }
@@ -43,7 +43,7 @@ class StarsTabViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var starred: [Starred] = sampleStarred
+    var starred: [Starred] = []
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.delegate = self

@@ -6,6 +6,8 @@
 //
 //import FirebaseAuth
 import UIKit
+import FirebaseFirestore
+import FirebaseAuth
 
 class FeedViewController: UIViewController, UITableViewDelegate, UICollectionViewDelegate {
     
@@ -13,20 +15,80 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     @IBOutlet weak var storyCollectionView: UICollectionView!
     @IBOutlet weak var feedTableView: UITableView!
     
-    var post: [Post] = mockPosts
+    var feedMemories: [Memory] = []
     var story : [Story] = mockStories
     var selectedStory: Story?
 
+    
+    let db = Firestore.firestore()
+    let currentUID = Auth.auth().currentUser?.uid ?? ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         feedTableView.delegate = self
         feedTableView.dataSource = self
         
+        fetchFriendFeed {feedMemories in
+            self.feedMemories = feedMemories
+            self.feedTableView.reloadData()
+        }
+        
         storyCollectionView.delegate = self
         storyCollectionView.dataSource = self
         
-        feedTableView.reloadData()
+        
         storyCollectionView.reloadData()
+    }
+    
+    func loadFeed() {
+        
+    }
+    
+    func fetchFriendFeed (completion: @escaping ([Memory]) -> Void) {
+        self.db.collection("users").document(self.currentUID).getDocument { snapshot, error in
+            guard let data = snapshot?.data(), let friendsUIDs = data["friends"] as? [String] else {
+                print("Failed to get Friends list")
+                completion([])
+                return
+            }
+            
+            let dispatchGroup = DispatchGroup()
+            var allMemories: [Memory] = []
+            
+            for friendUID in friendsUIDs {
+                dispatchGroup.enter()
+                
+                self.db.collection("memories")
+                    .whereField("ownerId", isEqualTo: friendUID)
+                    .order(by: "createdAt", descending: true)
+                    .limit(to: 2)
+                    .getDocuments { snapshot, error in
+                        if let docs = snapshot?.documents {
+                            let memories = docs.compactMap { doc -> Memory in
+                                let data = doc.data()
+                                return Memory (
+                                    id: doc.documentID,
+                                    ownerId: data["ownerId"] as? String ?? "",
+                                    caption: data["caption"] as? String ?? "",
+                                    recommends: data["recommends"] as? Int ?? 0,
+                                    memoryURLs: data["memoryURLs"] as? [String] ?? [],
+                                    bookmarks: data["bookmarks"] as? Int ?? 0,
+                                    taggedUIds: data["taggedUIds"] as? [String] ?? [],
+                                    commentsCount: data["commentsCount"] as? Int ?? 0,
+                                    createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                                )
+                            }
+                            allMemories.append(contentsOf: memories)
+                        }
+                        dispatchGroup.leave()
+                    }
+            }
+            dispatchGroup.notify(queue: .main) {
+                let shuffled = allMemories.shuffled()
+                let limited = Array(shuffled.prefix(20))
+                completion(limited)
+            }
+        }
     }
     
     
@@ -37,14 +99,14 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
    
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.post.count
+        return self.feedMemories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as? FeedCell else {
             return UITableViewCell()
         }
-        cell.configure(with: post[indexPath.row])
+        cell.configure(with: feedMemories[indexPath.row])
         return cell
     }
     
@@ -72,8 +134,8 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             
             // If segue triggered by tapping the entire cell
             if let indexPath = feedTableView.indexPathForSelectedRow {
-                let selectedPost = post[indexPath.row]
-                destinationVC.post = selectedPost
+                let selectedPost = feedMemories[indexPath.row]
+                destinationVC.feedMemories = selectedPost
                 print("✅ Passing post to PostVC via cell tap: \(selectedPost)")
             }
         }

@@ -15,19 +15,20 @@ class PostDetailViewController: UIViewController {
     @IBOutlet weak var showOnMapsButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
     @IBOutlet weak var addToPlansButton: UIButton!
+    @IBOutlet weak var recommendButton: UIButton!
     
     @IBOutlet weak var captionLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var postImage: UIImageView!
     
-    var post: Post?
+    var feedMemories: Memory?
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        captionLabel.text = post?.caption
-        usernameLabel.text = post?.username
-        postImage.image = post?.image
+        captionLabel.text = feedMemories?.caption
+        usernameLabel.text = feedMemories?.ownerId
+//        postImage.image = feedMemories?.image
     }
     
 
