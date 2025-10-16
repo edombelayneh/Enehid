@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import FirebaseFirestore
+import FirebaseAuth
 
 class FriendsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -23,14 +25,51 @@ class FriendsViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     @IBOutlet weak var tableView: UITableView!
     
-    var friends: [Friends] = mockFriends
+    let db = Firestore.firestore()
+    let currentUID = Auth.auth().currentUser?.uid ?? ""
+    
+    var friends: [User] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
+        
+        fetchFriends {users in
+            self.friends = users
+            self.tableView.reloadData()
+        }
     }
+    
+    func fetchFriends(completion: @escaping ([User]) -> Void) {
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            print("User not logged in")
+            completion([])
+            return
+        }
 
+        db.collection("users").document(currentUID).getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error: \(error.localizedDescription)")
+                completion([])
+                return
+            }
 
+            guard let data = snapshot?.data(),
+                  let friendsMap = data["friends"] as? [String: String] else {
+                print("❌ No friends found or map is malformed")
+                completion([])
+                return
+            }
+
+            let users = friendsMap.map { (uid, username) in
+                User(id: uid, username: username, email: "", friends: [:]) // Email and friends can be fetched later if needed
+            }
+
+            print("✅ Fetched \(users.count) friends from map")
+            completion(users)
+        }
+    }
 }
 

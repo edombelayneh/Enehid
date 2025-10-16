@@ -15,5 +15,5 @@ struct User: Codable, Identifiable {
     var username: String
     var email: String
 //    var profilePictureURL: String?
-    var friends: [String] = []
+    var friends: [String : String] = [:]
 }

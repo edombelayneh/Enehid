@@ -76,7 +76,7 @@ class ProfileViewController: UIViewController {
                 id: self.currentUID,
                 username: data["username"] as? String ?? "",
                 email: data["email"] as? String ?? "",
-                friends: data["friends"] as? [String] ?? [],
+                friends: data["friends"] as? [String:String] ?? [:],
             )
             
             completion(user)

@@ -4,7 +4,7 @@
 //
 //  Created by Edom Belayneh on 4/8/25.
 //
-//import FirebaseAuth
+
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
@@ -16,7 +16,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     @IBOutlet weak var feedTableView: UITableView!
     
     var feedMemories: [Memory] = []
-    var story : [Story] = mockStories
+    var story : [Story] = []
     var selectedStory: Story?
 
     
@@ -40,8 +40,40 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         storyCollectionView.reloadData()
     }
     
-    func loadFeed() {
-        
+    func fetchStories(completion: @escaping ([Story]) -> Void) {
+        self.db.collection("users").document(self.currentUID).getDocument(completion: { snapshot, error in
+            guard let data = snapshot?.data(),
+                  var friendUIDs = data["friends"] as? [String:String] ?? [:]
+            else {
+                print("❌ Failed to get Friends list for stories.")
+                completion([])
+                return
+            }
+            
+            self.db.collection("story").getDocuments(completion:{ snapshot, error in
+                guard let docs = snapshot?.documents
+                else {
+                    print("❌ Failed to fetch stories.")
+                    completion([])
+                    return
+                }
+                
+                let friendStories = docs.compactMap { doc -> Story? in
+                    let data = doc.data()
+                    let ownerId = data["ownerId"] as? String ?? ""
+                    guard friendUIDs.keys.contains(ownerId) else { return nil }
+                    
+                    return Story(
+                        id: doc.documentID,
+                        ownerId: ownerId,
+                        mediaURL: data["mediaURL"] as? String ?? "",
+                        createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                    )
+                }
+                let sortedStories = friendStories.sorted(by: { $0.createdAt > $1.createdAt })
+                completion(sortedStories)
+            })
+        })
     }
     
     func fetchFriendFeed (completion: @escaping ([Memory]) -> Void) {
