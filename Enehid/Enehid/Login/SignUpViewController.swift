@@ -10,7 +10,9 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class SignUpViewController: UIViewController {
-    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
     
     @IBOutlet weak var createAccountButton: UIButton!
     
@@ -21,6 +23,9 @@ class SignUpViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+
     }
     
     
@@ -143,6 +148,11 @@ class SignUpViewController: UIViewController {
         animation.duration = 0.4
         animation.values = [-10, 10, -8, 8, -5, 5, 0]
         view.layer.add(animation, forKey: "shake")
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder() // Dismiss keyboard
+        return true
     }
 
 

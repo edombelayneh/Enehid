@@ -14,7 +14,7 @@ class StoryCell: UICollectionViewCell {
     
     func configure(with story: Story?) {
 //        profileImage.image =
-        username.text = story?.ownerId
+        username.text = story?.username
     }
     
     override func awakeFromNib() {

@@ -16,7 +16,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     @IBOutlet weak var feedTableView: UITableView!
     
     var feedMemories: [Memory] = []
-    var story : [Story] = []
+    var feedStories : [Story] = []
     var selectedStory: Story?
 
     
@@ -28,52 +28,122 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         feedTableView.delegate = self
         feedTableView.dataSource = self
         
+        storyCollectionView.delegate = self
+        storyCollectionView.dataSource = self
+        
         fetchFriendFeed {feedMemories in
             self.feedMemories = feedMemories
             self.feedTableView.reloadData()
         }
         
-        storyCollectionView.delegate = self
-        storyCollectionView.dataSource = self
+        fetchStories { feedStories in
+            self.feedStories = feedStories
+            self.storyCollectionView.reloadData()
+        }
         
         
-        storyCollectionView.reloadData()
+        
+        
+        
     }
     
     func fetchStories(completion: @escaping ([Story]) -> Void) {
-        db.collection("users").document(self.currentUID).getDocument(completion: { snapshot, error in
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            print("User not logged in")
+            completion([])
+            return
+        }
+        
+        db.collection("users").document(currentUID).getDocument { snapshot, error in
             guard let data = snapshot?.data(),
-                  let friendUIDs = data["friends"] as? [String:String]
-            else {
-                print("❌ Failed to get Friends list for stories.")
+                  let friendsUIDs = data["friends"] as? [String:String] else {
+                print("Failed to get Friends list")
+//                print(snapshot?.data())
+//                print("Error: \(error?.localizedDescription)")
                 completion([])
                 return
             }
             
-            self.db.collection("story").getDocuments(completion:{ snapshot, error in
-                guard let docs = snapshot?.documents
-                else {
-                    print("❌ Failed to fetch stories.")
-                    completion([])
-                    return
-                }
+            let dispatchGroup = DispatchGroup()
+            var allStories: [Story] = []
+            
+            for friendUID in friendsUIDs {
+                print(friendUID.key)
+                dispatchGroup.enter()
+                print("I'm here 0 - \(friendUID.value)")
                 
-                let friendStories = docs.compactMap { doc -> Story? in
-                    let data = doc.data()
-                    let ownerId = data["ownerId"] as? String ?? ""
-                    guard friendUIDs.keys.contains(ownerId) else { return nil }
-                    
-                    return Story(
-                        id: doc.documentID,
-                        ownerId: ownerId,
-                        mediaURL: data["mediaURL"] as? String ?? "",
-                        createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
-                    )
-                }
-                let sortedStories = friendStories.sorted(by: { $0.createdAt > $1.createdAt })
-                completion(sortedStories)
-            })
-        })
+                self.db.collection("story")
+                    .whereField("ownerId", isEqualTo: friendUID.key)
+                    .order(by: "createdAt", descending: true)
+                    .getDocuments { snapshot, error in
+                        if let error = error {
+                            print("error: \(error.localizedDescription)")
+                            print("I'm here 1 - \(friendUID.value)")
+                            completion([])
+                        }
+                        print("I'm here 2 - \(friendUID.value)")
+                        if let docs = snapshot?.documents {
+                            print("I'm here 3 - \(friendUID.value)")
+                            print(docs)
+                            let stories = docs.compactMap { doc -> Story in
+                                print("I'm here 4 - \(friendUID.value)")
+                                print(doc)
+                                let data = doc.data()
+                                print("I'm here 5 - \(friendUID.value)")
+                                return Story (
+                                    id: doc.documentID,
+                                    ownerId: data["ownerId"] as? String ?? "",
+                                    username: data["username"] as? String ?? "",
+                                    mediaURL: data["mediaURL"] as? String ?? "",
+                                    createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                                )
+                            }
+                            allStories.append(contentsOf: stories)
+                        }
+                        dispatchGroup.leave()
+                    }
+            }
+            dispatchGroup.notify(queue: .main) {
+                let shuffled = allStories.shuffled()
+//                let limited = Array(shuffled.prefix(20))
+                completion(shuffled)
+            }
+        }
+        
+//        db.collection("users").document(currentUID).getDocument(completion: { snapshot, error in
+//            guard let data = snapshot?.data(),
+//                  let friendUIDs = data["friends"] as? [String:String]
+//            else {
+//                print("❌ Failed to get Friends list for stories.")
+//                completion([])
+//                return
+//            }
+//            
+//            self.db.collection("story").getDocuments(completion:{ snapshot, error in
+//                guard let docs = snapshot?.documents
+//                else {
+//                    print("❌ Failed to fetch stories.")
+//                    completion([])
+//                    return
+//                }
+//                
+//                let friendStories = docs.compactMap { doc -> Story? in
+//                    let data = doc.data()
+//                    let ownerId = data["ownerId"] as? String ?? ""
+//                    guard friendUIDs.keys.contains(ownerId) else { return nil }
+//                    
+//                    return Story(
+//                        id: doc.documentID,
+//                        ownerId: ownerId,
+//                        username: data["username"] ass? String ?? "",
+//                        mediaURL: data["mediaURL"] as? String ?? "",
+//                        createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+//                    )
+//                }
+//                let sortedStories = friendStories.sorted(by: { $0.createdAt > $1.createdAt })
+//                completion(sortedStories)
+//            })
+//        })
     }
     
     func fetchFriendFeed (completion: @escaping ([Memory]) -> Void) {
@@ -87,8 +157,8 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             guard let data = snapshot?.data(),
                   let friendsUIDs = data["friends"] as? [String:String] else {
                 print("Failed to get Friends list")
-                print(snapshot?.data())
-                print("Error: \(error?.localizedDescription)")
+//                print(snapshot?.data())
+//                print("Error: \(error?.localizedDescription)")
                 completion([])
                 return
             }
@@ -99,7 +169,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             for friendUID in friendsUIDs {
                 print(friendUID.key)
                 dispatchGroup.enter()
-                print("I'm here 0 - \(friendUID.value)")
+//                print("I'm here 0 - \(friendUID.value)")
                 
                 self.db.collection("memories")
                     .whereField("ownerId", isEqualTo: friendUID.key)
@@ -108,18 +178,18 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                     .getDocuments { snapshot, error in
                         if let error = error {
                             print("error: \(error.localizedDescription)")
-                            print("I'm here 1 - \(friendUID.value)")
+//                            print("I'm here 1 - \(friendUID.value)")
                             completion([])
                         }
-                        print("I'm here 2 - \(friendUID.value)")
+//                        print("I'm here 2 - \(friendUID.value)")
                         if let docs = snapshot?.documents {
-                            print("I'm here 3 - \(friendUID.value)")
+//                            print("I'm here 3 - \(friendUID.value)")
                             print(docs)
                             let memories = docs.compactMap { doc -> Memory in
-                                print("I'm here 4 - \(friendUID.value)")
+//                                print("I'm here 4 - \(friendUID.value)")
                                 print(doc)
                                 let data = doc.data()
-                                print("I'm here 5 - \(friendUID.value)")
+//                                print("I'm here 5 - \(friendUID.value)")
                                 return Memory (
                                     id: doc.documentID,
                                     ownerId: data["ownerId"] as? String ?? "",
@@ -166,19 +236,19 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.story.count
+        return self.feedStories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StoryCell", for: indexPath) as? StoryCell else {
                 return UICollectionViewCell()
             }
-            cell.configure(with: story[indexPath.item])
+            cell.configure(with: feedStories[indexPath.item])
             return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedStory = story[indexPath.item]
+        selectedStory = feedStories[indexPath.item]
         performSegue(withIdentifier: "ShowStorySegue", sender: self)
     }
 
