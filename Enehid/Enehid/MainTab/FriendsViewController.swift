@@ -57,17 +57,17 @@ class FriendsViewController: UIViewController, UITableViewDelegate, UITableViewD
             }
 
             guard let data = snapshot?.data(),
-                  let friendsMap = data["friends"] as? [String: String] else {
-                print("❌ No friends found or map is malformed")
+                  let friends = data["friends"] as? [String: String] else {
+                print("❌ No friends found")
                 completion([])
                 return
             }
 
-            let users = friendsMap.map { (uid, username) in
+            let users = friends.map { (uid, username) in
                 User(id: uid, username: username, email: "", friends: [:]) // Email and friends can be fetched later if needed
             }
 
-            print("✅ Fetched \(users.count) friends from map")
+            print("✅ Fetched \(users.count) friends")
             completion(users)
         }
     }

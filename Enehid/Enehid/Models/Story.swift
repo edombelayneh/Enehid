@@ -11,6 +11,7 @@ import UIKit
 struct Story: Equatable, Hashable {
     let id: String
     let ownerId: String
+    let username: String
     let mediaURL: String?
     let createdAt: Date
 }

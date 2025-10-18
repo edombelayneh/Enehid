@@ -24,7 +24,7 @@ class FeedCell: UITableViewCell {
     }
 
     func configure(with feedMemories: Memory?) {
-        usernameLabel.text = feedMemories?.ownerId ?? "Unknown"
+        usernameLabel.text = feedMemories?.username ?? "Unknown"
         detailsLabel.text = feedMemories?.caption ?? ""
 //        sharedPostImage.image = feedMemories?.image
         

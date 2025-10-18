@@ -9,7 +9,12 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-class LoginViewController: UIViewController {
+
+
+class LoginViewController: UIViewController, UITextFieldDelegate {
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
 
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
@@ -17,6 +22,9 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+
     }
     
     @IBAction func onTappedLogin(_ sender: UIButton) {
@@ -85,8 +93,9 @@ class LoginViewController: UIViewController {
     }
     */
 
-    func showAlert(title: String, message: String) {
-        
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder() // Dismiss keyboard
+        return true
     }
 
 

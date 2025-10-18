@@ -41,9 +41,9 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     }
     
     func fetchStories(completion: @escaping ([Story]) -> Void) {
-        self.db.collection("users").document(self.currentUID).getDocument(completion: { snapshot, error in
+        db.collection("users").document(self.currentUID).getDocument(completion: { snapshot, error in
             guard let data = snapshot?.data(),
-                  var friendUIDs = data["friends"] as? [String:String] ?? [:]
+                  let friendUIDs = data["friends"] as? [String:String]
             else {
                 print("❌ Failed to get Friends list for stories.")
                 completion([])
@@ -77,9 +77,18 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     }
     
     func fetchFriendFeed (completion: @escaping ([Memory]) -> Void) {
-        self.db.collection("users").document(self.currentUID).getDocument { snapshot, error in
-            guard let data = snapshot?.data(), let friendsUIDs = data["friends"] as? [String] else {
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            print("User not logged in")
+            completion([])
+            return
+        }
+        
+        db.collection("users").document(currentUID).getDocument { snapshot, error in
+            guard let data = snapshot?.data(),
+                  let friendsUIDs = data["friends"] as? [String:String] else {
                 print("Failed to get Friends list")
+                print(snapshot?.data())
+                print("Error: \(error?.localizedDescription)")
                 completion([])
                 return
             }
@@ -88,19 +97,33 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             var allMemories: [Memory] = []
             
             for friendUID in friendsUIDs {
+                print(friendUID.key)
                 dispatchGroup.enter()
+                print("I'm here 0 - \(friendUID.value)")
                 
                 self.db.collection("memories")
-                    .whereField("ownerId", isEqualTo: friendUID)
+                    .whereField("ownerId", isEqualTo: friendUID.key)
                     .order(by: "createdAt", descending: true)
                     .limit(to: 2)
                     .getDocuments { snapshot, error in
+                        if let error = error {
+                            print("error: \(error.localizedDescription)")
+                            print("I'm here 1 - \(friendUID.value)")
+                            completion([])
+                        }
+                        print("I'm here 2 - \(friendUID.value)")
                         if let docs = snapshot?.documents {
+                            print("I'm here 3 - \(friendUID.value)")
+                            print(docs)
                             let memories = docs.compactMap { doc -> Memory in
+                                print("I'm here 4 - \(friendUID.value)")
+                                print(doc)
                                 let data = doc.data()
+                                print("I'm here 5 - \(friendUID.value)")
                                 return Memory (
                                     id: doc.documentID,
                                     ownerId: data["ownerId"] as? String ?? "",
+                                    username: data["username"] as? String ?? "",
                                     caption: data["caption"] as? String ?? "",
                                     recommends: data["recommends"] as? Int ?? 0,
                                     memoryURLs: data["memoryURLs"] as? [String] ?? [],

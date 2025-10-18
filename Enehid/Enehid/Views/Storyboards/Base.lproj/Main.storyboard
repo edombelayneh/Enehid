@@ -2006,6 +2006,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="fQF-Aw-smb"/>
                                 </constraints>
+                                <color key="tintColor" red="0.85098040100000005" green="0.37647059560000001" blue="0.30980393290000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="pencil" catalog="system"/>
                             </button>

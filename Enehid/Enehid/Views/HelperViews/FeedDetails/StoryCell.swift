@@ -13,8 +13,8 @@ class StoryCell: UICollectionViewCell {
     @IBOutlet weak var username: UILabel!
     
     func configure(with story: Story?) {
-        profileImage.image = story?.image
-        username.text = story?.user?.username
+//        profileImage.image =
+        username.text = story?.ownerId
     }
     
     override func awakeFromNib() {

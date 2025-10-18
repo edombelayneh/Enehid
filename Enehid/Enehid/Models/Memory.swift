@@ -12,6 +12,7 @@ import UIKit
 struct Memory {
     var id: String
     var ownerId: String
+    var username: String
     var caption: String
     var recommends: Int
     var memoryURLs: [String]

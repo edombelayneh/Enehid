@@ -23,9 +23,9 @@ class StoryDetailsViewController: UIViewController {
         profilePicImage.layer.cornerRadius = profilePicImage.frame.size.width / 2
         profilePicImage.clipsToBounds = true
         
-        usernameLabel.text = story?.user?.username
-        profilePicImage.image = story?.image
-        storyImage.image = story?.story
+        usernameLabel.text = story?.ownerId
+//        profilePicImage.image = story?.image
+//        storyImage.image = story?.story
     }
     
 
