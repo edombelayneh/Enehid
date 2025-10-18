@@ -102,7 +102,9 @@ class SignUpViewController: UIViewController {
                         "username": username,
                         "email": email,
                         "profilePictureUrl": NSNull(),
-                        "friends": []
+                        "friends": [:],
+                        "incomingRequests": [:],
+                        "outgoingRequests": [:]
                     ]) { error in
                         if let error = error {
                             let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)

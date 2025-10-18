@@ -40,11 +40,6 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             self.feedStories = feedStories
             self.storyCollectionView.reloadData()
         }
-        
-        
-        
-        
-        
     }
     
     func fetchStories(completion: @escaping ([Story]) -> Void) {

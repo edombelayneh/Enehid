@@ -27,7 +27,7 @@ class PostDetailViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         captionLabel.text = feedMemories?.caption
-        usernameLabel.text = feedMemories?.ownerId
+        usernameLabel.text = feedMemories?.username
 //        postImage.image = feedMemories?.image
     }
     
