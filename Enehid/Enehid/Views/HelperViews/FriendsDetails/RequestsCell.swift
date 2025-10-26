@@ -13,16 +13,18 @@ class RequestsCell: UITableViewCell {
     @IBOutlet weak var addFriendButton: UIButton!
     @IBOutlet weak var bioLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
+    
     @IBOutlet weak var profilePicImageView: UIImageView!
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
+    
+    var onAddTapped: (() -> Void)?
+    var onDenyTapped: (() -> Void)?
+    
+    
+    @IBAction func onTapAddButton(_ sender: UIButton) {
+        onAddTapped?()
     }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    
+    @IBAction func onTapDenyButton(_ sender: UIButton) {
+        onDenyTapped?()
     }
-
 }

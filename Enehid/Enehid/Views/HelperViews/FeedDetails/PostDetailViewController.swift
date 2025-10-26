@@ -6,11 +6,14 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
 class PostDetailViewController: UIViewController {
 
     
     
+    @IBOutlet weak var createStarred: UIButton!
     @IBOutlet weak var addToBookmarkButton: UIButton!
     @IBOutlet weak var showOnMapsButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
@@ -31,7 +34,21 @@ class PostDetailViewController: UIViewController {
 //        postImage.image = feedMemories?.image
     }
     
-
+    
+    @IBAction func onTapAddToPlans(_ sender: UIButton) {
+    }
+    @IBAction func onTapComment(_ sender: UIButton) {
+    }
+    @IBAction func onTapOpenInMap(_ sender: UIButton) {
+    }
+    @IBAction func onTapRecommend(_ sender: UIButton) {
+    }
+    
+    @IBAction func onTapBookmarked(_ sender: UIButton) {
+    }
+    @IBAction func onTapCreateStarred(_ sender: UIButton) {
+    }
+    
     /*
     // MARK: - Navigation
 
@@ -41,5 +58,39 @@ class PostDetailViewController: UIViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    func recommendPost(memoryId: String) {
+        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        
+        let db = Firestore.firestore()
+        
+        let recommendRef = db.collection("users").document(currentUID).collection("recommends").document(memoryId)
+        
+        recommendRef.setData([
+            "recommendId": memoryId,
+            "recommendedAt": Timestamp()
+        ]) { error in
+            if let error = error {
+                print("❌ Failed to recommend: \(error.localizedDescription)")
+            } else {
+                print("✅ Post \(memoryId) recommended by user \(currentUID)")
+            }
+        }
+        
+    }
+    
+    func unrecommendPost(memoryId: String){
+        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        
+        let db = Firestore.firestore()
+        
+        db.collection("users").document(currentUID).collection("recommends").document(memoryId).delete { error in
+            if let error = error {
+                print("❌ Failed to un-recommend: \(error.localizedDescription)")
+            } else {
+                print("✅ Post \(memoryId) un-recommended")
+            }
+        }
+    }
 
 }

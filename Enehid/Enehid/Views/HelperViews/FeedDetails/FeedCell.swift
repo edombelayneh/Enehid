@@ -18,6 +18,8 @@ class FeedCell: UITableViewCell {
     
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
+    
+    var onRecommendTapped: (() -> Void)?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -35,9 +37,11 @@ class FeedCell: UITableViewCell {
     
     
     @IBAction func onTapRecommendButton(_ sender: UIButton) {
+        onRecommendTapped?()
     }
     
     @IBAction func onTapBookmarkButton(_ sender: UIButton) {
     }
-    
+
+
 }

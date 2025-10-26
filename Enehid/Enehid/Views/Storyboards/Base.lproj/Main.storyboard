@@ -602,6 +602,22 @@
             </objects>
             <point key="canvasLocation" x="1682" y="798"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="Dc4-8j-nKc">
+            <objects>
+                <viewController id="bIC-DU-Wpi" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Owc-Yd-3Y1">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="ldG-Bc-JYV"/>
+                        <color key="backgroundColor" red="0.22745099660000001" green="0.22745099660000001" blue="0.2352941036" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="O1B-p1-6K3"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BvS-uu-NdE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3491" y="2356"/>
+        </scene>
         <!--Story Details View Controller-->
         <scene sceneID="atv-TN-RHm">
             <objects>
@@ -756,6 +772,9 @@
                                                     <buttonConfiguration key="configuration" style="plain">
                                                         <imageReference key="image" image="bookmark" catalog="system" symbolScale="small"/>
                                                     </buttonConfiguration>
+                                                    <connections>
+                                                        <action selector="onTapBookmarkButton:" destination="d56-Dr-686" eventType="touchUpInside" id="h0u-vu-P56"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <constraints>
@@ -863,7 +882,20 @@
                             <constraint firstItem="7vd-JY-Nle" firstAttribute="top" secondItem="Dp7-id-YQ5" secondAttribute="bottom" id="hjN-vH-2wy"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="ENEHID" id="KaA-nv-Me7"/>
+                    <navigationItem key="navigationItem" title="ENEHID" id="KaA-nv-Me7">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="dE2-Ys-t6O">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="ojj-Em-0yg">
+                                <rect key="frame" x="267.33333333333331" y="5" width="109.66666666666669" height="34.333333333333336"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" image="plus" catalog="system" title="Memory"/>
+                                <connections>
+                                    <segue destination="bIC-DU-Wpi" kind="show" id="kJT-jJ-Q3o"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="feedTableView" destination="7vd-JY-Nle" id="nQ2-tG-4rL"/>
                         <outlet property="storyCollectionView" destination="Dp7-id-YQ5" id="jOr-fH-tyq"/>
@@ -1491,7 +1523,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Add Friends" id="LV7-HY-up0">
                         <barButtonItem key="rightBarButtonItem" style="plain" id="mQV-Iv-4g6">
-                            <button key="customView" opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="4d2-un-J8c">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="4d2-un-J8c">
                                 <rect key="frame" x="282" y="5" width="95" height="34.333333333333336"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -1562,6 +1594,7 @@
                                                         <imageReference key="image" image="checkmark" catalog="system" symbolScale="small"/>
                                                     </buttonConfiguration>
                                                     <connections>
+                                                        <action selector="onTapAddButton:" destination="gOP-k5-gO8" eventType="touchUpInside" id="p5v-aD-Q5h"/>
                                                         <action selector="onTapAddFriend:" destination="gOP-k5-gO8" eventType="touchUpInside" id="O7C-sd-ngx"/>
                                                     </connections>
                                                 </button>
@@ -1578,6 +1611,7 @@
                                                     </buttonConfiguration>
                                                     <connections>
                                                         <action selector="onTapAddFriend:" destination="gOP-k5-gO8" eventType="touchUpInside" id="V7T-PN-SRh"/>
+                                                        <action selector="onTapDenyButton:" destination="gOP-k5-gO8" eventType="touchUpInside" id="kg9-Bw-SZy"/>
                                                     </connections>
                                                 </button>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="7vE-gW-S1F">
@@ -1612,7 +1646,7 @@
                                             <outlet property="addFriendButton" destination="C5f-TA-iTH" id="wyi-zm-sgL"/>
                                             <outlet property="bioLabel" destination="LTu-cL-lja" id="07f-2f-n1l"/>
                                             <outlet property="denyFriendButton" destination="9dr-x0-DCd" id="HeI-BE-66e"/>
-                                            <outlet property="profilePicImageView" destination="7vE-gW-S1F" id="hIc-uc-Tv7"/>
+                                            <outlet property="profilePicImageView" destination="7vE-gW-S1F" id="Pzl-Oi-ABg"/>
                                             <outlet property="usernameLabel" destination="Yww-AZ-GlY" id="UbE-UM-0I7"/>
                                         </connections>
                                     </tableViewCell>
@@ -1860,7 +1894,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="L8H-Kb-lFv">
-                                <rect key="frame" x="30" y="220" width="331.33333333333331" height="355"/>
+                                <rect key="frame" x="30" y="220" width="331" height="355"/>
                                 <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="333" id="MSd-Xw-sVo"/>
@@ -1868,31 +1902,43 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="253" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ohI-if-AXX">
-                                <rect key="frame" x="308.33333333333331" y="585" width="53" height="35"/>
+                                <rect key="frame" x="308" y="585" width="53" height="35"/>
                                 <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="megaphone" catalog="system"/>
+                                <connections>
+                                    <action selector="onTapRecommend:" destination="4Th-fV-C6H" eventType="touchUpInside" id="55A-cZ-84d"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EGO-Ha-3jY">
-                                <rect key="frame" x="248.33333333333337" y="585" width="52" height="35"/>
+                                <rect key="frame" x="248" y="585" width="52" height="35"/>
                                 <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="map" catalog="system"/>
+                                <connections>
+                                    <action selector="onTapOpenInMap:" destination="4Th-fV-C6H" eventType="touchUpInside" id="I5a-kb-Peh"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="252" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m24-RZ-lWn">
-                                <rect key="frame" x="179.33333333333334" y="585" width="61" height="35"/>
+                                <rect key="frame" x="179" y="585" width="61" height="35"/>
                                 <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="rectangle.and.pencil.and.ellipsis" catalog="system"/>
+                                <connections>
+                                    <action selector="onTapComment:" destination="4Th-fV-C6H" eventType="touchUpInside" id="kp9-No-kUM"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pH0-DR-zdV">
-                                <rect key="frame" x="30.000000000000004" y="585" width="52.333333333333343" height="35"/>
+                                <rect key="frame" x="30" y="585" width="52" height="35"/>
                                 <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="calendar.badge.plus" catalog="system"/>
+                                <connections>
+                                    <action selector="onTapAddToPlans:" destination="4Th-fV-C6H" eventType="touchUpInside" id="9Y4-IF-vs5"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iMQ-wc-dWc">
-                                <rect key="frame" x="30" y="630" width="262.33333333333331" height="21"/>
+                                <rect key="frame" x="30" y="630" width="262" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="263" id="DQZ-uk-v1D"/>
                                 </constraints>
@@ -1901,7 +1947,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="comments are going to be here" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RUq-0z-eEA">
-                                <rect key="frame" x="30" y="662" width="331.33333333333331" height="112"/>
+                                <rect key="frame" x="30" y="662" width="331" height="112"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="333" id="MB2-KJ-wix"/>
                                     <constraint firstAttribute="height" constant="112" id="m0N-AP-AVx"/>
@@ -1911,7 +1957,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WXY-jT-uSv">
-                                <rect key="frame" x="320" y="172" width="41.333333333333314" height="40"/>
+                                <rect key="frame" x="319.66666666666669" y="172" width="41.333333333333314" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="Wqd-Bp-LYy"/>
                                     <constraint firstAttribute="height" constant="40" id="dnc-rQ-Vi7"/>
@@ -1921,6 +1967,24 @@
                                 <buttonConfiguration key="configuration" style="plain">
                                     <imageReference key="image" image="bookmark" catalog="system" symbolScale="medium"/>
                                 </buttonConfiguration>
+                                <connections>
+                                    <action selector="onTapBookmarked:" destination="4Th-fV-C6H" eventType="touchUpInside" id="IRw-YR-oGa"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6nK-LH-KQO">
+                                <rect key="frame" x="30" y="172" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="Rsq-DA-WWs"/>
+                                    <constraint firstAttribute="height" constant="40" id="gYM-ww-bOY"/>
+                                </constraints>
+                                <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain">
+                                    <imageReference key="image" image="star" catalog="system" symbolScale="medium"/>
+                                </buttonConfiguration>
+                                <connections>
+                                    <action selector="onTapCreateStarred:" destination="4Th-fV-C6H" eventType="touchUpInside" id="S9W-x8-lBs"/>
+                                </connections>
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="dMt-ZQ-1V6"/>
@@ -1936,11 +2000,12 @@
                             <constraint firstItem="dMt-ZQ-1V6" firstAttribute="trailing" secondItem="RUq-0z-eEA" secondAttribute="trailing" constant="30" id="Ld1-yL-gCD"/>
                             <constraint firstItem="iMQ-wc-dWc" firstAttribute="top" secondItem="EGO-Ha-3jY" secondAttribute="bottom" constant="10" id="SrH-i6-4vv"/>
                             <constraint firstItem="pH0-DR-zdV" firstAttribute="top" secondItem="L8H-Kb-lFv" secondAttribute="bottom" constant="10" id="T8m-kN-U97"/>
+                            <constraint firstItem="WXY-jT-uSv" firstAttribute="leading" secondItem="6nK-LH-KQO" secondAttribute="trailing" constant="249.66999999999999" id="TJz-lx-L2J"/>
+                            <constraint firstItem="6nK-LH-KQO" firstAttribute="top" secondItem="dMt-ZQ-1V6" secondAttribute="top" constant="10" id="YYE-DA-eJK"/>
                             <constraint firstItem="pH0-DR-zdV" firstAttribute="leading" secondItem="dMt-ZQ-1V6" secondAttribute="leading" constant="30" id="Yh6-dT-Bx0"/>
                             <constraint firstItem="dMt-ZQ-1V6" firstAttribute="trailing" secondItem="L8H-Kb-lFv" secondAttribute="trailing" constant="30" id="aRn-FL-iwo"/>
                             <constraint firstItem="dMt-ZQ-1V6" firstAttribute="trailing" secondItem="WXY-jT-uSv" secondAttribute="trailing" constant="30" id="do8-EZ-dMZ"/>
                             <constraint firstItem="m24-RZ-lWn" firstAttribute="leading" secondItem="pH0-DR-zdV" secondAttribute="trailing" constant="97" id="eha-SR-JkU"/>
-                            <constraint firstItem="WXY-jT-uSv" firstAttribute="leading" secondItem="dMt-ZQ-1V6" secondAttribute="leading" constant="320" id="iDV-hH-Dy4"/>
                             <constraint firstItem="EGO-Ha-3jY" firstAttribute="top" secondItem="L8H-Kb-lFv" secondAttribute="bottom" constant="10" id="iXM-l7-plL"/>
                             <constraint firstItem="L8H-Kb-lFv" firstAttribute="leading" secondItem="dMt-ZQ-1V6" secondAttribute="leading" constant="30" id="k1b-c5-ceW"/>
                             <constraint firstItem="ohI-if-AXX" firstAttribute="leading" secondItem="EGO-Ha-3jY" secondAttribute="trailing" constant="8" id="nK1-qE-5Ha"/>
@@ -1951,6 +2016,7 @@
                             <constraint firstItem="dMt-ZQ-1V6" firstAttribute="trailing" secondItem="iMQ-wc-dWc" secondAttribute="trailing" constant="99" id="sHy-vA-ue2"/>
                             <constraint firstItem="iMQ-wc-dWc" firstAttribute="leading" secondItem="dMt-ZQ-1V6" secondAttribute="leading" constant="30" id="syY-O8-Mwz"/>
                             <constraint firstItem="EGO-Ha-3jY" firstAttribute="leading" secondItem="m24-RZ-lWn" secondAttribute="trailing" constant="8" id="wRD-GX-Vyw"/>
+                            <constraint firstItem="6nK-LH-KQO" firstAttribute="leading" secondItem="dMt-ZQ-1V6" secondAttribute="leading" constant="30" id="xc6-Md-AqY"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="c0Q-Oi-Shj"/>
@@ -1959,6 +2025,7 @@
                         <outlet property="addToPlansButton" destination="pH0-DR-zdV" id="CG5-uD-brc"/>
                         <outlet property="captionLabel" destination="RUq-0z-eEA" id="CFy-0U-nD6"/>
                         <outlet property="commentButton" destination="m24-RZ-lWn" id="ifD-Gw-SpR"/>
+                        <outlet property="createStarred" destination="6nK-LH-KQO" id="LgJ-Fm-WCH"/>
                         <outlet property="postImage" destination="L8H-Kb-lFv" id="cvu-Qe-azr"/>
                         <outlet property="recommendButton" destination="ohI-if-AXX" id="0yJ-FA-rlm"/>
                         <outlet property="showOnMapsButton" destination="EGO-Ha-3jY" id="5nU-bT-fKt"/>

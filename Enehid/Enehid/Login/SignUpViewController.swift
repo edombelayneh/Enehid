@@ -104,7 +104,8 @@ class SignUpViewController: UIViewController {
                         "profilePictureUrl": NSNull(),
                         "friends": [:],
                         "incomingRequests": [:],
-                        "outgoingRequests": [:]
+                        "outgoingRequests": [:],
+                        
                     ]) { error in
                         if let error = error {
                             let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
@@ -112,6 +113,13 @@ class SignUpViewController: UIViewController {
                             self.present(alert, animated: true, completion: nil)
                             print("❌ Error saving user data: \(error.localizedDescription)")
                         } else {
+                            let recommendsRef = db.collection("users").document(uid).collection("recommends").document("placeholder")
+                            let starredRef = db.collection("users").document(uid).collection("starred").document("placeholder")
+
+//                            // Create placeholder documents (optional — remove later)
+//                            recommendsRef.setData(["init": true])
+//                            starredRef.setData(["init": true])
+
                             print("✅ User signed up and username saved")
                             // User account created successfully
                             print("User created: \(authResult?.user.email ?? "N/A")")

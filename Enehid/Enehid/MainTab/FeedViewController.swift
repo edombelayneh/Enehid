@@ -53,8 +53,6 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             guard let data = snapshot?.data(),
                   let friendsUIDs = data["friends"] as? [String:String] else {
                 print("Failed to get Friends list")
-//                print(snapshot?.data())
-//                print("Error: \(error?.localizedDescription)")
                 completion([])
                 return
             }
@@ -100,45 +98,9 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             }
             dispatchGroup.notify(queue: .main) {
                 let shuffled = allStories.shuffled()
-//                let limited = Array(shuffled.prefix(20))
                 completion(shuffled)
             }
         }
-        
-//        db.collection("users").document(currentUID).getDocument(completion: { snapshot, error in
-//            guard let data = snapshot?.data(),
-//                  let friendUIDs = data["friends"] as? [String:String]
-//            else {
-//                print("❌ Failed to get Friends list for stories.")
-//                completion([])
-//                return
-//            }
-//            
-//            self.db.collection("story").getDocuments(completion:{ snapshot, error in
-//                guard let docs = snapshot?.documents
-//                else {
-//                    print("❌ Failed to fetch stories.")
-//                    completion([])
-//                    return
-//                }
-//                
-//                let friendStories = docs.compactMap { doc -> Story? in
-//                    let data = doc.data()
-//                    let ownerId = data["ownerId"] as? String ?? ""
-//                    guard friendUIDs.keys.contains(ownerId) else { return nil }
-//                    
-//                    return Story(
-//                        id: doc.documentID,
-//                        ownerId: ownerId,
-//                        username: data["username"] ass? String ?? "",
-//                        mediaURL: data["mediaURL"] as? String ?? "",
-//                        createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
-//                    )
-//                }
-//                let sortedStories = friendStories.sorted(by: { $0.createdAt > $1.createdAt })
-//                completion(sortedStories)
-//            })
-//        })
     }
     
     func fetchFriendFeed (completion: @escaping ([Memory]) -> Void) {
@@ -213,6 +175,57 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     
     
     
+    func toggleRecommend(for postId: String, completion: @escaping (Bool) -> Void) {
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            completion(false)
+            return
+        }
+        
+        let db = Firestore.firestore()
+        let recommendRef = db
+            .collection("users")
+            .document(currentUID)
+            .collection("recommends")
+            .document(postId)
+        
+        recommendRef.getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error checking recommend status: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+
+            if snapshot?.exists == true {
+                // ❌ Unrecommend
+                recommendRef.delete { error in
+                    if let error = error {
+                        print("❌ Failed to un-recommend: \(error.localizedDescription)")
+                        completion(false)
+                    } else {
+                        print("🔕 Unrecommended post \(postId)")
+                        completion(false) // now not recommended
+                    }
+                }
+            } else {
+                // ✅ Recommend
+                recommendRef.setData([
+                    "postId": postId,
+                    "recommendedAt": Timestamp()
+                ]) { error in
+                    if let error = error {
+                        print("❌ Failed to recommend: \(error.localizedDescription)")
+                        completion(false)
+                    } else {
+                        print("📢 Recommended post \(postId)")
+                        completion(true) 
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    
 }
 
 extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource {
@@ -221,14 +234,55 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.feedMemories.count
     }
+//    
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        guard let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as? FeedCell else {
+//            return UITableViewCell()
+//        }
+//        
+//
+//        cell.configure(with: feedMemories[indexPath.row])
+//        return cell
+//    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as? FeedCell else {
             return UITableViewCell()
         }
-        cell.configure(with: feedMemories[indexPath.row])
+
+        let memory = feedMemories[indexPath.row]
+        cell.configure(with: memory)
+
+        // Configure recommend icon based on current state
+        let postId = memory.id
+        let currentUID = Auth.auth().currentUser?.uid ?? ""
+        let recommendRef = Firestore.firestore()
+            .collection("users")
+            .document(currentUID)
+            .collection("recommends")
+            .document(postId)
+
+        recommendRef.getDocument { snapshot, _ in
+            let isRecommended = snapshot?.exists == true
+            let iconName = isRecommended ? "megaphone.fill" : "megaphone"
+            DispatchQueue.main.async {
+                cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
+            }
+        }
+
+        // Set tap behavior
+        cell.onRecommendTapped = { [weak self] in
+            self?.toggleRecommend(for: postId) { isRecommended in
+                DispatchQueue.main.async {
+                    let iconName = isRecommended ? "megaphone.fill" : "megaphone"
+                    cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
+                }
+            }
+        }
+
         return cell
     }
+
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.feedStories.count

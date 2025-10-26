@@ -14,6 +14,10 @@ struct User: Codable, Identifiable {
     var id: String
     var username: String
     var email: String
-//    var profilePictureURL: String?
+    var profilePictureURL: String?
     var friends: [String : String] = [:]
+    
+    var recommendedPostIDs: [String] = []
+    var starredPostIDs: [String] = []
+    var memoryPostIDs: [String] = []
 }

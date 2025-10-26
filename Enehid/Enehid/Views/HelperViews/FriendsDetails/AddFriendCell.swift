@@ -18,15 +18,15 @@ class AddFriendCell: UITableViewCell {
     
     var onAddTapped: (() -> Void)?
 
-    func configure(with searchResults: User?) {
-        usernameLabel.text = searchResults?.username ?? "Unknown"
-//        bioLabel.text = searchResults? ?? ""
-//        sharedPostImage.image = feedMemories?.image
-        
-//        if let date = comment?.commentDate {
-//            dateLabel.text = DateFormatter.postFormatter.string(from: date)
-//        }
-    }
+//    func configure(with searchResults: User?) {
+//        usernameLabel.text = searchResults?.username ?? "Unknown"
+////        bioLabel.text = searchResults? ?? ""
+////        sharedPostImage.image = feedMemories?.image
+//        
+////        if let date = comment?.commentDate {
+////            dateLabel.text = DateFormatter.postFormatter.string(from: date)
+////        }
+//    }
     
     @IBAction func onTapAddFriend(_ sender: UIButton) {
         onAddTapped?()

@@ -91,6 +91,7 @@ class ProfileViewController: UIViewController {
         fetchUser { user in
             guard let user = user else { return }
             self.usernameLabel.text = user.username
+            self.memoriesCounterLabel.text = "\(user.friends.count)"
         }
         
         postSegmentedControl.selectedSegmentIndex = 0

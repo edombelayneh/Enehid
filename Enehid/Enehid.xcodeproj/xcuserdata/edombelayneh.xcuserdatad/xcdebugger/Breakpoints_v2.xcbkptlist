@@ -68,5 +68,93 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2AD56521-24F4-4B8B-A77C-159D3B75E121"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Enehid/Views/HelperViews/FriendsDetails/RequestsCell.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "16"
+            endingLineNumber = "16"
+            landmarkName = "RequestsCell"
+            landmarkType = "3">
+            <Locations>
+               <Location
+                  uuid = "2AD56521-24F4-4B8B-A77C-159D3B75E121 - c202c1c209084640"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Enehid.RequestsCell.profilePicImageView.getter : Swift.Optional&lt;__C.UIImageView&gt;"
+                  moduleName = "Enehid.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/edombelayneh/Desktop/Enehid/Enehid/Enehid/Views/HelperViews/FriendsDetails/RequestsCell.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "2AD56521-24F4-4B8B-A77C-159D3B75E121 - cd60524062721a7c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Enehid.RequestsCell.profilePicImageView.setter : Swift.Optional&lt;__C.UIImageView&gt;"
+                  moduleName = "Enehid.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/edombelayneh/Desktop/Enehid/Enehid/Enehid/Views/HelperViews/FriendsDetails/RequestsCell.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "2AD56521-24F4-4B8B-A77C-159D3B75E121 - aed38c6a2573dd4f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Enehid.RequestsCell.profilePicImageView.modify : Swift.Optional&lt;__C.UIImageView&gt;"
+                  moduleName = "Enehid.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/edombelayneh/Desktop/Enehid/Enehid/Enehid/Views/HelperViews/FriendsDetails/RequestsCell.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "2AD56521-24F4-4B8B-A77C-159D3B75E121 - caf874230a43fd26"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Enehid.RequestsCell.init(style: __C.UITableViewCellStyle, reuseIdentifier: Swift.Optional&lt;Swift.String&gt;) -&gt; Enehid.RequestsCell"
+                  moduleName = "Enehid.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/edombelayneh/Desktop/Enehid/Enehid/Enehid/Views/HelperViews/FriendsDetails/RequestsCell.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "17"
+                  endingLineNumber = "17">
+               </Location>
+               <Location
+                  uuid = "2AD56521-24F4-4B8B-A77C-159D3B75E121 - 89c5969e657aaa8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Enehid.RequestsCell.init(coder: __C.NSCoder) -&gt; Swift.Optional&lt;Enehid.RequestsCell&gt;"
+                  moduleName = "Enehid.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/edombelayneh/Desktop/Enehid/Enehid/Enehid/Views/HelperViews/FriendsDetails/RequestsCell.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "17"
+                  endingLineNumber = "17">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
