@@ -173,7 +173,54 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         }
     }
     
-    
+    func toggleBookmark(for postId: String, completion: @escaping (Bool) -> Void) {
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            completion(false)
+            return
+        }
+        
+        let db = Firestore.firestore()
+        let bookmarkeRef = db
+            .collection("users")
+            .document(currentUID)
+            .collection("bookmarked")
+            .document(postId)
+        
+        bookmarkeRef.getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error checking bookmarked status: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+
+            if snapshot?.exists == true {
+                // ❌ Unrecommend
+                bookmarkeRef.delete { error in
+                    if let error = error {
+                        print("❌ Failed to un-bookmark: \(error.localizedDescription)")
+                        completion(false)
+                    } else {
+                        print("📎 Unbookmarked post \(postId)")
+                        completion(false) // now not bookmark
+                    }
+                }
+            } else {
+                // ✅ Recommend
+                bookmarkeRef.setData([
+                    "postId": postId,
+                    "bookmarkedAt": Timestamp()
+                ]) { error in
+                    if let error = error {
+                        print("❌ Failed to bookmark: \(error.localizedDescription)")
+                        completion(false)
+                    } else {
+                        print("📑 Bookmarked post \(postId)")
+                        completion(true)
+                    }
+                }
+            }
+        }
+    }
     
     func toggleRecommend(for postId: String, completion: @escaping (Bool) -> Void) {
         guard let currentUID = Auth.auth().currentUser?.uid else {
@@ -217,7 +264,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                         completion(false)
                     } else {
                         print("📢 Recommended post \(postId)")
-                        completion(true) 
+                        completion(true)
                     }
                 }
             }
@@ -261,6 +308,12 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             .document(currentUID)
             .collection("recommends")
             .document(postId)
+        
+        let bookmarkRef = Firestore.firestore()
+            .collection("users")
+            .document(currentUID)
+            .collection("bookmarked")
+            .document(postId)
 
         recommendRef.getDocument { snapshot, _ in
             let isRecommended = snapshot?.exists == true
@@ -268,6 +321,15 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             DispatchQueue.main.async {
                 cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
             }
+        }
+        
+        bookmarkRef.getDocument { snapshot, _ in
+            let isBookmarked = snapshot?.exists == true
+            let iconName = isBookmarked ? "bookmark.fill" : "bookmark"
+            DispatchQueue.main.async {
+                cell.bookmarkButton.setImage(UIImage(systemName: iconName), for: .normal)
+            }
+            
         }
 
         // Set tap behavior
@@ -279,6 +341,16 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
                 }
             }
         }
+        
+        cell.onBookmarkTapped = { [weak self] in
+            self?.toggleBookmark(for: postId) { isBookmarked in
+                DispatchQueue.main.async {
+                    let iconName = isBookmarked ? "bookmark.fill" : "bookmark"
+                    cell.bookmarkButton.setImage(UIImage(systemName: iconName), for: .normal)
+                }
+            }
+        }
+        
 
         return cell
     }
@@ -295,11 +367,6 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             cell.configure(with: feedStories[indexPath.item])
             return cell
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedStory = feedStories[indexPath.item]
-        performSegue(withIdentifier: "ShowStorySegue", sender: self)
-    }
 
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -315,9 +382,13 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
         }
         else if segue.identifier == "ShowStorySegue" {
             let destinationVC = segue.destination as! StoryDetailsViewController
-            if let selectedStory = selectedStory {
+            if let selectedIndexPaths = storyCollectionView.indexPathsForSelectedItems,
+               let indexPath = selectedIndexPaths.first {
+                
+                let selectedStory = feedStories[indexPath.item]
                 destinationVC.story = selectedStory
-                print("✅ Passing story to StoryDetailVC via cell tap: \(selectedStory)")
+                print("✅ Passing story to StoryDetailVC via collectionView index: \(selectedStory)")
+                
             } else {
                 print("⚠️ No story selected.")
             }
