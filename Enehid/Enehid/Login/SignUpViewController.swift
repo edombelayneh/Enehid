@@ -115,6 +115,10 @@ class SignUpViewController: UIViewController {
                         } else {
                             let recommendsRef = db.collection("users").document(uid).collection("recommends").document("placeholder")
                             let starredRef = db.collection("users").document(uid).collection("starred").document("placeholder")
+                            let plannedRef = db.collection("users").document(uid).collection("plans").document("placeholder")
+                            let bookmarkRef = db.collection("users").document(uid).collection("bookmarked").document("placeholder")
+
+
 
 //                            // Create placeholder documents (optional — remove later)
 //                            recommendsRef.setData(["init": true])

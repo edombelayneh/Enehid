@@ -6,8 +6,102 @@
 //
 
 import UIKit
+import FirebaseAuth
+import FirebaseFirestore
 
-class PlansViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class PlansViewController: UIViewController, UITableViewDelegate {
+    
+    @IBOutlet weak var plansTableView: UITableView!
+    
+    
+    var plans: [Plans] = []
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        plansTableView.delegate = self
+        plansTableView.dataSource = self
+        // Do any additional setup after loading the view.
+        
+        fetchPlans{ plansUpdate in
+            self.plans = plansUpdate
+            self.plansTableView.reloadData()
+        }
+    }
+    
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+    
+    func fetchPlans(completion: @escaping ([Plans]) -> Void) {
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            print("User not logged in")
+            completion([])
+            return
+        }
+        
+        let db = Firestore.firestore()
+        let plansRef = db.collection("users").document(currentUID).collection("plans")
+        
+        plansRef.getDocuments(source: .default) { snapshot, error in
+            if let error = error {
+                print("❌ Failed to get plans: \(error.localizedDescription)")
+                completion([])
+                return
+            }
+            
+            guard let docs = snapshot?.documents else {
+                print("📭 No bookmarked posts found")
+                completion([])
+                return
+            }
+            
+            let planIds = docs.compactMap { $0.data()["planId"] as? String }
+            var plans: [Plans] = []
+            let dispatchGroup = DispatchGroup()
+            
+            for planId in planIds {
+                dispatchGroup.enter()
+                db.collection("plans").document(planId).getDocument(source: .default) { planSnapshot, error in
+                    defer { dispatchGroup.leave() }
+                    
+                    if let error = error {
+                        print("❌ Failed to get plan for \(planId): \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    guard let data = planSnapshot?.data() else {
+                        return
+                    }
+                    
+                    let acceptedByList = data["acceptedByIDs"] as? [String] ?? []
+                    let currentUID = Auth.auth().currentUser?.uid ?? ""
+                    
+                    let plans = Plans(
+                        id: planSnapshot!.documentID,
+                        activityName: data["activityName"] as? String ?? "",
+                        location: data["location"] as? String ?? "",
+                        date: data["date"] as? String ?? "",
+                        group: data["group"] as? String ?? "",
+                        createdBy: data["createdBy"] as? String ?? "",
+                        participants: data["participants"] as? [String:String] ?? [:],
+                        acceptedByIDs: Set(acceptedByList),
+                        iAccepted: acceptedByList.contains(currentUID)
+                    )
+                }
+            }
+        }
+    }
+
+}
+
+extension PlansViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return plans.count
     }
@@ -46,27 +140,4 @@ class PlansViewController: UIViewController, UITableViewDelegate, UITableViewDat
         return cell
     }
     
-
-    @IBOutlet weak var plansTableView: UITableView!
-    
-    
-    var plans: [Plans] = mockPlans
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        plansTableView.delegate = self
-        plansTableView.dataSource = self
-        // Do any additional setup after loading the view.
-    }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
