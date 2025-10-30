@@ -28,16 +28,16 @@ class PlansViewController: UIViewController, UITableViewDelegate {
         }
     }
     
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destination.
+     // Pass the selected object to the new view controller.
+     }
+     */
     
     func fetchPlans(completion: @escaping ([Plans]) -> Void) {
         guard let currentUID = Auth.auth().currentUser?.uid else {
@@ -57,7 +57,7 @@ class PlansViewController: UIViewController, UITableViewDelegate {
             }
             
             guard let docs = snapshot?.documents else {
-                print("📭 No bookmarked posts found")
+                print("📭 No plans found")
                 completion([])
                 return
             }
@@ -83,7 +83,7 @@ class PlansViewController: UIViewController, UITableViewDelegate {
                     let acceptedByList = data["acceptedByIDs"] as? [String] ?? []
                     let currentUID = Auth.auth().currentUser?.uid ?? ""
                     
-                    let plans = Plans(
+                    let plan = Plans(
                         id: planSnapshot!.documentID,
                         activityName: data["activityName"] as? String ?? "",
                         location: data["location"] as? String ?? "",
@@ -94,12 +94,19 @@ class PlansViewController: UIViewController, UITableViewDelegate {
                         acceptedByIDs: Set(acceptedByList),
                         iAccepted: acceptedByList.contains(currentUID)
                     )
+                    
+                    plans.append(plan)
                 }
             }
+            
+            dispatchGroup.notify(queue: .main) {
+                completion(plans)
+            }
+            
         }
     }
-
 }
+
 
 extension PlansViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -110,14 +117,14 @@ extension PlansViewController: UITableViewDataSource {
         let plan = plans[indexPath.row]
         let id = plan.createdByIsMe ? "PlanOwnerCell" : "PlanInviteeCell"
         let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! PlansCell
-
+        
         // Common fields
-//        cell.profileUIImageVIew.image = UIImage.enehidLogo
+        //        cell.profileUIImageVIew.image = UIImage.enehidLogo
         cell.activityNameLabel.text = plan.activityName
         cell.locationLabel.text     = plan.location
         cell.dateLabel.text         = plan.date
         cell.createdBy.text    = plan.createdByIsMe ? "Organizer: YOU"
-                                                             : "@\(plan.createdBy)"
+        : "@\(plan.createdBy)"
         print("🫵🏽\(plan.activityName) is_me \(plan.createdByIsMe)")
         
         if plan.createdByIsMe {
@@ -132,11 +139,8 @@ extension PlansViewController: UITableViewDataSource {
             cell.acceptButton?.isHidden       = plan.iAccepted
             cell.declineButton?.isHidden      = !plan.iAccepted
             cell.waitingLabel?.text           = plan.iAccepted ? "You accepted" : "Waiting on you"
-
-//            cell.onAccept = { [weak self] in /* update model + reload row */ }
-//            cell.onDecline = { [weak self] in /* update model + reload row */ }
         }
-
+        
         return cell
     }
     

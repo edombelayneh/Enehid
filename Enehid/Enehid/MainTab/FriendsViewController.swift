@@ -59,6 +59,9 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
             completion(users)
         }
     }
+
+    
+    
 }
 
 extension FriendsViewController: UITableViewDataSource {
@@ -73,5 +76,13 @@ extension FriendsViewController: UITableViewDataSource {
         
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let friend = friends[indexPath.row]
+        let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
+        chatVC.recipientUser = friend
+        navigationController?.pushViewController(chatVC, animated: true)
+    }
+
 }
 
