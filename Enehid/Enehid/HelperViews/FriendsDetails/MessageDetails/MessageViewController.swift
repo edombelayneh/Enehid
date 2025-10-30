@@ -11,6 +11,8 @@ import FirebaseFirestore
 
 class MessageViewController: UIViewController, UITableViewDelegate {
     
+    
+    @IBOutlet weak var inputBottomView: UIView!
     @IBOutlet weak var inputBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var messageField: UITextField!
     @IBOutlet weak var tableView: UITableView!
@@ -48,10 +50,13 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.keyboardDismissMode = .interactive
+        tableView.contentInsetAdjustmentBehavior = .always
+
         tableView.register(MessageBubbleCell.self, forCellReuseIdentifier: "MessageCell")
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = 60
         tableView.rowHeight = UITableView.automaticDimension
+        
 
         
         if let planId = currentPlanId {
@@ -70,47 +75,42 @@ class MessageViewController: UIViewController, UITableViewDelegate {
     }
     
     @objc func keyboardWillShow(notification: Notification) {
-        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
+              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+              let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
+
         let keyboardHeight = keyboardFrame.cgRectValue.height
 
-        inputBottomConstraint.constant = -keyboardHeight
-
-        UIView.animate(withDuration: 0.3, animations: {
+        inputBottomConstraint.constant = keyboardHeight
+        UIView.animate(withDuration: duration,
+                       delay: 0,
+                       options: UIView.AnimationOptions(rawValue: curve << 16),
+                       animations: {
             self.view.layoutIfNeeded()
-        }) { _ in
-            self.scrollToBottom()
-        }
+            self.scrollToBottom() // important!
+        }, completion: nil)
     }
-
-//    
-//    @objc func keyboardWillShow(notification: Notification) {
-//        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-//        let keyboardHeight = keyboardFrame.cgRectValue.height
-//
-//        inputBottomConstraint.constant = -keyboardHeight
-//
-//        UIView.animate(withDuration: 0.3) {
-//            self.view.layoutIfNeeded()
-//        }
-//
-//        scrollToBottom()
-//    }
 
     @objc func keyboardWillHide(notification: Notification) {
-        inputBottomConstraint.constant = 0
+        guard let userInfo = notification.userInfo,
+              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+              let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
 
-        UIView.animate(withDuration: 0.3) {
+        inputBottomConstraint.constant = 0
+        UIView.animate(withDuration: duration,
+                       delay: 0,
+                       options: UIView.AnimationOptions(rawValue: curve << 16),
+                       animations: {
             self.view.layoutIfNeeded()
-        }
+        }, completion: nil)
     }
+
 
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-
-
-
     
     /*
      // MARK: - Navigation
@@ -349,21 +349,11 @@ class MessageViewController: UIViewController, UITableViewDelegate {
     
 }
 
-
-
 extension MessageViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.messages.count
     }
     
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let message = messages[indexPath.row]
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageBubbleCell
-//
-//        cell.configure(with: message, currentUserId: currentUID)
-//
-//        return cell
-//    }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageBubbleCell
@@ -373,3 +363,33 @@ extension MessageViewController: UITableViewDataSource {
 
 
 }
+
+
+
+
+
+    
+//    @objc func keyboardWillShow(notification: Notification) {
+//        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+//        let keyboardHeight = keyboardFrame.cgRectValue.height
+//
+//        inputBottomConstraint.constant = -keyboardHeight + view.safeAreaInsets.bottom
+//
+//
+//        UIView.animate(withDuration: 0.3, animations: {
+//            self.view.layoutIfNeeded()
+//        }) { _ in
+//            self.scrollToBottom()
+//        }
+//    }
+//
+//    @objc func keyboardWillHide(notification: Notification) {
+//        inputBottomConstraint.constant = 0
+//
+//        UIView.animate(withDuration: 0.3) {
+//            self.view.layoutIfNeeded()
+//        }
+//    }
+
+    
+   
