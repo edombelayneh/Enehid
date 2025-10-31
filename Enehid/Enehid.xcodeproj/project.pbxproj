@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		AA8D03092E99C76F00392AEA /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AA8D03082E99C76F00392AEA /* FirebaseAuth */; };
 		AA8D030B2E99C78A00392AEA /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = AA8D030A2E99C78A00392AEA /* FirebaseFirestore */; };
+		AAD186342EB434550095B92C /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = AAD186332EB434550095B92C /* SDWebImage */; };
+		AAD186362EB434550095B92C /* SDWebImageMapKit in Frameworks */ = {isa = PBXBuildFile; productRef = AAD186352EB434550095B92C /* SDWebImageMapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +43,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAD186342EB434550095B92C /* SDWebImage in Frameworks */,
 				AA8D03092E99C76F00392AEA /* FirebaseAuth in Frameworks */,
+				AAD186362EB434550095B92C /* SDWebImageMapKit in Frameworks */,
 				AA8D030B2E99C78A00392AEA /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -95,6 +99,8 @@
 			packageProductDependencies = (
 				AA8D03082E99C76F00392AEA /* FirebaseAuth */,
 				AA8D030A2E99C78A00392AEA /* FirebaseFirestore */,
+				AAD186332EB434550095B92C /* SDWebImage */,
+				AAD186352EB434550095B92C /* SDWebImageMapKit */,
 			);
 			productName = Enehid;
 			productReference = AA73A3212E5C9B7C00CD0CC9 /* Enehid.app */;
@@ -126,6 +132,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				AA8D02FC2E99C6D400392AEA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				AAD186322EB434550095B92C /* XCRemoteSwiftPackageReference "SDWebImage" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AA73A3222E5C9B7C00CD0CC9 /* Products */;
@@ -367,6 +374,14 @@
 				minimumVersion = 12.4.0;
 			};
 		};
+		AAD186322EB434550095B92C /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.21.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -379,6 +394,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = AA8D02FC2E99C6D400392AEA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		AAD186332EB434550095B92C /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAD186322EB434550095B92C /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
+		};
+		AAD186352EB434550095B92C /* SDWebImageMapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AAD186322EB434550095B92C /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImageMapKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

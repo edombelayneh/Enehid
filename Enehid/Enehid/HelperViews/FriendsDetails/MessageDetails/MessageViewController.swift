@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import SDWebImage
 
 class MessageViewController: UIViewController, UITableViewDelegate {
     
@@ -31,43 +32,52 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         super.viewDidLoad()
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
-
         
-//        navigationItem.title = "GROUP NAME HERE"
+        
+        //        navigationItem.title = "GROUP NAME HERE"
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillShow),
                                                name: UIResponder.keyboardWillShowNotification,
                                                object: nil)
-
+        
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillHide),
                                                name: UIResponder.keyboardWillHideNotification,
                                                object: nil)
-
+        
         
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
         tableView.keyboardDismissMode = .interactive
         tableView.contentInsetAdjustmentBehavior = .always
-
+        
         tableView.register(MessageBubbleCell.self, forCellReuseIdentifier: "MessageCell")
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = 60
         tableView.rowHeight = UITableView.automaticDimension
         
-
         
+        
+//        if let planId = currentPlanId {
+//            navigationItem.title = "Group Chat"
+//            startGroupChatListener(planId: planId)
+//        } else if let user = recipientUser {
+//            navigationItem.title = user.username
+//            ensurePrivateChatExists(with: user)
+//            startPrivateChatListener(with: user)
+//        }
         if let planId = currentPlanId {
-            navigationItem.title = "Group Chat"
+            setupGroupChatTitleView(groupName: "Group Chat")
             startGroupChatListener(planId: planId)
         } else if let user = recipientUser {
-            navigationItem.title = user.username
+            setupTitleView(user: user)
             ensurePrivateChatExists(with: user)
             startPrivateChatListener(with: user)
         }
 
+        
     }
     
     @IBAction func onTapSendMessage(_ sender: UIButton) {
@@ -79,9 +89,9 @@ class MessageViewController: UIViewController, UITableViewDelegate {
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
               let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
-
+        
         let keyboardHeight = keyboardFrame.cgRectValue.height
-
+        
         inputBottomConstraint.constant = keyboardHeight
         UIView.animate(withDuration: duration,
                        delay: 0,
@@ -91,12 +101,12 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             self.scrollToBottom() // important!
         }, completion: nil)
     }
-
+    
     @objc func keyboardWillHide(notification: Notification) {
         guard let userInfo = notification.userInfo,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
               let curve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
-
+        
         inputBottomConstraint.constant = 0
         UIView.animate(withDuration: duration,
                        delay: 0,
@@ -105,8 +115,8 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             self.view.layoutIfNeeded()
         }, completion: nil)
     }
-
-
+    
+    
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
@@ -126,27 +136,27 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         guard let text = messageField.text,
               !text.isEmpty,
               let user = Auth.auth().currentUser else { return }
-
+        
         let messageData: [String: Any] = [
             "text": text,
             "senderId": user.uid,
             "username": user.displayName ?? "Unknown",
             "timestamp": FieldValue.serverTimestamp()
         ]
-
+        
         if let planId = currentPlanId {
             // ✅ Sending to group chat
             let messageRef = db.collection("groupChats")
                 .document(planId)
                 .collection("messages")
                 .document()
-
+            
             messageRef.setData(messageData) { error in
                 if let error = error {
                     print("❌ Error sending group message: \(error)")
                 } else {
                     self.messageField.text = ""
-
+                    
                     self.db.collection("groupChats")
                         .document(planId)
                         .updateData([
@@ -160,18 +170,18 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         } else if let friend = recipientUser {
             // ✅ Sending to private chat
             let chatId = privateChatId(with: friend.id)
-
+            
             let messageRef = db.collection("privateChats")
                 .document(chatId)
                 .collection("messages")
                 .document()
-
+            
             messageRef.setData(messageData) { error in
                 if let error = error {
                     print("❌ Error sending private message: \(error)")
                 } else {
                     self.messageField.text = ""
-
+                    
                     // Optional: store lastMessage in chat metadata if needed
                     self.db.collection("privateChats")
                         .document(chatId)
@@ -185,7 +195,6 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             }
         }
     }
-
     
     func startGroupChatListener(planId: String) {
         listener = db.collection("groupChats")
@@ -224,26 +233,25 @@ class MessageViewController: UIViewController, UITableViewDelegate {
                     self.scrollToBottom()
                 }
             }
-        
     }
     
     func ensurePrivateChatExists(with friend: User) {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
-
+        
         let chatId = privateChatId(with: friend.id)
         let chatRef = db.collection("privateChats").document(chatId)
-
+        
         chatRef.getDocument { snapshot, error in
             if let snapshot = snapshot, snapshot.exists {
                 print("✅ Chat already exists: \(chatId)")
                 return
             }
-
+            
             let chatData: [String: Any] = [
                 "participants": [currentUID, friend.id],
                 "createdAt": FieldValue.serverTimestamp()
             ]
-
+            
             chatRef.setData(chatData) { error in
                 if let error = error {
                     print("❌ Failed to create chat:", error.localizedDescription)
@@ -253,7 +261,6 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             }
         }
     }
-
     
     func privateChatId(with friendId: String) -> String {
         let currentUserId = Auth.auth().currentUser?.uid ?? ""
@@ -269,7 +276,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         }
         
         let chatId = privateChatId(with: friend.id)
-
+        
         listener = db.collection("privateChats")
             .document(chatId)
             .collection("messages")
@@ -306,7 +313,6 @@ class MessageViewController: UIViewController, UITableViewDelegate {
                     self.scrollToBottom()
                 }
             }
-        
     }
     
     func scrollToBottom() {
@@ -321,32 +327,118 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         listener?.remove()
     }
     
+//    func setupTitleView(user: User) {
+//        let titleView = UIStackView()
+//        titleView.axis = .horizontal
+//        titleView.spacing = 8
+//        
+//        let imageView = UIImageView()
+//        imageView.image = UIImage(named: "placeholder")  // Load from URL if available
+//        imageView.layer.cornerRadius = 15
+//        imageView.clipsToBounds = true
+//        imageView.contentMode = .scaleAspectFill
+//        imageView.translatesAutoresizingMaskIntoConstraints = false
+//        imageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+//        imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        
+//        let label = UILabel()
+//        label.text = user.username
+//        label.font = UIFont.boldSystemFont(ofSize: 17)
+//        
+//        titleView.addArrangedSubview(imageView)
+//        titleView.addArrangedSubview(label)
+//        
+//        navigationItem.titleView = titleView
+//    }
+    
     func setupTitleView(user: User) {
-        let titleView = UIStackView()
-        titleView.axis = .horizontal
-        titleView.spacing = 8
+        let container = UIView()
+
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
 
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "placeholder")  // Load from URL if available
-        imageView.layer.cornerRadius = 15
+        imageView.layer.cornerRadius = 17
         imageView.clipsToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
+
+//        if let urlString = user.profilePictureURL, let url = URL(string: urlString) {
+//            imageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "person.crop.circle"))
+//        } else {
+//            imageView.image = UIImage(systemName: "person.crop.circle")
+//            imageView.tintColor = .gray
+//        }
+
+        // Try loading profile picture or fallback to system icon
+        if let urlString = user.profilePictureURL, let url = URL(string: urlString) {
+            // If using SDWebImage or similar:
+            imageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "person.crop.circle"))
+        } else {
+            imageView.image = UIImage(systemName: "person.crop.circle")
+            imageView.tintColor = .gray
+            imageView.backgroundColor = .clear
+        }
 
         let label = UILabel()
         label.text = user.username
-        label.font = UIFont.boldSystemFont(ofSize: 17)
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        label.textColor = .label
 
-        titleView.addArrangedSubview(imageView)
-        titleView.addArrangedSubview(label)
+        stackView.addArrangedSubview(imageView)
+        stackView.addArrangedSubview(label)
 
-        navigationItem.titleView = titleView
+        container.addSubview(stackView)
+
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+        ])
+
+        navigationItem.titleView = container
+    }
+    
+    func setupGroupChatTitleView(groupName: String?) {
+        let container = UIView()
+
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "person.3")
+        imageView.tintColor = .gray
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
+
+        let label = UILabel()
+        label.text = groupName ?? "Group Chat"
+        label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        label.textColor = .label
+
+        stackView.addArrangedSubview(imageView)
+        stackView.addArrangedSubview(label)
+
+        container.addSubview(stackView)
+
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+        ])
+
+        navigationItem.titleView = container
     }
 
-    
-    
+
 }
 
 extension MessageViewController: UITableViewDataSource {
@@ -360,36 +452,8 @@ extension MessageViewController: UITableViewDataSource {
         cell.configure(with: message, currentUserId: currentUID)
         return cell
     }
-
-
 }
 
 
 
 
-
-    
-//    @objc func keyboardWillShow(notification: Notification) {
-//        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-//        let keyboardHeight = keyboardFrame.cgRectValue.height
-//
-//        inputBottomConstraint.constant = -keyboardHeight + view.safeAreaInsets.bottom
-//
-//
-//        UIView.animate(withDuration: 0.3, animations: {
-//            self.view.layoutIfNeeded()
-//        }) { _ in
-//            self.scrollToBottom()
-//        }
-//    }
-//
-//    @objc func keyboardWillHide(notification: Notification) {
-//        inputBottomConstraint.constant = 0
-//
-//        UIView.animate(withDuration: 0.3) {
-//            self.view.layoutIfNeeded()
-//        }
-//    }
-
-    
-   
