@@ -86,7 +86,7 @@ extension RequestsViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "RequestsCell", for: indexPath) as? RequestsCell else {
             return UITableViewCell()
         }
-        print(cell.usernameLabel)
+//        print(cell.usernameLabel)
 
         
         return cell

@@ -12,6 +12,7 @@ import FirebaseAuth
 
 class ProfileViewController: UIViewController {
     
+    @IBOutlet weak var editButton: UIButton!
     @IBAction func didTapBookmarked(_ sender: Any) {
         performSegue(withIdentifier: "BookmarkedSegue", sender: nil)
     }
@@ -76,6 +77,7 @@ class ProfileViewController: UIViewController {
                 id: self.currentUID,
                 username: data["username"] as? String ?? "",
                 email: data["email"] as? String ?? "",
+                profilePictureURL: data["profilePictureURL"] as? String,
                 friends: data["friends"] as? [String:String] ?? [:],
             )
             
@@ -90,10 +92,13 @@ class ProfileViewController: UIViewController {
         // Do any additional setup after loading the view.
         fetchUser { user in
             guard let user = user else { return }
-            self.usernameLabel.text = user.username
-            self.memoriesCounterLabel.text = "\(user.friends.count)"
+            DispatchQueue.main.async {
+                self.usernameLabel.text = user.username
+                self.memoriesCounterLabel.text = "\(user.friends.count)"
+                AvatarManager.loadAvatar(from: user.profilePictureURL, into: self.profilePicImageView)
+                print("👀 Loading avatar from: \(user.profilePictureURL ?? "nil")")
+            }
         }
-        
         postSegmentedControl.selectedSegmentIndex = 0
     }
     
@@ -107,6 +112,14 @@ class ProfileViewController: UIViewController {
      // Pass the selected object to the new view controller.
      }
      */
+    
+    @IBAction func editButtonTapped(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let editVC = storyboard.instantiateViewController(withIdentifier: "EditAvatarViewController") as? EditAvatarViewController {
+            navigationController?.pushViewController(editVC, animated: true)
+        }
+    }
+
     // MARK: - Setup
     private func setupPageViewController() {
         // 1. Initialize the page view controller.
@@ -130,23 +143,10 @@ class ProfileViewController: UIViewController {
         pageViewController.setViewControllers([orderedViewControllers[0]], direction: .forward, animated:false)
     }
 
+
 }
 
 extension ProfileViewController: UIPageViewControllerDataSource {
-    // This is called when the user swipes to the left (before).
-//    func pageViewController(_ pvc: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-//        guard let viewControllerIndex = orderedViewControllers.firstIndex(of: viewController) else { return nil }
-//        let previousIndex = viewControllerIndex - 1
-//        guard previousIndex >= 0 else { return nil }
-//        return orderedViewControllers[previousIndex]
-//    }
-//    
-//    // This is called when the user swipes to the right (after).
-//    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-//        guard let viewControllerIndex = orderedViewControllers.firstIndex(of: viewController) else { return nil }
-//        let nextIndex = viewControllerIndex + 1
-//        guard nextIndex < orderedViewControllers.count else { return nil }
-//        return orderedViewControllers[nextIndex]
     func pageViewController(_ pvc: UIPageViewController, viewControllerBefore vc: UIViewController) -> UIViewController? {
         guard let idx = orderedViewControllers.firstIndex(of: vc), idx > 0 else { return nil }
         return orderedViewControllers[idx - 1]

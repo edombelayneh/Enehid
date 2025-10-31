@@ -15,8 +15,13 @@ struct User: Codable, Identifiable {
     var username: String
     var email: String
     var profilePictureURL: String?
-    var friends: [String : String] = [:]
+   
+    var avatarSkin: String?        // e.g. "skin_tone_05"
+    var avatarEyes: String?
+    var avatarMouth: String?
+    var avatarAccessory: String?
     
+    var friends: [String : String] = [:]
     var recommendedPostIDs: [String] = []
     var starredPostIDs: [String] = []
     var memoryPostIDs: [String] = []

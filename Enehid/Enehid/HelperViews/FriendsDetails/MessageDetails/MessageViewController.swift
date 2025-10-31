@@ -59,15 +59,6 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         tableView.rowHeight = UITableView.automaticDimension
         
         
-        
-//        if let planId = currentPlanId {
-//            navigationItem.title = "Group Chat"
-//            startGroupChatListener(planId: planId)
-//        } else if let user = recipientUser {
-//            navigationItem.title = user.username
-//            ensurePrivateChatExists(with: user)
-//            startPrivateChatListener(with: user)
-//        }
         if let planId = currentPlanId {
             setupGroupChatTitleView(groupName: "Group Chat")
             startGroupChatListener(planId: planId)
@@ -368,22 +359,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
 
-//        if let urlString = user.profilePictureURL, let url = URL(string: urlString) {
-//            imageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "person.crop.circle"))
-//        } else {
-//            imageView.image = UIImage(systemName: "person.crop.circle")
-//            imageView.tintColor = .gray
-//        }
-
-        // Try loading profile picture or fallback to system icon
-        if let urlString = user.profilePictureURL, let url = URL(string: urlString) {
-            // If using SDWebImage or similar:
-            imageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "person.crop.circle"))
-        } else {
-            imageView.image = UIImage(systemName: "person.crop.circle")
-            imageView.tintColor = .gray
-            imageView.backgroundColor = .clear
-        }
+        AvatarManager.loadAvatar(from: user.profilePictureURL, into: imageView, cropToFace: true)
 
         let label = UILabel()
         label.text = user.username
@@ -446,12 +422,29 @@ extension MessageViewController: UITableViewDataSource {
         return self.messages.count
     }
     
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let message = messages[indexPath.row]
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageBubbleCell
+//        cell.configure(with: message, currentUserId: currentUID)
+//        return cell
+//    }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageBubbleCell
-        cell.configure(with: message, currentUserId: currentUID)
+        
+        let isCurrentUser = message.senderId == currentUID
+        let avatarURL: String? = isCurrentUser ? nil : recipientUser?.profilePictureURL
+
+//        cell.configure(with: message, currentUserId: currentUID, senderAvatarURL: avatarURL)
+        cell.configure(
+            with: message,
+            currentUserId: currentUID,
+            senderAvatarURL: message.senderId != currentUID ? recipientUser?.profilePictureURL : nil
+        )
+
         return cell
     }
+
 }
 
 

@@ -114,8 +114,6 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             guard let data = snapshot?.data(),
                   let friendsUIDs = data["friends"] as? [String:String] else {
                 print("Failed to get Friends list")
-//                print(snapshot?.data())
-//                print("Error: \(error?.localizedDescription)")
                 completion([])
                 return
             }
@@ -126,7 +124,6 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             for friendUID in friendsUIDs {
                 print(friendUID.key)
                 dispatchGroup.enter()
-//                print("I'm here 0 - \(friendUID.value)")
                 
                 self.db.collection("memories")
                     .whereField("ownerId", isEqualTo: friendUID.key)

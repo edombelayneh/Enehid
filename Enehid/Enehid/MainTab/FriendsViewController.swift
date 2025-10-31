@@ -10,23 +10,39 @@ import FirebaseFirestore
 import FirebaseAuth
 
 class FriendsViewController: UIViewController, UITableViewDelegate {
-
+    
     @IBOutlet weak var tableView: UITableView!
     
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
     var friends: [User] = []
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         tableView.delegate = self
         tableView.dataSource = self
         
-        fetchFriends {users in
-            self.friends = users
-            self.tableView.reloadData()
+        fetchFriends {user in
+            DispatchQueue.main.async {
+                self.friends = user
+                self.tableView.reloadData()
+            }
+            
+            // ✅ Load avatar image
+            //            if let urlString = user.profilePictureURL, let url = URL(string: urlString) {
+            //                URLSession.shared.dataTask(with: url) { data, _, error in
+            //                    if let data = data, error == nil {
+            //                        DispatchQueue.main.async {
+            //                            self.profilePicImageView.image = UIImage(data: data)
+            //                            self.profilePicImageView.contentMode = .scaleAspectFill
+            //                            self.profilePicImageView.layer.cornerRadius = self.profilePicImageView.frame.width / 2
+            //                            self.profilePicImageView.layer.masksToBounds = true
+            //                        }
+            //                    }
+            //                }.resume()
+            //            }
         }
     }
     
@@ -36,32 +52,52 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
             completion([])
             return
         }
-
+        
         db.collection("users").document(currentUID).getDocument { snapshot, error in
             if let error = error {
                 print("❌ Error: \(error.localizedDescription)")
                 completion([])
                 return
             }
-
+            
             guard let data = snapshot?.data(),
-                  let friends = data["friends"] as? [String: String] else {
+                  let friendDict = data["friends"] as? [String: String] else {
                 print("❌ No friends found")
                 completion([])
                 return
             }
-
-            let users = friends.map { (uid, username) in
-                User(id: uid, username: username, email: "", friends: [:]) // Email and friends can be fetched later if needed
+            
+            var fetchedUsers: [User] = []
+            let group = DispatchGroup()
+            
+            for (friendUID, username) in friendDict {
+                group.enter()
+                
+                self.db.collection("users").document(friendUID).getDocument { friendSnapshot, error in
+                    defer { group.leave() }
+                    
+                    guard let friendData = friendSnapshot?.data(), error == nil else {
+                        print("⚠️ Failed to fetch friend \(username)")
+                        return
+                    }
+                    
+                    let user = User(
+                        id: friendUID,
+                        username: username,
+                        email: friendData["email"] as? String ?? "",
+                        profilePictureURL: friendData["profilePictureURL"] as? String,
+                        friends: [:]
+                    )
+                    fetchedUsers.append(user)
+                }
             }
-
-            print("✅ Fetched \(users.count) friends")
-            completion(users)
+            
+            group.notify(queue: .main) {
+                print("✅ Fetched \(fetchedUsers.count) friends")
+                completion(fetchedUsers)
+            }
         }
     }
-
-    
-    
 }
 
 extension FriendsViewController: UITableViewDataSource {
@@ -74,6 +110,8 @@ extension FriendsViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
         cell.usernameLabel.text = friend.username
         
+        AvatarManager.loadAvatar(from: friend.profilePictureURL, into: cell.profilePicture, cropToFace: true)
+        
         return cell
     }
     
@@ -83,6 +121,6 @@ extension FriendsViewController: UITableViewDataSource {
         chatVC.recipientUser = friend
         navigationController?.pushViewController(chatVC, animated: true)
     }
-
+    
 }
 
