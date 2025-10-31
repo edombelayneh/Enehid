@@ -15,6 +15,8 @@ class MessageBubbleCell: UITableViewCell {
     
     var isIncoming: Bool = false {
         didSet {
+//            bubbleBackgroundView.backgroundColor = isIncoming ? Theme.creamBackground : Theme.primaryPurple
+
             bubbleBackgroundView.backgroundColor = isIncoming ? UIColor(white: 0.9, alpha: 1) : .systemBlue
             messageLabel.textColor = isIncoming ? .black : .white
             timestampLabel.textColor = .gray
@@ -32,6 +34,9 @@ class MessageBubbleCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
+        
+        contentView.backgroundColor = UIColor(Theme.creamBackground)
+        backgroundColor = .clear
         
         // Profile Image
         profileImageView.image = UIImage(named: "placeholder") // Set default or load from URL later

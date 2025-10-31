@@ -14,23 +14,8 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="enehid launch" translatesAutoresizingMaskIntoConstraints="NO" id="LDM-dj-a9Z">
-                                <rect key="frame" x="41" y="260" width="310" height="333"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="310" id="jJ2-oS-AxG"/>
-                                    <constraint firstAttribute="height" constant="333" id="uXr-5A-6LH"/>
-                                </constraints>
-                            </imageView>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" red="0.22745099660000001" green="0.22745099660000001" blue="0.2352941036" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                        <constraints>
-                            <constraint firstItem="LDM-dj-a9Z" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="41" id="34q-bR-BaB"/>
-                            <constraint firstItem="LDM-dj-a9Z" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="142" id="GtW-e8-K4Y"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="LDM-dj-a9Z" secondAttribute="trailing" constant="42" id="K0o-aU-EvI"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="LDM-dj-a9Z" secondAttribute="bottom" constant="191" id="tem-hI-O0x"/>
-                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -38,7 +23,4 @@
             <point key="canvasLocation" x="52.671755725190835" y="374.64788732394368"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="enehid launch" width="500" height="500"/>
-    </resources>
 </document>
