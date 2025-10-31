@@ -3,6 +3,7 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -14,8 +15,23 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="enehidLaunchScreen" translatesAutoresizingMaskIntoConstraints="NO" id="0LP-G7-lDa">
+                                <rect key="frame" x="98" y="287" width="196" height="278"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="196" id="iHh-bT-arU"/>
+                                    <constraint firstAttribute="height" constant="278" id="sVc-fK-dKZ"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.22745099660000001" green="0.22745099660000001" blue="0.2352941036" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" name="CreamBackground"/>
+                        <constraints>
+                            <constraint firstItem="0LP-G7-lDa" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="169" id="NzD-H1-ml5"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="0LP-G7-lDa" secondAttribute="trailing" constant="99" id="YAm-2B-ub5"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="0LP-G7-lDa" secondAttribute="bottom" constant="219" id="cRz-qC-SSb"/>
+                            <constraint firstItem="0LP-G7-lDa" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="98" id="m8U-xz-ZAB"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -23,4 +39,10 @@
             <point key="canvasLocation" x="52.671755725190835" y="374.64788732394368"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="enehidLaunchScreen" width="1024" height="1024"/>
+        <namedColor name="CreamBackground">
+            <color red="0.99215686274509807" green="0.97254901960784312" blue="0.96078431372549022" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
 </document>
