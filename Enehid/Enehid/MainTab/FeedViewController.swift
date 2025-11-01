@@ -18,10 +18,18 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     var feedMemories: [Memory] = []
     var feedStories : [Story] = []
     var selectedStory: Story?
-
+    
     
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
+    
+    
+    @IBAction func onTappedNewMemory(_ sender: UIButton) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let mediaPickerVC = storyboard.instantiateViewController(withIdentifier: "MediaPickerVC") as? MediaPickerViewController {
+            self.navigationController?.pushViewController(mediaPickerVC, animated: true)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,38 +71,39 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             for friendUID in friendsUIDs {
                 print(friendUID.key)
                 dispatchGroup.enter()
-                print("I'm here 0 - \(friendUID.value)")
-                
-                self.db.collection("story")
-                    .whereField("ownerId", isEqualTo: friendUID.key)
-                    .order(by: "createdAt", descending: true)
-                    .getDocuments { snapshot, error in
-                        if let error = error {
-                            print("error: \(error.localizedDescription)")
-                            print("I'm here 1 - \(friendUID.value)")
-                            completion([])
-                        }
-                        print("I'm here 2 - \(friendUID.value)")
-                        if let docs = snapshot?.documents {
-                            print("I'm here 3 - \(friendUID.value)")
-                            print(docs)
-                            let stories = docs.compactMap { doc -> Story in
-                                print("I'm here 4 - \(friendUID.value)")
-                                print(doc)
-                                let data = doc.data()
-                                print("I'm here 5 - \(friendUID.value)")
-                                return Story (
-                                    id: doc.documentID,
-                                    ownerId: data["ownerId"] as? String ?? "",
-                                    username: data["username"] as? String ?? "",
-                                    mediaURL: data["mediaURL"] as? String ?? "",
-                                    createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
-                                )
+                self.db.collection("users").document(friendUID.key).getDocument { userSnapshot, _ in
+                    let avatarURL = userSnapshot?.data()?["profilePictureURL"] as? String ?? ""
+                    let twentyFourHoursAgo = Date().addingTimeInterval(-86400)
+                    
+                    self.db.collection("story")
+                        .whereField("ownerId", isEqualTo: friendUID.key)
+                        .whereField("createdAt", isGreaterThan: twentyFourHoursAgo)
+                    //                        .whereField("isExpired", isEqualTo: false)
+                        .order(by: "createdAt", descending: true)
+                        .getDocuments { snapshot, error in
+                            if let error = error {
+                                print("error: \(error.localizedDescription)")
+                                completion([])
                             }
-                            allStories.append(contentsOf: stories)
+                            if let docs = snapshot?.documents {
+                                
+                                let stories = docs.compactMap { doc -> Story in
+                                    let data = doc.data()
+                                    return Story (
+                                        id: doc.documentID,
+                                        ownerId: data["ownerId"] as? String ?? "",
+                                        username: data["username"] as? String ?? "",
+                                        profilePictureURL: avatarURL,
+                                        mediaURL: data["mediaURL"] as? String ?? "",
+                                        createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                                        //                                        isExpired: data["isExpired"] as? Bool ?? false
+                                    )
+                                }
+                                allStories.append(contentsOf: stories)
+                            }
+                            dispatchGroup.leave()
                         }
-                        dispatchGroup.leave()
-                    }
+                }
             }
             dispatchGroup.notify(queue: .main) {
                 let shuffled = allStories.shuffled()
@@ -132,18 +141,17 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                     .getDocuments { snapshot, error in
                         if let error = error {
                             print("error: \(error.localizedDescription)")
-//                            print("I'm here 1 - \(friendUID.value)")
+                            
                             completion([])
                         }
-//                        print("I'm here 2 - \(friendUID.value)")
+                        
                         if let docs = snapshot?.documents {
-//                            print("I'm here 3 - \(friendUID.value)")
                             print(docs)
                             let memories = docs.compactMap { doc -> Memory in
-//                                print("I'm here 4 - \(friendUID.value)")
+                                
                                 print(doc)
                                 let data = doc.data()
-//                                print("I'm here 5 - \(friendUID.value)")
+                                
                                 return Memory (
                                     id: doc.documentID,
                                     ownerId: data["ownerId"] as? String ?? "",
@@ -189,7 +197,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                 completion(false)
                 return
             }
-
+            
             if snapshot?.exists == true {
                 // ❌ Unrecommend
                 bookmarkeRef.delete { error in
@@ -238,7 +246,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                 completion(false)
                 return
             }
-
+            
             if snapshot?.exists == true {
                 // ❌ Unrecommend
                 recommendRef.delete { error in
@@ -273,30 +281,20 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
 }
 
 extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource {
-   
-
+    
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.feedMemories.count
     }
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        guard let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as? FeedCell else {
-//            return UITableViewCell()
-//        }
-//        
-//
-//        cell.configure(with: feedMemories[indexPath.row])
-//        return cell
-//    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell", for: indexPath) as? FeedCell else {
             return UITableViewCell()
         }
-
+        
         let memory = feedMemories[indexPath.row]
         cell.configure(with: memory)
-
+        
         // Configure recommend icon based on current state
         let postId = memory.id
         let currentUID = Auth.auth().currentUser?.uid ?? ""
@@ -311,7 +309,7 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             .document(currentUID)
             .collection("bookmarked")
             .document(postId)
-
+        
         recommendRef.getDocument { snapshot, _ in
             let isRecommended = snapshot?.exists == true
             let iconName = isRecommended ? "megaphone.fill" : "megaphone"
@@ -328,7 +326,7 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             }
             
         }
-
+        
         // Set tap behavior
         cell.onRecommendTapped = { [weak self] in
             self?.toggleRecommend(for: postId) { isRecommended in
@@ -348,10 +346,10 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             }
         }
         
-
+        
         return cell
     }
-
+    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.feedStories.count
@@ -359,12 +357,12 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StoryCell", for: indexPath) as? StoryCell else {
-                return UICollectionViewCell()
-            }
-            cell.configure(with: feedStories[indexPath.item])
-            return cell
+            return UICollectionViewCell()
+        }
+        cell.configure(with: feedStories[indexPath.item])
+        return cell
     }
-
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowPostSegue" {
@@ -391,6 +389,6 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             }
         }
     }
-
+    
 }
 

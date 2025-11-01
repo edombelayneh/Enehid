@@ -9,25 +9,56 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-class SignUpViewController: UIViewController {
+class SignUpViewController: UIViewController, UITextViewDelegate {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
     
+    @IBOutlet weak var termsTextView: UITextView!
+    @IBOutlet weak var checkboxButton: UIButton!
     @IBOutlet weak var createAccountButton: UIButton!
     
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
+    
+    var isChecked = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        termsTextView.delegate = self
 
+        
         // Do any additional setup after loading the view.
+        // Set linked text
+        let fullText = "By creating an account, you acknowledge that you have read and agree to Enehid’s Terms and Conditions."
+        let attributedString = NSMutableAttributedString(string: fullText)
+        let linkRange = (fullText as NSString).range(of: "Terms and Conditions")
+        attributedString.addAttribute(.link, value: "enehid://terms", range: linkRange)
+        attributedString.addAttributes([
+            .foregroundColor: UIColor.systemBlue,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ], range: linkRange)
+
+        
+        termsTextView.attributedText = attributedString
+        termsTextView.isEditable = false
+        termsTextView.isSelectable = true
+        termsTextView.dataDetectorTypes = .link
+        termsTextView.textAlignment = .left
+        termsTextView.font = UIFont.systemFont(ofSize: 14)
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
-
+        
     }
     
+    @IBAction func onTapAgreed(_ sender: UIButton) {
+        isChecked.toggle()
+        let imageName = isChecked ? "checkmark.square" : "square"
+        checkboxButton.setImage(UIImage(systemName: imageName), for: .normal)
+        createAccountButton.isEnabled = isChecked
+    }
     
     @IBAction func onTappedCreateAccount(_ sender: UIButton) {
         guard let email = emailTextField.text, !email.isEmpty,
@@ -45,15 +76,15 @@ class SignUpViewController: UIViewController {
             if passwordTextField.text?.isEmpty ?? true {
                 emptyFields.append(passwordTextField)
             }
-
+            
             // Shake all empty fields
             for field in emptyFields {
                 shake(view: field)
             }
-
+            
             // Focus the first empty field
             emptyFields.first?.becomeFirstResponder()
-
+            
             // Show alert
             let alert = UIAlertController(
                 title: "Error",
@@ -117,13 +148,13 @@ class SignUpViewController: UIViewController {
                             let starredRef = db.collection("users").document(uid).collection("starred").document("placeholder")
                             let plannedRef = db.collection("users").document(uid).collection("plans").document("placeholder")
                             let bookmarkRef = db.collection("users").document(uid).collection("bookmarked").document("placeholder")
-
-
-
-//                            // Create placeholder documents (optional — remove later)
-//                            recommendsRef.setData(["init": true])
-//                            starredRef.setData(["init": true])
-
+                            
+                            
+                            
+                            //                            // Create placeholder documents (optional — remove later)
+                            //                            recommendsRef.setData(["init": true])
+                            //                            starredRef.setData(["init": true])
+                            
                             print("✅ User signed up and username saved")
                             // User account created successfully
                             print("User created: \(authResult?.user.email ?? "N/A")")
@@ -146,16 +177,38 @@ class SignUpViewController: UIViewController {
         }
     }
     
-
+    
     /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destination.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
+    @available(iOS 17.0, *)
+    func textView(_ textView: UITextView, didTapOnLink link: URL, in characterRange: NSRange) {
+        openTermsWebView()
     }
-    */
+    
+    func textView(_ textView: UITextView,
+                  shouldInteractWith URL: URL,
+                  in characterRange: NSRange,
+                  interaction: UITextItemInteraction) -> Bool {
+        openTermsWebView()
+        return false
+    }
+    
+    func openTermsWebView() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let termsVC = storyboard.instantiateViewController(withIdentifier: "TermsViewController") as? TermsViewController {
+            self.navigationController?.pushViewController(termsVC, animated: true)
+        }
+    }
+
+
     func shake(view: UIView) {
         let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
         animation.timingFunction = CAMediaTimingFunction(name: .linear)
@@ -168,6 +221,7 @@ class SignUpViewController: UIViewController {
         textField.resignFirstResponder() // Dismiss keyboard
         return true
     }
-
-
+    
+    
 }
+
