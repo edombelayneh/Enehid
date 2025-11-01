@@ -13,7 +13,9 @@ class MediaPreviewCell: UICollectionViewCell {
     
     func configure(with image: UIImage) {
         mediaImageView.image = image
-        mediaImageView.contentMode = .scaleAspectFill
-        mediaImageView.clipsToBounds = true
+//        mediaImageView.contentMode = .scaleAspectFill
+//        mediaImageView.contentMode = .scaleAspectFit
+
+//        mediaImageView.clipsToBounds = true
     }
 }

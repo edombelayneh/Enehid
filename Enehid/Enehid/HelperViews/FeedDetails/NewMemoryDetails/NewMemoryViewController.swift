@@ -104,7 +104,7 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
     func setupCollectionView() {
         photosCollectionView.dataSource = self
         photosCollectionView.delegate = self
-        photosCollectionView.register(UINib(nibName: "MediaPreviewCell", bundle: nil), forCellWithReuseIdentifier: "MediaPreviewCell")
+//        photosCollectionView.register(UINib(nibName: "MediaPreviewCell", bundle: nil), forCellWithReuseIdentifier: "MediaPreviewCell")
     }
     
     func showPlanSelector() {
