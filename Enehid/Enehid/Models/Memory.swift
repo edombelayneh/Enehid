@@ -8,6 +8,7 @@
 // approved for firebase
 import Foundation
 import UIKit
+import FirebaseFirestore
 
 struct Memory {
     var id: String
@@ -19,5 +20,7 @@ struct Memory {
     var bookmarks: Int
     var taggedUIds: [String]
     var commentsCount: Int
-    var createdAt: Date
+    var createdAt: Timestamp
+    var visibility: String
+    var planId: String
 }

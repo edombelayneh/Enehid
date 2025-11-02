@@ -84,7 +84,9 @@ class BookmarkedViewController: UIViewController, UITableViewDelegate  {
                         bookmarks: data["bookmarks"] as? Int ?? 0,
                         taggedUIds: data["taggedUIds"] as? [String] ?? [],
                         commentsCount: data["commentsCount"] as? Int ?? 0,
-                        createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                        createdAt: (data["createdAt"] as? Timestamp) ?? Timestamp(),
+                        visibility: data["visibility"] as? String ?? "friends",
+                        planId: data["planId"] as? String ?? ""
                     )
                     print("HERE IS THE BOOKMARKED: \(memory)")
                     bookmarkedMemories.append(memory)

@@ -162,7 +162,9 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                                     bookmarks: data["bookmarks"] as? Int ?? 0,
                                     taggedUIds: data["taggedUIds"] as? [String] ?? [],
                                     commentsCount: data["commentsCount"] as? Int ?? 0,
-                                    createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
+                                    createdAt: (data["createdAt"] as? Timestamp) ?? Timestamp(),
+                                    visibility: data["visibility"] as? String ?? "friends",
+                                    planId: data["planId"] as? String ?? ""
                                 )
                             }
                             allMemories.append(contentsOf: memories)

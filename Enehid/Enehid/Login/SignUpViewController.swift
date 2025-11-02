@@ -27,7 +27,7 @@ class SignUpViewController: UIViewController, UITextViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         termsTextView.delegate = self
-
+        
         
         // Do any additional setup after loading the view.
         // Set linked text
@@ -39,7 +39,7 @@ class SignUpViewController: UIViewController, UITextViewDelegate {
             .foregroundColor: UIColor.systemBlue,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ], range: linkRange)
-
+        
         
         termsTextView.attributedText = attributedString
         termsTextView.isEditable = false
@@ -129,48 +129,112 @@ class SignUpViewController: UIViewController, UITextViewDelegate {
                     // User account created successfully
                     guard let uid = authResult?.user.uid else { return }
                     
-                    db.collection("users").document(uid).setData([
+                    let userRef = db.collection("users").document(uid)
+                    
+                    //                    db.collection("users").document(uid).setData([
+                    //                        "username": username,
+                    //                        "email": email,
+                    //                        "profilePictureUrl": NSNull(),
+                    //                        "friends": [:],
+                    //                        "incomingRequests": [:],
+                    //                        "outgoingRequests": [:],
+                    
+                    //                    ]) { error in
+                    //                        if let error = error {
+                    //                            let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+                    //                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    //                            self.present(alert, animated: true, completion: nil)
+                    //                            print("❌ Error saving user data: \(error.localizedDescription)")
+                    //                        }
+                    
+                    userRef.setData([
                         "username": username,
                         "email": email,
                         "profilePictureUrl": NSNull(),
                         "friends": [:],
                         "incomingRequests": [:],
-                        "outgoingRequests": [:],
-                        
+                        "outgoingRequests": [:]
                     ]) { error in
                         if let error = error {
                             let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                            self.present(alert, animated: true, completion: nil)
-                            print("❌ Error saving user data: \(error.localizedDescription)")
-                        } else {
-                            let recommendsRef = db.collection("users").document(uid).collection("recommends").document("placeholder")
-                            let starredRef = db.collection("users").document(uid).collection("starred").document("placeholder")
-                            let plannedRef = db.collection("users").document(uid).collection("plans").document("placeholder")
-                            let bookmarkRef = db.collection("users").document(uid).collection("bookmarked").document("placeholder")
+                            alert.addAction(UIAlertAction(title: "OK", style: .default))
+                            self.present(alert, animated: true)
+                            print("❌ Error saving user: \(error.localizedDescription)")
+                            return
+                        }
+                        
+                        let defaultSettings: [String: Any] = [
+                            "username": username,
+                            "preferredCity": "New York",
+                            "coordinates": [
+                                "lat": 40.7128,
+                                "lon": -74.0060
+                            ],
+                            "preferredRadiusMiles": 10,
+                            "notificationsEnabled": true
+                        ]
+                        
+                        userRef.collection("settings").document("preferences").setData(defaultSettings) { error in
+                            if let error = error {
+                                print("❌ Failed to create default settings: \(error.localizedDescription)")
+                            } else {
+                                print("✅ Default settings created")
+                            }
+                            
+                            // Continue with navigation
+                            let recommendsRef = userRef.collection("recommends").document("placeholder")
+                            let starredRef = userRef.collection("starred").document("placeholder")
+                            let plannedRef = userRef.collection("plans").document("placeholder")
+                            let bookmarkRef = userRef.collection("bookmarked").document("placeholder")
                             
                             
+                            recommendsRef.setData(["init": true])
+                            starredRef.setData(["init": true])
+                            plannedRef.setData(["init": true])
+                            bookmarkRef.setData(["init": true])
                             
-                            //                            // Create placeholder documents (optional — remove later)
-                            //                            recommendsRef.setData(["init": true])
-                            //                            starredRef.setData(["init": true])
+                            print("✅ User fully initialized")
                             
                             print("✅ User signed up and username saved")
                             // User account created successfully
                             print("User created: \(authResult?.user.email ?? "N/A")")
                             
-                            // Navigate to the next screen or update UI
-                            // ✅ Show success alert
+                            // Go to main app
                             let alert = UIAlertController(title: "Success", message: "Account created successfully!", preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "Enehid", style: .default, handler: { _ in
-                                // ✅ Navigate to TabBarController after OK
+                            alert.addAction(UIAlertAction(title: "Enehid", style: .default) { _ in
                                 if let tabBarVC = self.storyboard?.instantiateViewController(withIdentifier: "MainTabBarController") {
                                     tabBarVC.modalPresentationStyle = .fullScreen
-                                    self.present(tabBarVC, animated: true, completion: nil)
+                                    self.present(tabBarVC, animated: true)
                                 }
-                            }))
-                            self.present(alert, animated: true, completion: nil)
+                            })
+                            self.present(alert, animated: true)
                         }
+                        //                    else {
+                        //                            let recommendsRef = db.collection("users").document(uid).collection("recommends").document("placeholder")
+                        //                            let starredRef = db.collection("users").document(uid).collection("starred").document("placeholder")
+                        //                            let plannedRef = db.collection("users").document(uid).collection("plans").document("placeholder")
+                        //                            let bookmarkRef = db.collection("users").document(uid).collection("bookmarked").document("placeholder")
+                        
+                        
+                        
+                        //                            // Create placeholder documents (optional — remove later)
+                        //                            recommendsRef.setData(["init": true])
+                        //                            starredRef.setData(["init": true])
+                        
+                        
+                        
+                        //                            // Navigate to the next screen or update UI
+                        //                            // ✅ Show success alert
+                        //                            let alert = UIAlertController(title: "Success", message: "Account created successfully!", preferredStyle: .alert)
+                        //                            alert.addAction(UIAlertAction(title: "Enehid", style: .default, handler: { _ in
+                        //                                // ✅ Navigate to TabBarController after OK
+                        //                                if let tabBarVC = self.storyboard?.instantiateViewController(withIdentifier: "MainTabBarController") {
+                        //                                    tabBarVC.modalPresentationStyle = .fullScreen
+                        //                                    self.present(tabBarVC, animated: true, completion: nil)
+                        //                                }
+                        //                            }))
+                        //                            self.present(alert, animated: true, completion: nil)
+                        //                        }
                     }
                 }
             }
@@ -207,8 +271,8 @@ class SignUpViewController: UIViewController, UITextViewDelegate {
             self.navigationController?.pushViewController(termsVC, animated: true)
         }
     }
-
-
+    
+    
     func shake(view: UIView) {
         let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
         animation.timingFunction = CAMediaTimingFunction(name: .linear)

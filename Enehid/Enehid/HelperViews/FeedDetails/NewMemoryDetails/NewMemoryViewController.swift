@@ -11,8 +11,10 @@ import FirebaseFirestore
 import FirebaseStorage
 
 class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
-    
-    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
     @IBOutlet weak var uploadButton: UIButton!
     @IBOutlet weak var planPickerButton: UIButton!
     @IBOutlet weak var captionTextView: UITextView!
@@ -33,6 +35,9 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
         
         // Do any additional setup after loading the view.
         setupCollectionView()
+        // Do any additional setup after loading the view.
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
     
     @IBAction func onTappedUpload(_ sender: UIButton) {
@@ -69,37 +74,99 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
      // Pass the selected object to the new view controller.
      }
      */
+
     
+//    func saveMemory(planId: String) {
+//        let memoryId = UUID().uuidString
+//        guard let currentUID = Auth.auth().currentUser?.uid else {
+//            showAlert(title: "User Not Logged In", message: "Please Log In To save Memory")
+//            return
+//        }
+//
+//        let userDocRef = db.collection("users").document(currentUID)
+//        
+//        userDocRef.getDocument { (document, error) in
+//            if let document = document, document.exists {
+//                let username = document.get("username") as? String
+//            } else {
+//                print("Error fetching user: \(error?.localizedDescription)")
+//            }
+//        }
+//        
+//        let memoryData: [String: Any] = [
+//            "id": memoryId,
+//            "ownerId": currentUID,
+//            "username": username,
+//            "caption": captionTextView.text ?? "",
+//            "recommends": 0,
+//            "memoryURLs": uploadedImageURLs,
+//            "bookmarks": 0,
+//            "taggedUIds": taggedUserIds,
+//            "commentsCount": 0,
+//            "createdAt": Timestamp(date: Date()),
+//            "visibility": visibilitySwitch.isOn ? "public" : "friends",
+//            "planId": planId
+//        ]
+//        
+//        db.collection("memories").document(memoryId).setData(memoryData) { [weak self] error in
+//            self?.uploadButton.isEnabled = true
+//            
+//            if let error = error {
+//                self?.showAlert(title: "Error", message: error.localizedDescription)
+//            } else {
+//                self?.showAlert(title: "Success", message: "Memory uploaded!") {
+//                    self?.navigationController?.popViewController(animated: true)
+//                }
+//            }
+//        }
+//    }
     func saveMemory(planId: String) {
         let memoryId = UUID().uuidString
-        let currentUserId = "test-user-id" // Replace with real UID
-        
-        let memoryData: [String: Any] = [
-            "id": memoryId,
-            "ownerId": currentUserId,
-            "planId": planId,
-            "caption": captionTextView.text ?? "",
-            "createdAt": Timestamp(date: Date()),
-            "memoryURLs": uploadedImageURLs,
-            "taggedUIds": taggedUserIds,
-            "recommends": 0,
-            "bookmarks": 0,
-            "commentsCount": 0,
-            "visibility": visibilitySwitch.isOn ? "public" : "friends"
-        ]
-        
-        db.collection("memories").document(memoryId).setData(memoryData) { [weak self] error in
-            self?.uploadButton.isEnabled = true
-            
-            if let error = error {
-                self?.showAlert(title: "Error", message: error.localizedDescription)
-            } else {
-                self?.showAlert(title: "Success", message: "Memory uploaded!") {
-                    self?.navigationController?.popViewController(animated: true)
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            showAlert(title: "User Not Logged In", message: "Please Log In To save Memory")
+            return
+        }
+
+        let userDocRef = db.collection("users").document(currentUID)
+
+        userDocRef.getDocument { [weak self] (document, error) in
+            guard let self = self else { return }
+
+            if let document = document, document.exists {
+                let username = document.get("username") as? String ?? "Unknown"
+
+                let memoryData: [String: Any] = [
+                    "id": memoryId,
+                    "ownerId": currentUID,
+                    "username": username,
+                    "caption": self.captionTextView.text ?? "",
+                    "recommends": 0,
+                    "memoryURLs": self.uploadedImageURLs,
+                    "bookmarks": 0,
+                    "taggedUIds": self.taggedUserIds,
+                    "commentsCount": 0,
+                    "createdAt": Timestamp(date: Date()),
+                    "visibility": self.visibilitySwitch.isOn ? "public" : "friends",
+                    "planId": planId
+                ]
+
+                self.db.collection("memories").document(memoryId).setData(memoryData) { error in
+                    self.uploadButton.isEnabled = true
+
+                    if let error = error {
+                        self.showAlert(title: "Error", message: error.localizedDescription)
+                    } else {
+                        self.showAlert(title: "Success", message: "Memory uploaded!") {
+                            self.navigationController?.popViewController(animated: true)
+                        }
+                    }
                 }
+            } else {
+                self.showAlert(title: "Error", message: "Could not fetch username.")
             }
         }
     }
+
     
     func setupCollectionView() {
         photosCollectionView.dataSource = self
@@ -179,8 +246,8 @@ extension NewMemoryViewController: UICollectionViewDataSource {
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 280, height: 180)
-    }
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//        return CGSize(width: 280, height: 180)
+//    }
 }
 

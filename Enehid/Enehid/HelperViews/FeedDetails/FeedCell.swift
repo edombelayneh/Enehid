@@ -9,6 +9,8 @@ import UIKit
 
 class FeedCell: UITableViewCell, UICollectionViewDelegate {
     
+    @IBOutlet weak var profilePictureImageView: UIImageView!
+    @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var postCollectionView: UICollectionView!
     @IBOutlet weak var reecommendButton: UIButton!
     @IBOutlet weak var bookmarkButton: UIButton!
@@ -32,11 +34,11 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     func configure(with feedMemories: Memory?) {
         usernameLabel.text = feedMemories?.username ?? "Unknown"
         detailsLabel.text = feedMemories?.caption ?? ""
-        //        sharedPostImage.image = feedMemories?.image
-        
-        //        if let date = comment?.commentDate {
-        //            dateLabel.text = DateFormatter.postFormatter.string(from: date)
-        //        }
+//        sharedPostImage.image = feedMemories?.image
+//         = feedMemories?.memoryURLs
+        if let date = feedMemories?.createdAt {
+            dateLabel.text = DateFormatter.dateFormat(fromTemplate: "yyyy-MM-dd HH:mm:ss", options: 0, locale: Locale(identifier: "ar_EG"))
+        }
     }
     
     
