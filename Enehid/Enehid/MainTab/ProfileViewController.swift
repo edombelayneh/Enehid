@@ -19,14 +19,18 @@ class ProfileViewController: UIViewController {
     @IBAction func didTapAddStory(_ sender: Any) {
     }
     @IBAction func didTapSettings(_ sender: Any) {
-        performSegue(withIdentifier: "SettingsSegue", sender: nil)
+        //        performSegue(withIdentifier: "SettingsSegue", sender: nil)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let settingsVC = storyboard.instantiateViewController(withIdentifier: "SettingsTableViewController") as? SettingsTableViewController {
+            navigationController?.pushViewController(settingsVC, animated: true)
+        }
     }
     @IBAction func didChangeTabsSegmentedControl(_ sender: UISegmentedControl) {
         // This is called when the user taps one of the tabs.
         let target = sender.selectedSegmentIndex
         let selectedIndex = sender.selectedSegmentIndex
         guard target != currentIndex else { return }
-//        let viewControllerToShow = orderedViewControllers[selectedIndex]
+        //        let viewControllerToShow = orderedViewControllers[selectedIndex]
         
         // We set the correct direction for the transition.
         let direction: UIPageViewController.NavigationDirection = (target >  currentIndex) ? .forward : .reverse
@@ -36,7 +40,7 @@ class ProfileViewController: UIViewController {
     
     @IBOutlet weak var postSegmentedControl: UISegmentedControl!
     @IBOutlet weak var recommendsCounterLabel: UILabel!
-   
+    
     @IBOutlet weak var starsCounterLabel: UILabel!
     @IBOutlet weak var memoriesCounterLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
@@ -119,7 +123,7 @@ class ProfileViewController: UIViewController {
             navigationController?.pushViewController(editVC, animated: true)
         }
     }
-
+    
     // MARK: - Setup
     private func setupPageViewController() {
         // 1. Initialize the page view controller.
@@ -142,8 +146,8 @@ class ProfileViewController: UIViewController {
         pageViewController.didMove(toParent: self)
         pageViewController.setViewControllers([orderedViewControllers[0]], direction: .forward, animated:false)
     }
-
-
+    
+    
 }
 
 extension ProfileViewController: UIPageViewControllerDataSource {
@@ -151,7 +155,7 @@ extension ProfileViewController: UIPageViewControllerDataSource {
         guard let idx = orderedViewControllers.firstIndex(of: vc), idx > 0 else { return nil }
         return orderedViewControllers[idx - 1]
     }
-
+    
     func pageViewController(_ pvc: UIPageViewController, viewControllerAfter vc: UIViewController) -> UIViewController? {
         guard let idx = orderedViewControllers.firstIndex(of: vc), idx < orderedViewControllers.count - 1 else { return nil }
         return orderedViewControllers[idx + 1]

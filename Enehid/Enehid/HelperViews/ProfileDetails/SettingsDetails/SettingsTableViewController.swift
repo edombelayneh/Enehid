@@ -10,9 +10,13 @@ import FirebaseAuth
 import FirebaseFirestore
 import CoreLocation
 
-class SettingsTableViewController: UITableViewController {
+class SettingsTableViewController: UITableViewController, CitySearchDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
+    
+    @IBOutlet weak var radiusLabel: UILabel!
+    @IBOutlet weak var cityLabel: UILabel!
+    @IBOutlet weak var usernameLabel: UILabel!
     
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
@@ -25,11 +29,6 @@ class SettingsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-        
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
         searchBar.isHidden = true
         loadUserSettings()
     }
@@ -44,7 +43,7 @@ class SettingsTableViewController: UITableViewController {
         super.viewWillAppear(animated)
         loadUserSettings()
     }
-
+    
     
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y < -40 {
@@ -54,28 +53,17 @@ class SettingsTableViewController: UITableViewController {
     }
     
     // MARK: - Table view data source
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
-    }
-    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
         switch (indexPath.section, indexPath.row) {
         case (0, 1): // Change Password
             presentChangePasswordAlert()
-//        case (1, 0): // Preferred City
-//            presentCitySearch()
+        case (1, 0): // Preferred City
+            presentCitySearch()
         case (1, 1): // Radius
             presentRadiusPicker()
-        case (3, 0): // Sign Out
+        case (2, 0): // Sign Out
             handleSignOut()
         default:
             break
@@ -83,63 +71,7 @@ class SettingsTableViewController: UITableViewController {
     }
     
     
-
-    
-    /*
-     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-     let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-     
-     // Configure the cell...
-     
-     return cell
-     }
-     */
-    
-    /*
-     // Override to support conditional editing of the table view.
-     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the specified item to be editable.
-     return true
-     }
-     */
-    
-    /*
-     // Override to support editing the table view.
-     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-     if editingStyle == .delete {
-     // Delete the row from the data source
-     tableView.deleteRows(at: [indexPath], with: .fade)
-     } else if editingStyle == .insert {
-     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-     }
-     }
-     */
-    
-    /*
-     // Override to support rearranging the table view.
-     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-     
-     }
-     */
-    
-    /*
-     // Override to support conditional rearranging of the table view.
-     override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-     // Return false if you do not want the item to be re-orderable.
-     return true
-     }
-     */
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
+    // MARK: - Navigation
     func loadUserSettings() {
         let userRef = db.collection("users").document(currentUID)
         let settingsRef = db.collection("users")
@@ -171,13 +103,17 @@ class SettingsTableViewController: UITableViewController {
                     return
                 }
                 
-//                self.username = data["username"] as? String ?? "Unknown"
+                //                self.username = data["username"] as? String ?? "Unknown"
                 self.preferredCity = data["preferredCity"] as? String ?? "Not Set"
                 self.radiusMiles = data["preferredRadiusMiles"] as? Int ?? 10
                 
                 DispatchQueue.main.async {
+                    self.usernameLabel.text = "@\(self.username)"
+                    self.cityLabel.text = self.preferredCity
+                    self.radiusLabel.text = "\(self.radiusMiles) mi"
                     self.tableView.reloadData()
                 }
+                
             }
         }
     }
@@ -186,7 +122,7 @@ class SettingsTableViewController: UITableViewController {
     func presentChangePasswordAlert() {
         let alert = UIAlertController(title: "Change Password", message: nil, preferredStyle: .alert)
         alert.addTextField { $0.placeholder = "New Password"; $0.isSecureTextEntry = true }
-
+        
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         alert.addAction(UIAlertAction(title: "Change", style: .default, handler: { _ in
             guard let newPass = alert.textFields?.first?.text, !newPass.isEmpty else { return }
@@ -198,7 +134,7 @@ class SettingsTableViewController: UITableViewController {
                 }
             }
         }))
-
+        
         self.present(alert, animated: true)
     }
     
@@ -208,18 +144,23 @@ class SettingsTableViewController: UITableViewController {
         geo.geocodeAddressString(city) { placemarks, error in
             guard let location = placemarks?.first?.location else { return }
             let coords = location.coordinate
-
+            
             let settingsUpdate: [String: Any] = [
                 "preferredCity": city,
                 "coordinates": ["lat": coords.latitude, "lon": coords.longitude]
             ]
-
+            
             self.db.collection("users").document(self.currentUID).setData([
                 "settings": settingsUpdate
             ], merge: true)
         }
     }
-    
+    func didSelectCity(_ city: String) {
+        print("🏙️ City chosen: \(city)")
+        preferredCity = city
+        cityLabel.text = city
+        tableView.reloadData()
+    }
     
     func presentRadiusPicker() {
         let alert = UIAlertController(title: "Select Radius", message: nil, preferredStyle: .actionSheet)
@@ -231,15 +172,32 @@ class SettingsTableViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         self.present(alert, animated: true)
     }
-
+    
     func saveRadiusPreference(miles: Int) {
-        db.collection("users").document(currentUID).setData([
-            "settings.preferredRadiusMiles": miles
+        let settingsRef = db.collection("users")
+            .document(currentUID)
+            .collection("settings")
+            .document("preferences")
+        
+        settingsRef.setData([
+            "preferredRadiusMiles": miles
         ], merge: true)
+        
         self.radiusMiles = miles
+        self.radiusLabel.text = "\(miles) mi"
         self.tableView.reloadData()
     }
-
+    
+    
+    func presentCitySearch() {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let cityVC = storyboard.instantiateViewController(withIdentifier: "CitySearchViewController") as? CitySearchViewController {
+            cityVC.delegate = self
+            navigationController?.pushViewController(cityVC, animated: true)
+        }
+    }
+    
+    
     func handleSignOut() {
         do {
             try Auth.auth().signOut()

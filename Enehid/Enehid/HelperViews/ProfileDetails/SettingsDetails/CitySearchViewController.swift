@@ -10,14 +10,21 @@ import CoreLocation
 import FirebaseFirestore
 import FirebaseAuth
 
+protocol CitySearchDelegate: AnyObject {
+    func didSelectCity(_ city: String)
+}
+
+
 class CitySearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate {
     
+    weak var delegate: CitySearchDelegate?
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
     var matchingCities: [CLPlacemark] = []
     let geocoder = CLGeocoder()
+    
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
@@ -67,7 +74,7 @@ class CitySearchViewController: UIViewController, UISearchBarDelegate, UITableVi
             print("❌ Missing city name or location")
             return
         }
-
+        
         let lat = location.coordinate.latitude
         let lon = location.coordinate.longitude
         
@@ -78,19 +85,34 @@ class CitySearchViewController: UIViewController, UISearchBarDelegate, UITableVi
                 "lon": lon
             ]
         ]
-
-        db.collection("users").document(currentUID).setData([
-            "settings": updateData
-        ], merge: true) { error in
-            if let error = error {
-                print("❌ Failed to save city: \(error.localizedDescription)")
-            } else {
-                print("✅ City \(cityName) saved")
-                self.navigationController?.popViewController(animated: true)
+        
+        db.collection("users")
+            .document(currentUID)
+            .collection("settings")
+            .document("preferences")
+            .setData(updateData, merge: true) { error in
+                if let error = error {
+                    print("❌ Failed to save city: \(error.localizedDescription)")
+                } else {
+                    print("✅ City \(cityName) saved")
+                    
+                    // ✅ Notify delegate
+                    self.delegate?.didSelectCity(cityName)
+                    
+                    DispatchQueue.main.async {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
             }
-        }
     }
-
+    
+    
+//    // Call this after user selects a city
+//    func citySelected(_ city: String) {
+//        delegate?.didSelectCity(city)
+//        navigationController?.popViewController(animated: true)
+//    }
+    
     
 }
 
@@ -112,4 +134,12 @@ extension CitySearchViewController: UITableViewDataSource {
         saveSelectedCity(city: selectedCity)
     }
 }
+
+
+//extension Array where Element: Hashable {
+//    func uniqued() -> [Element] {
+//        Array(Set(self))
+//    }
+//}
+
 
