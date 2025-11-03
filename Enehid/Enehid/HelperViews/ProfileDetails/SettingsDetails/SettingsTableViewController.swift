@@ -11,8 +11,15 @@ import FirebaseFirestore
 import CoreLocation
 
 class SettingsTableViewController: UITableViewController, CitySearchDelegate {
+    //    @objc func dismissKeyboard() {
+    //        view.endEditing(true)
+    //    }
     
-    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var signOutCellCV: UIView!
+    @IBOutlet weak var radiusCellCV: UIView!
+    @IBOutlet weak var preferredCityCellCV: UIView!
+    @IBOutlet weak var changePaswordCellCV: UIView!
+    @IBOutlet weak var usernameCellCV: UIView!
     
     @IBOutlet weak var radiusLabel: UILabel!
     @IBOutlet weak var cityLabel: UILabel!
@@ -21,7 +28,6 @@ class SettingsTableViewController: UITableViewController, CitySearchDelegate {
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
-    
     var username = ""
     var preferredCity = ""
     var radiusMiles = 10
@@ -29,8 +35,18 @@ class SettingsTableViewController: UITableViewController, CitySearchDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        searchBar.isHidden = true
         loadUserSettings()
+        //        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        //        view.addGestureRecognizer(tapGesture)
+        
+        style(container: usernameCellCV)
+        style(container: changePaswordCellCV)
+        style(container: preferredCityCellCV)
+        style(container: radiusCellCV)
+        style(container: signOutCellCV)
+        
+        tableView.separatorStyle = .none
+        
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -45,16 +61,11 @@ class SettingsTableViewController: UITableViewController, CitySearchDelegate {
     }
     
     
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.y < -40 {
-            searchBar.isHidden = false
-            searchBar.becomeFirstResponder()
-        }
-    }
-    
     // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+
+        print("🔥 Tapped cell at section: \(indexPath.section), row: \(indexPath.row)")
         
         switch (indexPath.section, indexPath.row) {
         case (0, 1): // Change Password
@@ -69,7 +80,6 @@ class SettingsTableViewController: UITableViewController, CitySearchDelegate {
             break
         }
     }
-    
     
     // MARK: - Navigation
     func loadUserSettings() {
@@ -103,7 +113,6 @@ class SettingsTableViewController: UITableViewController, CitySearchDelegate {
                     return
                 }
                 
-                //                self.username = data["username"] as? String ?? "Unknown"
                 self.preferredCity = data["preferredCity"] as? String ?? "Not Set"
                 self.radiusMiles = data["preferredRadiusMiles"] as? Int ?? 10
                 
@@ -214,5 +223,21 @@ class SettingsTableViewController: UITableViewController, CitySearchDelegate {
             self.present(alert, animated: true)
         }
     }
+    
+    func style(container: UIView) {
+        
+        if let superview = container.superview {
+            container.frame = container.frame.insetBy(dx: 16, dy: 0)
+        }
+        
+        container.layer.cornerRadius = 20
+        container.layer.masksToBounds = false
+        container.layer.shadowColor = UIColor.black.cgColor
+        container.layer.shadowOffset = CGSize(width: 0, height: 2)
+        container.layer.shadowOpacity = 0.1
+        container.layer.shadowRadius = 6
+        container.backgroundColor = .white
+    }
+    
     
 }

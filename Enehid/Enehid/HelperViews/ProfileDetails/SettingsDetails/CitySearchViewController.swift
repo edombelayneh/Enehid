@@ -6,7 +6,9 @@
 //
 
 import UIKit
-import CoreLocation
+//import CoreLocation
+import MapKit
+
 import FirebaseFirestore
 import FirebaseAuth
 
@@ -15,12 +17,15 @@ protocol CitySearchDelegate: AnyObject {
 }
 
 
-class CitySearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate {
+class CitySearchViewController: UIViewController, UISearchBarDelegate, UITableViewDelegate, MKLocalSearchCompleterDelegate, UITableViewDataSource {
     
     weak var delegate: CitySearchDelegate?
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
+    
+    var searchCompleter = MKLocalSearchCompleter()
+    var searchResults: [MKLocalSearchCompletion] = []
     
     var matchingCities: [CLPlacemark] = []
     let geocoder = CLGeocoder()
@@ -35,111 +40,84 @@ class CitySearchViewController: UIViewController, UISearchBarDelegate, UITableVi
         searchBar.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
+        
+        searchCompleter.delegate = self
+        searchCompleter.resultTypes = .address
     }
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        guard !searchText.isEmpty else {
-            matchingCities.removeAll()
+            searchCompleter.queryFragment = searchText
+        }
+
+        func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+            searchResults = completer.results
             tableView.reloadData()
-            return
+        }
+
+        func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+            print("❌ Search completer failed: \(error.localizedDescription)")
+        }
+
+        func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            return searchResults.count
+        }
+
+        func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let completion = searchResults[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: "CityCell") ?? UITableViewCell(style: .subtitle, reuseIdentifier: "CityCell")
+            cell.textLabel?.text = completion.title
+            cell.detailTextLabel?.text = completion.subtitle
+            return cell
+        }
+
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            let completion = searchResults[indexPath.row]
+            searchForLocation(completion)
         }
         
-        geocoder.geocodeAddressString(searchText) { placemarks, error in
-            if let error = error {
-                print("❌ Geocoding error: \(error.localizedDescription)")
-                return
-            }
+        func searchForLocation(_ completion: MKLocalSearchCompletion) {
+            let searchRequest = MKLocalSearch.Request(completion: completion)
+            let search = MKLocalSearch(request: searchRequest)
             
-            self.matchingCities = placemarks?.filter { $0.locality != nil } ?? []
-            self.tableView.reloadData()
-        }
-    }
-    
-    func saveSelectedCity(city: CLPlacemark) {
-        guard
-            let cityName = city.locality,
-            let location = city.location
-        else {
-            print("❌ Missing city name or location")
-            return
+            search.start { response, error in
+                guard let placemark = response?.mapItems.first?.placemark else {
+                    print("❌ Couldn't resolve selected city")
+                    return
+                }
+
+                let city = placemark.locality ?? placemark.name ?? "Unknown"
+                let state = placemark.administrativeArea ?? ""
+                let country = placemark.country ?? ""
+                let fullName = [city, state, country].filter { !$0.isEmpty }.joined(separator: ", ")
+
+                // Save or notify delegate
+                self.saveSelectedCity(cityName: fullName, coordinate: placemark.coordinate)
+            }
         }
         
-        let lat = location.coordinate.latitude
-        let lon = location.coordinate.longitude
-        
-        let updateData: [String: Any] = [
-            "preferredCity": cityName,
-            "coordinates": [
-                "lat": lat,
-                "lon": lon
+        func saveSelectedCity(cityName: String, coordinate: CLLocationCoordinate2D) {
+            let db = Firestore.firestore()
+            let uid = Auth.auth().currentUser?.uid ?? ""
+            
+            let updateData: [String: Any] = [
+                "preferredCity": cityName,
+                "coordinates": [
+                    "lat": coordinate.latitude,
+                    "lon": coordinate.longitude
+                ]
             ]
-        ]
-        
-        db.collection("users")
-            .document(currentUID)
-            .collection("settings")
-            .document("preferences")
-            .setData(updateData, merge: true) { error in
+            
+            db.collection("users").document(uid).setData([
+                "settings": updateData
+            ], merge: true) { error in
                 if let error = error {
                     print("❌ Failed to save city: \(error.localizedDescription)")
                 } else {
-                    print("✅ City \(cityName) saved")
-                    
-                    // ✅ Notify delegate
-                    self.delegate?.didSelectCity(cityName)
-                    
-                    DispatchQueue.main.async {
-                        self.navigationController?.popViewController(animated: true)
-                    }
+                    print("✅ Saved city: \(cityName)")
+                    self.navigationController?.popViewController(animated: true)
                 }
             }
-    }
-    
-    
-//    // Call this after user selects a city
-//    func citySelected(_ city: String) {
-//        delegate?.didSelectCity(city)
-//        navigationController?.popViewController(animated: true)
-//    }
-    
+        }
     
 }
-
-extension CitySearchViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return matchingCities.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let city = matchingCities[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CityCell") ?? UITableViewCell(style: .subtitle, reuseIdentifier: "CityCell")
-        cell.textLabel?.text = city.locality ?? "Unknown City"
-        cell.detailTextLabel?.text = city.administrativeArea ?? city.country ?? ""
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedCity = matchingCities[indexPath.row]
-        saveSelectedCity(city: selectedCity)
-    }
-}
-
-
-//extension Array where Element: Hashable {
-//    func uniqued() -> [Element] {
-//        Array(Set(self))
-//    }
-//}
-
 
