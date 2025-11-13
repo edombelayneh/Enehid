@@ -164,6 +164,7 @@ class SettingsTableViewController: UITableViewController, CitySearchDelegate {
             ], merge: true)
         }
     }
+    
     func didSelectCity(_ city: String) {
         print("🏙️ City chosen: \(city)")
         preferredCity = city
@@ -173,7 +174,7 @@ class SettingsTableViewController: UITableViewController, CitySearchDelegate {
     
     func presentRadiusPicker() {
         let alert = UIAlertController(title: "Select Radius", message: nil, preferredStyle: .actionSheet)
-        [5, 10, 25, 50].forEach { value in
+        [25, 50, 100, 250, 500].forEach { value in
             alert.addAction(UIAlertAction(title: "\(value) miles", style: .default) { _ in
                 self.saveRadiusPreference(miles: value)
             })

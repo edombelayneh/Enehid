@@ -422,20 +422,13 @@ extension MessageViewController: UITableViewDataSource {
         return self.messages.count
     }
     
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let message = messages[indexPath.row]
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageBubbleCell
-//        cell.configure(with: message, currentUserId: currentUID)
-//        return cell
-//    }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "MessageCell", for: indexPath) as! MessageBubbleCell
         
         let isCurrentUser = message.senderId == currentUID
         let avatarURL: String? = isCurrentUser ? nil : recipientUser?.profilePictureURL
-
-//        cell.configure(with: message, currentUserId: currentUID, senderAvatarURL: avatarURL)
+        
         cell.configure(
             with: message,
             currentUserId: currentUID,
@@ -444,6 +437,7 @@ extension MessageViewController: UITableViewDataSource {
 
         return cell
     }
+
 
 }
 

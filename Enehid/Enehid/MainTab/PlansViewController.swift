@@ -81,6 +81,7 @@ class PlansViewController: UIViewController, UITableViewDelegate {
                     }
                     
                     let acceptedByList = data["acceptedByIDs"] as? [String] ?? []
+                    let declinedByList = data["declinedByIDs"] as? [String] ?? []
                     let currentUID = Auth.auth().currentUser?.uid ?? ""
                     
                     let plan = Plans(
@@ -92,6 +93,7 @@ class PlansViewController: UIViewController, UITableViewDelegate {
                         createdBy: data["createdBy"] as? String ?? "",
                         participants: data["participants"] as? [String:String] ?? [:],
                         acceptedByIDs: Set(acceptedByList),
+                        declinedByIDs: Set(declinedByList),
                         iAccepted: acceptedByList.contains(currentUID)
                     )
                     
@@ -117,9 +119,7 @@ extension PlansViewController: UITableViewDataSource {
         let plan = plans[indexPath.row]
         let id = plan.createdByIsMe ? "PlanOwnerCell" : "PlanInviteeCell"
         let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! PlansCell
-        
-        // Common fields
-        //        cell.profileUIImageVIew.image = UIImage.enehidLogo
+    
         cell.activityNameLabel.text = plan.activityName
         cell.locationLabel.text     = plan.location
         cell.dateLabel.text         = plan.date
@@ -142,6 +142,15 @@ extension PlansViewController: UITableViewDataSource {
         }
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let plan = plans[indexPath.row]
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let detailVC = storyboard.instantiateViewController(identifier: "PlanDetailsViewController") as! PlanDetailsViewController
+//        detailVC.plan = plan
+        detailVC.modalPresentationStyle = .pageSheet
+        present(detailVC, animated: true)
     }
     
 }
