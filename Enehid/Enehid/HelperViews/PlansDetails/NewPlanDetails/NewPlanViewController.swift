@@ -8,10 +8,12 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import MapKit
 
-class NewPlanViewController: UIViewController, UICollectionViewDelegate {
+
+class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITableViewDelegate, MKLocalSearchCompleterDelegate {
     
-    
+    @IBOutlet weak var locationResultsTableView: UITableView!
     @IBOutlet weak var dateTimePicker: UIDatePicker!
     @IBOutlet weak var inviteFriendsCollectionView: UICollectionView!
     @IBOutlet weak var scheduleButton: UIButton!
@@ -20,14 +22,44 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate {
     
     var selectedFriends: [User] = []
     
+    let searchCompleter = MKLocalSearchCompleter()
+    var searchResults: [MKLocalSearchCompletion] = []
+    
+    var selectedLocation: (name: String, lat: Double, lon: Double)?
+    
+    @objc func locationTextChanged(_ textField: UITextField) {
+        guard let query = textField.text, !query.isEmpty else {
+            searchResults = []
+            locationResultsTableView.isHidden = true
+            locationResultsTableView.reloadData()
+            return
+        }
+        
+        searchCompleter.queryFragment = query
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         activityTextField.applyEnehidTFStyle()
         locationTextField.applyEnehidTFStyle()
+        searchCompleter.delegate = self
+        locationTextField.addTarget(self, action: #selector(locationTextChanged), for: .editingChanged)
         // Do any additional setup after loading the view.
         inviteFriendsCollectionView.dataSource = self
         inviteFriendsCollectionView.delegate = self
+        locationResultsTableView.dataSource = self
+        locationResultsTableView.delegate = self
+        locationResultsTableView.isHidden = true
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false  // <-- This is the fix!
+        view.addGestureRecognizer(tapGesture)
         
         inviteFriendsCollectionView.register(
             UINib(nibName: "InviteFriendCell", bundle: nil),
@@ -38,8 +70,9 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate {
     
     
     @IBAction func onTappedSchedule(_ sender: UIButton) {
-        guard let activity = activityTextField.text, !activity.isEmpty else {
-            print("Missing activity name")
+        guard let activity = activityTextField.text, !activity.isEmpty,
+              let locationData = selectedLocation else {
+            print("⚠️ Missing activity or location")
             return
         }
         
@@ -52,19 +85,26 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate {
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
         let formattedDate = formatter.string(from: dateTimePicker.date)
         
-        let groupName = "DefaultGroup" // Replace with real group picker later
-        
         let participants: [String: String] = selectedFriends.reduce(into: [:]) { dict, user in
             dict[user.id] = user.username
         }
         
+        
+        
         createNewPlan(
             activityName: activity,
-            location: location,
+            location: locationData.name,
             date: formattedDate,
-            group: groupName,
-            participants: participants
+            //            group: "My Friends", // Optional group name
+            participants: participants,
+            lat: locationData.lat,
+            lon: locationData.lon
         )
+        
+        // ✅ Go back to previous screen
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
     /*
      // MARK: - Navigation
@@ -79,8 +119,11 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate {
     func createNewPlan(activityName: String,
                        location: String,
                        date: String,
-                       group: String,
-                       participants: [String: String]) {
+                       //                       group: String,
+                       participants: [String: String],
+                       lat: Double,
+                       lon: Double,
+    ) {
         
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
@@ -88,16 +131,20 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate {
         let planRef = db.collection("plans").document()
         let planId = planRef.documentID
         
+        
         let planData: [String: Any] = [
             "activityName": activityName,
             "location": location,
             "date": date,
-            "group": group,
+            //            "group": group,
             "createdBy": currentUID,
+            "lat": lat,
+            "lon": lon,
             "participants": participants,           // [uid: username]
             "acceptedByIDs": [],                    // empty at first
             "declinedByIDs": []                     // empty at first
         ]
+        print("Plan Data: \(planData)")
         
         // Write to /plans/{planId}
         planRef.setData(planData) { error in
@@ -113,7 +160,11 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate {
                     .document(uid)
                     .collection("plans")
                     .document(planId)
-                    .setData(["planId": planId])
+                    .setData([
+                        "planId": planId,
+                        "createdBy": currentUID
+                    ])
+
             }
         }
     }
@@ -131,9 +182,19 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate {
         
         present(pickerVC, animated: true)
     }
+    
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        searchResults = completer.results
+        locationResultsTableView.reloadData()
+        locationResultsTableView.isHidden = searchResults.isEmpty
+    }
+    
+    func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+        print("❌ Search failed: \(error)")
+    }
 }
 
-extension NewPlanViewController: UICollectionViewDataSource {
+extension NewPlanViewController: UICollectionViewDataSource, UITableViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return selectedFriends.count + 1 // +1 for the Add button
     }
@@ -171,6 +232,43 @@ extension NewPlanViewController: UICollectionViewDataSource {
         
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return searchResults.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let result = searchResults[indexPath.row]
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LocationResultCell")
+        ?? UITableViewCell(style: .subtitle, reuseIdentifier: "LocationResultCell")
+        
+        cell.textLabel?.text = result.title
+        cell.detailTextLabel?.text = result.subtitle
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let completion = searchResults[indexPath.row]
+        let searchRequest = MKLocalSearch.Request(completion: completion)
+        let search = MKLocalSearch(request: searchRequest)
+        
+        search.start { response, error in
+            guard let placemark = response?.mapItems.first?.placemark else { return }
+            
+            let name = placemark.name ?? ""
+            let lat = placemark.coordinate.latitude
+            let lon = placemark.coordinate.longitude
+            
+            self.locationTextField.text = name
+            self.selectedLocation = (name, lat, lon)
+            
+            print("📍 Stored: \(name) at (\(lat), \(lon))")
+            self.locationResultsTableView.isHidden = true
+        }
+    }
+    
 }
+
+
 
 

@@ -16,8 +16,10 @@ struct Plans {
     let activityName: String
     let location: String
     let date: String
-    let group: String
+//    let group: String
     let createdBy: String
+    let lat: Double
+    let lon: Double
     
     let participants: [String: String]  // uid: username
     let acceptedByIDs: Set<String>

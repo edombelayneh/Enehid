@@ -542,7 +542,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="La6-1W-eQu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3464.8854961832058" y="3171.8309859154933"/>
+            <point key="canvasLocation" x="4391.6030534351139" y="3171.8309859154933"/>
         </scene>
         <!--Settings-->
         <scene sceneID="GGQ-mj-JI5">
@@ -1855,15 +1855,17 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
-                            <datePicker clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" style="compact" translatesAutoresizingMaskIntoConstraints="NO" id="e7S-0H-gnl">
-                                <rect key="frame" x="0.0" y="367" width="393" height="76"/>
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Where's it happening?" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iQv-d2-RCH">
+                                <rect key="frame" x="38" y="287" width="317" height="40"/>
+                                <color key="backgroundColor" name="CreamBackground"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="76" id="Kah-Zt-A1l"/>
-                                    <constraint firstAttribute="width" constant="393" id="n8J-5T-R7Z"/>
+                                    <constraint firstAttribute="height" constant="40" id="2hf-wJ-DBm"/>
                                 </constraints>
-                            </datePicker>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I8x-et-voj">
-                                <rect key="frame" x="0.0" y="518" width="393" height="150"/>
+                                <rect key="frame" x="0.0" y="528" width="393" height="150"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="P7O-xg-PmY">
                                         <rect key="frame" x="0.0" y="0.0" width="393" height="150"/>
@@ -1928,7 +1930,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gak-Ta-yfi">
-                                <rect key="frame" x="38" y="748" width="317" height="30"/>
+                                <rect key="frame" x="38" y="698" width="317" height="30"/>
                                 <color key="backgroundColor" name="TextButton"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="LId-Wf-EJs"/>
@@ -1957,15 +1959,24 @@
                                     <action selector="onTappedSchedule:" destination="mUq-C0-lGa" eventType="touchUpInside" id="kAQ-MJ-RvD"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Where's it happening?" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iQv-d2-RCH">
-                                <rect key="frame" x="38" y="287" width="317" height="40"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="noW-jo-pPd">
+                                <rect key="frame" x="38" y="332" width="317" height="129"/>
                                 <color key="backgroundColor" name="CreamBackground"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="2hf-wJ-DBm"/>
+                                    <constraint firstAttribute="width" constant="317" id="NNK-mr-bwf"/>
+                                    <constraint firstAttribute="height" constant="129" id="xnt-Tm-BWd"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                <textInputTraits key="textInputTraits"/>
-                            </textField>
+                                <color key="separatorColor" name="CreamBackground"/>
+                                <color key="sectionIndexBackgroundColor" name="CreamBackground"/>
+                                <color key="sectionIndexTrackingBackgroundColor" name="CreamBackground"/>
+                            </tableView>
+                            <datePicker clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" minuteInterval="1" style="compact" translatesAutoresizingMaskIntoConstraints="NO" id="e7S-0H-gnl">
+                                <rect key="frame" x="77" y="466" width="239" height="48"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="239" id="4vs-FQ-AJY"/>
+                                    <constraint firstAttribute="height" constant="48" id="zRP-P5-SyB"/>
+                                </constraints>
+                            </datePicker>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="KqO-xG-WCg"/>
                         <color key="backgroundColor" name="CreamBackground"/>
@@ -1973,21 +1984,24 @@
                             <constraint firstItem="KqO-xG-WCg" firstAttribute="trailing" secondItem="zZi-eE-5MB" secondAttribute="trailing" constant="38" id="0iM-n8-2IS"/>
                             <constraint firstItem="zZi-eE-5MB" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" constant="38" id="1Lt-Xc-cVZ"/>
                             <constraint firstItem="I8x-et-voj" firstAttribute="trailing" secondItem="KqO-xG-WCg" secondAttribute="trailing" id="4au-VT-uu2"/>
-                            <constraint firstItem="I8x-et-voj" firstAttribute="top" secondItem="e7S-0H-gnl" secondAttribute="bottom" constant="75" id="A0R-a3-Eb0"/>
                             <constraint firstItem="KqO-xG-WCg" firstAttribute="trailing" secondItem="Gak-Ta-yfi" secondAttribute="trailing" constant="38" id="Gns-B0-yDr"/>
+                            <constraint firstItem="noW-jo-pPd" firstAttribute="top" secondItem="iQv-d2-RCH" secondAttribute="bottom" constant="5" id="OGW-Hl-UDR"/>
                             <constraint firstItem="iQv-d2-RCH" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" constant="38" id="Sym-x9-PxQ"/>
-                            <constraint firstItem="e7S-0H-gnl" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" id="Xuk-7E-XgL"/>
+                            <constraint firstItem="e7S-0H-gnl" firstAttribute="top" secondItem="noW-jo-pPd" secondAttribute="bottom" constant="5" id="VLy-Rc-i7Y"/>
                             <constraint firstItem="iQv-d2-RCH" firstAttribute="top" secondItem="zZi-eE-5MB" secondAttribute="bottom" constant="30" id="YCk-nK-Eh5"/>
-                            <constraint firstItem="e7S-0H-gnl" firstAttribute="top" secondItem="iQv-d2-RCH" secondAttribute="bottom" constant="40" id="bIY-n3-up2"/>
-                            <constraint firstItem="e7S-0H-gnl" firstAttribute="trailing" secondItem="KqO-xG-WCg" secondAttribute="trailing" id="dWe-hS-4md"/>
+                            <constraint firstItem="noW-jo-pPd" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" constant="38" id="bmK-SZ-i8O"/>
+                            <constraint firstItem="KqO-xG-WCg" firstAttribute="trailing" secondItem="noW-jo-pPd" secondAttribute="trailing" constant="38" id="cXz-Ke-U4b"/>
+                            <constraint firstItem="e7S-0H-gnl" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" constant="77" id="dLg-QG-3as"/>
+                            <constraint firstItem="KqO-xG-WCg" firstAttribute="trailing" secondItem="e7S-0H-gnl" secondAttribute="trailing" constant="77" id="ePc-cp-zXt"/>
                             <constraint firstItem="zZi-eE-5MB" firstAttribute="top" secondItem="KqO-xG-WCg" secondAttribute="top" constant="55" id="hmw-5B-o1Q"/>
                             <constraint firstItem="I8x-et-voj" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" id="iHL-Cy-Pyi"/>
                             <constraint firstItem="I8x-et-voj" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" id="ivQ-AL-Thu"/>
+                            <constraint firstItem="I8x-et-voj" firstAttribute="top" secondItem="e7S-0H-gnl" secondAttribute="bottom" constant="14" id="lpl-46-vhs"/>
                             <constraint firstItem="KqO-xG-WCg" firstAttribute="trailing" secondItem="iQv-d2-RCH" secondAttribute="trailing" constant="38" id="qLw-RQ-LXG"/>
                             <constraint firstItem="Gak-Ta-yfi" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" constant="38" id="s5j-c8-dTf"/>
                             <constraint firstItem="I8x-et-voj" firstAttribute="trailing" secondItem="KqO-xG-WCg" secondAttribute="trailing" id="uNi-Ro-TCX"/>
                             <constraint firstAttribute="bottom" secondItem="Gak-Ta-yfi" secondAttribute="bottom" constant="104" id="wup-R0-2dQ"/>
-                            <constraint firstItem="Gak-Ta-yfi" firstAttribute="top" secondItem="I8x-et-voj" secondAttribute="bottom" constant="80" id="yYq-nN-hw5"/>
+                            <constraint firstItem="Gak-Ta-yfi" firstAttribute="top" secondItem="I8x-et-voj" secondAttribute="bottom" constant="20" id="yYq-nN-hw5"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="New Plan" id="rM8-ED-wSn"/>
@@ -1995,6 +2009,7 @@
                         <outlet property="activityTextField" destination="zZi-eE-5MB" id="vyn-5i-tvG"/>
                         <outlet property="dateTimePicker" destination="e7S-0H-gnl" id="ARR-Ba-pso"/>
                         <outlet property="inviteFriendsCollectionView" destination="P7O-xg-PmY" id="hZb-ww-M8A"/>
+                        <outlet property="locationResultsTableView" destination="noW-jo-pPd" id="euQ-tE-vIA"/>
                         <outlet property="locationTextField" destination="iQv-d2-RCH" id="370-8d-ag3"/>
                         <outlet property="scheduleButton" destination="Gak-Ta-yfi" id="NaT-wT-Rq0"/>
                     </connections>
@@ -2353,7 +2368,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="op7-Jg-sea" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="803.81679389312978" y="3131.6901408450708"/>
+            <point key="canvasLocation" x="1730.534351145038" y="3131.6901408450708"/>
         </scene>
         <!--Bookmarked-->
         <scene sceneID="1g6-Fk-OY7">
@@ -3284,9 +3299,36 @@
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <button key="tableFooterView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="5XJ-iQ-oaP">
+                                    <rect key="frame" x="0.0" y="0.0" width="393" height="40"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <color key="backgroundColor" name="TextButton"/>
+                                    <color key="tintColor" name="CreamBackground"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" subtitle="" cornerStyle="capsule">
+                                        <attributedString key="attributedTitle">
+                                            <fragment content="Done">
+                                                <attributes>
+                                                    <font key="NSFont" size="18" name="Helvetica-Bold"/>
+                                                    <font key="NSOriginalFont" size="12" name="Helvetica"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
+                                    </buttonConfiguration>
+                                    <connections>
+                                        <action selector="onTappedDone:" destination="J3j-2r-9gI" eventType="touchUpInside" id="rG1-MR-VWA"/>
+                                    </connections>
+                                </button>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cl2-aH-zFj">
-                                <rect key="frame" x="307" y="75" width="65" height="35"/>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="bpU-7T-kbe"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="UFe-7B-fjv">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="XE5-QH-nyK">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Cl2-aH-zFj">
+                                <rect key="frame" x="297" y="4.6666666666666679" width="80" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Done"/>
@@ -3294,10 +3336,8 @@
                                     <action selector="onTappedDone:" destination="J3j-2r-9gI" eventType="touchUpInside" id="6yp-Vk-oP6"/>
                                 </connections>
                             </button>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="bpU-7T-kbe"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="doneButton" destination="Cl2-aH-zFj" id="rNl-da-bej"/>
                         <outlet property="tableView" destination="AXZ-mt-Je5" id="V2w-2o-pPg"/>
@@ -3305,7 +3345,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sIN-Cy-9Q4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-60.305343511450381" y="3131.6901408450708"/>
+            <point key="canvasLocation" x="866.41221374045801" y="3131.6901408450708"/>
         </scene>
         <!--Settings View Controller-->
         <scene sceneID="KYF-cx-CWC">
