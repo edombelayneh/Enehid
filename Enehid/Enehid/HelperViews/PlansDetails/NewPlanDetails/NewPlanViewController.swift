@@ -141,7 +141,7 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
             "lat": lat,
             "lon": lon,
             "participants": participants,           // [uid: username]
-            "acceptedByIDs": [],                    // empty at first
+            "acceptedByIDs": [currentUID],                    // empty at first
             "declinedByIDs": []                     // empty at first
         ]
         print("Plan Data: \(planData)")
@@ -156,16 +156,28 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
             
             // Link plan to all users involved
             for (uid, _) in participants {
-                db.collection("users")
+                let userPlanRef = db.collection("users")
                     .document(uid)
                     .collection("plans")
                     .document(planId)
-                    .setData([
-                        "planId": planId,
-                        "createdBy": currentUID
-                    ])
-
+                
+                let status = uid == currentUID ? "accepted" : "pending"
+                
+                userPlanRef.setData([
+                    "planId": planId,
+                    "createdBy": currentUID,
+                    "status": status,
+                    "activityName": activityName,
+                    "date": date,
+                    "location": location,
+                    "lastUpdated": Timestamp(date: Date())
+                ]) { error in
+                    if let error = error {
+                        print("⚠️ Failed to write user plan link for \(uid): \(error)")
+                    }
+                }
             }
+            
         }
     }
     

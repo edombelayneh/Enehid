@@ -47,9 +47,9 @@ class PlansViewController: UIViewController, UITableViewDelegate {
         }
         
         let db = Firestore.firestore()
-        let plansRef = db.collection("users").document(currentUID).collection("plans")
+        let userPlansRef = db.collection("users").document(currentUID).collection("plans")
         
-        plansRef.getDocuments(source: .default) { snapshot, error in
+        userPlansRef.getDocuments(source: .default) { snapshot, error in
             if let error = error {
                 print("❌ Failed to get plans: \(error.localizedDescription)")
                 completion([])
@@ -62,11 +62,13 @@ class PlansViewController: UIViewController, UITableViewDelegate {
                 return
             }
             
-            let planIds = docs.compactMap { $0.data()["planId"] as? String }
             var plans: [Plans] = []
             let dispatchGroup = DispatchGroup()
             
-            for planId in planIds {
+            for doc in docs {
+                let planId = doc.documentID
+                let status = doc.data()["status"] as? String ?? "pending"
+                
                 dispatchGroup.enter()
                 db.collection("plans").document(planId).getDocument(source: .default) { planSnapshot, error in
                     defer { dispatchGroup.leave() }
@@ -89,14 +91,14 @@ class PlansViewController: UIViewController, UITableViewDelegate {
                         activityName: data["activityName"] as? String ?? "",
                         location: data["location"] as? String ?? "",
                         date: data["date"] as? String ?? "",
-//                        group: data["group"] as? String ?? "",
                         createdBy: data["createdBy"] as? String ?? "",
                         lat: data["lat"] as? Double ?? 0.0,
                         lon: data["lon"] as? Double ?? 0.0,
-                        participants: data["participants"] as? [String:String] ?? [:],
+                        participants: data["participants"] as? [String: String] ?? [:],
                         acceptedByIDs: Set(acceptedByList),
                         declinedByIDs: Set(declinedByList),
-                        iAccepted: acceptedByList.contains(currentUID)
+                        iAccepted: status == "accepted", // pulled from user doc
+                        iDeclined: status == "declined"
                     )
                     
                     plans.append(plan)
@@ -106,9 +108,9 @@ class PlansViewController: UIViewController, UITableViewDelegate {
             dispatchGroup.notify(queue: .main) {
                 completion(plans)
             }
-            
         }
     }
+    
 }
 
 
@@ -121,7 +123,7 @@ extension PlansViewController: UITableViewDataSource {
         let plan = plans[indexPath.row]
         let id = plan.createdByIsMe ? "PlanOwnerCell" : "PlanInviteeCell"
         let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! PlansCell
-    
+        
         cell.activityNameLabel.text = plan.activityName
         cell.locationLabel.text     = plan.location
         cell.dateLabel.text         = plan.date
@@ -150,7 +152,7 @@ extension PlansViewController: UITableViewDataSource {
         let plan = plans[indexPath.row]
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let detailVC = storyboard.instantiateViewController(identifier: "PlanDetailsViewController") as! PlanDetailsViewController
-//        detailVC.plan = plan
+        //        detailVC.plan = plan
         detailVC.modalPresentationStyle = .pageSheet
         present(detailVC, animated: true)
     }

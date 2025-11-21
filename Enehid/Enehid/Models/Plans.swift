@@ -11,27 +11,30 @@ import FirebaseAuth
 
 
 let currUserUID = Auth.auth().currentUser?.uid ?? ""
+
 struct Plans {
     let id: String
     let activityName: String
     let location: String
     let date: String
-//    let group: String
     let createdBy: String
     let lat: Double
     let lon: Double
     
-    let participants: [String: String]  // uid: username
+    let participants: [String: String]
     let acceptedByIDs: Set<String>
     let declinedByIDs: Set<String>
     let iAccepted: Bool
-    
+    let iDeclined: Bool
+
     var totalCount: Int { participants.count }
-    var acceptedCount: Int {
-        acceptedByIDs.intersection(participants.keys).count
-    }
+    var acceptedCount: Int { acceptedByIDs.count }
     var pendingCount: Int { totalCount - acceptedCount }
-    var createdByIsMe: Bool { createdBy == currUserUID }
+    var createdByIsMe: Bool {
+        return createdBy == currUserUID
+    }
+    
+    
     
     func status(for uid: String) -> ParticipationStatus {
         if acceptedByIDs.contains(uid) {
@@ -65,9 +68,9 @@ struct Participant {
 }
 
 
-
-enum ParticipationStatus {
+enum ParticipationStatus: String, Hashable {
     case accepted
     case declined
     case pending
 }
+
