@@ -18,64 +18,70 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
     
     var plan: Plans?
     var participantsBySection: [ParticipantSection: [Participant]] = [:]
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupParticipantsBySection()
         
         collectionView.collectionViewLayout = createLayout()
-            
-        registerCollectionView()
         
-        collectionView.dataSource = self
-        collectionView.delegate = self
+        //        registerCollectionView()
+        
+                collectionView.dataSource = self
+                collectionView.delegate = self
         
         activityNameLabel.text = plan?.activityName
         dateLabel.text = plan?.date
-//        timeLabel.text = plan?.date
+        //        timeLabel.text = plan?.date
         locationLabel.text = plan?.location
         
-        
+//        
 //        collectionView.register(
 //            UINib(nibName: "SectionHeaderView", bundle: nil),
 //            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
 //            withReuseIdentifier: "SectionHeaderView"
 //        )
         
-
-
-        // Do any additional setup after loading the view.
-    }
-    
-    
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
-    func registerCollectionView() {
-        collectionView.register(
-            UINib(nibName: "ParticipantCell", bundle: nil),
-            forCellWithReuseIdentifier: "ParticipantCell"
-        )
         
-    }
+        
+        // Do any additional setup after loading the view.
+        collectionView.reloadData()
 
+    }
+    
+    
+    
+    
+    /*
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destination.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
+    //    func registerCollectionView() {
+    //        collectionView.register(
+    //            UINib(nibName: "ParticipantCell", bundle: nil),
+    //            forCellWithReuseIdentifier: "ParticipantCell"
+    //        )
+    //
+    //    }
+    
     
     func setupParticipantsBySection() {
         guard let plan = plan else { return }
-
+        
         participantsBySection[.accepted] = plan.participantsByStatus[.accepted] ?? []
         participantsBySection[.pending] = plan.participantsByStatus[.pending] ?? []
         participantsBySection[.declined] = plan.participantsByStatus[.declined] ?? []
+        
+        print("✅ Accepted: \(participantsBySection[.accepted]?.count ?? 0)")
+        print("⏳ Pending: \(participantsBySection[.pending]?.count ?? 0)")
+        print("❌ Declined: \(participantsBySection[.declined]?.count ?? 0)")
     }
     
     func createLayout() -> UICollectionViewCompositionalLayout {
@@ -88,7 +94,7 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
                 heightDimension: .absolute(80)
             )
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
-
+            
             // Group
             let groupSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
@@ -96,11 +102,11 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
             )
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
             group.interItemSpacing = .fixed(12)
-
+            
             // Section
             let section = NSCollectionLayoutSection(group: group)
             section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 24, trailing: 16)
-
+            
             // Header
             let headerSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
@@ -116,9 +122,9 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
             return section
         }
     }
-
-
-
+    
+    
+    
 }
 
 extension PlanDetailsViewController: UICollectionViewDataSource {
@@ -155,7 +161,7 @@ extension PlanDetailsViewController: UICollectionViewDataSource {
         }
         return UICollectionReusableView()
     }
-
+    
 }
 
 enum ParticipantSection: Int, CaseIterable {
@@ -170,4 +176,4 @@ enum ParticipantSection: Int, CaseIterable {
     }
 }
 
-    
+
