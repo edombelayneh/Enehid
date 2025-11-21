@@ -31,6 +31,12 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
         collectionView.dataSource = self
         collectionView.delegate = self
         
+        activityNameLabel.text = plan?.activityName
+        dateLabel.text = plan?.date
+//        timeLabel.text = plan?.date
+        locationLabel.text = plan?.location
+        
+        
 //        collectionView.register(
 //            UINib(nibName: "SectionHeaderView", bundle: nil),
 //            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,

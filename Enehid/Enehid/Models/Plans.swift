@@ -10,7 +10,9 @@ import UIKit
 import FirebaseAuth
 
 
-let currUserUID = Auth.auth().currentUser?.uid ?? ""
+var currentUserUID: String {
+    return Auth.auth().currentUser?.uid ?? ""
+}
 
 struct Plans {
     let id: String
@@ -31,7 +33,7 @@ struct Plans {
     var acceptedCount: Int { acceptedByIDs.count }
     var pendingCount: Int { totalCount - acceptedCount }
     var createdByIsMe: Bool {
-        return createdBy == currUserUID
+        return createdBy == currentUserUID
     }
     
     

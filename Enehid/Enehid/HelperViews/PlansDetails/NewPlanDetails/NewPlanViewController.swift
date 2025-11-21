@@ -95,7 +95,6 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
             activityName: activity,
             location: locationData.name,
             date: formattedDate,
-            //            group: "My Friends", // Optional group name
             participants: participants,
             lat: locationData.lat,
             lon: locationData.lon
@@ -115,70 +114,85 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
      // Pass the selected object to the new view controller.
      }
      */
-    
     func createNewPlan(activityName: String,
                        location: String,
                        date: String,
-                       //                       group: String,
                        participants: [String: String],
                        lat: Double,
-                       lon: Double,
-    ) {
+                       lon: Double) {
         
-        guard let currentUID = Auth.auth().currentUser?.uid else { return }
+        guard let currentUser = Auth.auth().currentUser else { return }
+        let currentUID = currentUser.uid
         let db = Firestore.firestore()
-        
         let planRef = db.collection("plans").document()
         let planId = planRef.documentID
         
-        
-        let planData: [String: Any] = [
-            "activityName": activityName,
-            "location": location,
-            "date": date,
-            //            "group": group,
-            "createdBy": currentUID,
-            "lat": lat,
-            "lon": lon,
-            "participants": participants,           // [uid: username]
-            "acceptedByIDs": [currentUID],                    // empty at first
-            "declinedByIDs": []                     // empty at first
-        ]
-        print("Plan Data: \(planData)")
-        
-        // Write to /plans/{planId}
-        planRef.setData(planData) { error in
+        db.collection("users").document(currentUID).getDocument { snapshot, error in
             if let error = error {
-                print("❌ Failed to create plan: \(error)")
+                print("❌ Error fetching creator data: \(error.localizedDescription)")
                 return
             }
-            print("✅ Plan created successfully!")
             
-            // Link plan to all users involved
-            for (uid, _) in participants {
-                let userPlanRef = db.collection("users")
-                    .document(uid)
-                    .collection("plans")
-                    .document(planId)
+            guard let data = snapshot?.data(),
+                  let creatorUsername = data["username"] as? String else {
+                print("❌ Failed to get username for current user")
+                return
+            }
+            
+            
+            // ✅ Include creator in participants
+            var fullParticipants = participants
+            fullParticipants[currentUID] = creatorUsername
+            
+            let planData: [String: Any] = [
+                "activityName": activityName,
+                "location": location,
+                "date": date,
+                "createdBy": currentUID,
+                "lat": lat,
+                "lon": lon,
+                "participants": fullParticipants,
+                "acceptedByIDs": [currentUID], // creator has accepted by default
+                "declinedByIDs": []
+            ]
+            
+            print("Plan Data: \(planData)")
+            
+            // ✅ Create the plan document
+            planRef.setData(planData) { error in
+                if let error = error {
+                    print("❌ Failed to create plan: \(error)")
+                    return
+                }
+                print("✅ Plan created successfully!")
                 
-                let status = uid == currentUID ? "accepted" : "pending"
-                
-                userPlanRef.setData([
-                    "planId": planId,
-                    "createdBy": currentUID,
-                    "status": status,
-                    "activityName": activityName,
-                    "date": date,
-                    "location": location,
-                    "lastUpdated": Timestamp(date: Date())
-                ]) { error in
-                    if let error = error {
-                        print("⚠️ Failed to write user plan link for \(uid): \(error)")
+                // ✅ Write to /users/{uid}/plans/{planId} for all participants (including creator)
+                for (uid, _) in fullParticipants {
+                    let userPlanRef = db.collection("users")
+                        .document(uid)
+                        .collection("plans")
+                        .document(planId)
+                    
+                    let status = (uid == currentUID) ? "accepted" : "pending"
+                    
+                    userPlanRef.setData([
+                        "planId": planId,
+                        "createdBy": currentUID,
+                        "status": status,
+                        "activityName": activityName,
+                        "date": date,
+                        "location": location,
+                        "lastUpdated": Timestamp(date: Date())
+                    ]) { error in
+                        if let error = error {
+                            print("⚠️ Failed to write user plan link for \(uid): \(error)")
+                        }
                     }
                 }
             }
-            
         }
+        
+        
     }
     
     func presentFriendPicker() {

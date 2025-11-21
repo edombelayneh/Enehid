@@ -21,11 +21,14 @@ class PlansViewController: UIViewController, UITableViewDelegate {
         plansTableView.delegate = self
         plansTableView.dataSource = self
         // Do any additional setup after loading the view.
-        
+        plansTableView.register(PlanCell.self, forCellReuseIdentifier: "PlanCell")
+
         fetchPlans{ plansUpdate in
             self.plans = plansUpdate
             self.plansTableView.reloadData()
         }
+        plansTableView.reloadData()
+        
     }
     
     
@@ -120,41 +123,98 @@ extension PlansViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let currentUserID = Auth.auth().currentUser?.uid ?? ""
         let plan = plans[indexPath.row]
-        let id = plan.createdByIsMe ? "PlanOwnerCell" : "PlanInviteeCell"
-        let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! PlansCell
-        
-        cell.activityNameLabel.text = plan.activityName
+//        let id = plan.createdByIsMe ? "PlanOwnerCell" : "PlanInviteeCell"
+//        let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! PlansCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PlanCell", for: indexPath) as! PlanCell
+        let currentUserId = Auth.auth().currentUser?.uid ?? ""
+        cell.configure(with: plan, currentUserId: currentUserId)
+        cell.onAccept = { [weak self] in
+            self?.handleResponse(to: plan, accept: true)
+        }
+        cell.onDecline = { [weak self] in
+            self?.handleResponse(to: plan, accept: false)
+        }
+
+        // ✅ Always set these core labels
+        cell.activityLabel.text = plan.activityName
         cell.locationLabel.text     = plan.location
-        cell.dateLabel.text         = plan.date
-        cell.createdBy.text    = plan.createdByIsMe ? "Organizer: YOU"
-        : "@\(plan.createdBy)"
-        print("🫵🏽\(plan.activityName) is_me \(plan.createdByIsMe)")
         
-        if plan.createdByIsMe {
-            cell.ownerControlsView?.isHidden  = false
-            cell.inviteeStatusView?.isHidden  = true
-            cell.acceptButton?.isHidden       = true
-            cell.declineButton?.isHidden      = true
-            cell.waitingLabel?.text            = "\(plan.acceptedCount)/\(plan.totalCount) friends accepted"
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateStyle = .medium  // e.g., "Nov 21, 2025"
+        outputFormatter.timeStyle = .none
+
+        if let dateObj = inputFormatter.date(from: plan.date) {
+            cell.dateLabel.text = outputFormatter.string(from: dateObj)
         } else {
-            cell.ownerControlsView?.isHidden  = true
-            cell.inviteeStatusView?.isHidden  = false
-            cell.acceptButton?.isHidden       = plan.iAccepted
-            cell.declineButton?.isHidden      = !plan.iAccepted
-            cell.waitingLabel?.text           = plan.iAccepted ? "You accepted" : "Waiting on you"
+            cell.dateLabel.text = plan.date // fallback if parsing fails
+        }
+
+
+        // ✅ Show who scheduled it
+        if plan.createdByIsMe {
+            cell.createdByLabel.text = "Scheduled by You"
+        } else {
+            if let name = plan.participants[plan.createdBy] {
+                print("Here is name: \(name)")
+                cell.createdByLabel.text = "@\(name)"
+            } else {
+                cell.createdByLabel.text = "@\(plan.createdBy.prefix(5))"
+            }
         }
         
+
         return cell
     }
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let plan = plans[indexPath.row]
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let detailVC = storyboard.instantiateViewController(identifier: "PlanDetailsViewController") as! PlanDetailsViewController
-        //        detailVC.plan = plan
+        detailVC.plan = plan
         detailVC.modalPresentationStyle = .pageSheet
         present(detailVC, animated: true)
     }
+    
+    func handleResponse(to plan: Plans, accept: Bool) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+
+        let db = Firestore.firestore()
+
+        // Update central plans collection
+        let planRef = db.collection("plans").document(plan.id)
+        let fieldToUpdate = accept ? "acceptedByIDs" : "declinedByIDs"
+        let oppositeField = accept ? "declinedByIDs" : "acceptedByIDs"
+
+        let batch = db.batch()
+        batch.updateData([
+            fieldToUpdate: FieldValue.arrayUnion([uid]),
+            oppositeField: FieldValue.arrayRemove([uid])
+        ], forDocument: planRef)
+
+        // Update user's own subcollection
+        let userPlanRef = db.collection("users").document(uid).collection("plans").document(plan.id)
+        batch.updateData([
+            "status": accept ? "accepted" : "declined"
+        ], forDocument: userPlanRef)
+
+        batch.commit { error in
+            if let error = error {
+                print("❌ Failed to update response: \(error)")
+            } else {
+                print("✅ Updated response")
+                self.fetchPlans { updated in
+                    self.plans = updated
+                    self.plansTableView.reloadData()
+                }
+            }
+        }
+    }
+
     
 }
