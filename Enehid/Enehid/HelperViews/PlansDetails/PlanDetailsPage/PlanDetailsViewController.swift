@@ -27,14 +27,31 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
         
         collectionView.collectionViewLayout = createLayout()
         
-        //        registerCollectionView()
-        
-                collectionView.dataSource = self
-                collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.delegate = self
         
         activityNameLabel.text = plan?.activityName
-        dateLabel.text = plan?.date
-        //        timeLabel.text = plan?.date
+
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        inputFormatter.locale = Locale(identifier: "en_US_POSIX") // ensures consistency
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateStyle = .none
+        timeFormatter.timeStyle = .short
+
+        if let dateString = plan?.date, let dateObj = inputFormatter.date(from: dateString) {
+            dateLabel.text = dateFormatter.string(from: dateObj) // e.g., "Nov 21, 2025"
+            timeLabel.text = timeFormatter.string(from: dateObj) // e.g., "2:30 PM"
+        } else {
+            dateLabel.text = plan?.date
+            timeLabel.text = ""
+        }
+     
         locationLabel.text = plan?.location
         
         
@@ -131,18 +148,8 @@ extension PlanDetailsViewController: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ParticipantCell", for: indexPath) as! ParticipantCell
         cell.usernameLabel.text = participant?.name
-        
-//        switch sectionType {
-//        case .accepted:
-//            cell.statusLabel.text = "Accepted"
-////            cell.statusLabel.color = .systemGreen
-//        case .pending:
-//            cell.statusLabel.text = "Pending"
-////            cell.statusLabel.color = .systemBlue
-//        case .declined:
-//            cell.statusLabel.text = "Declined"
-////            cell.statusLabel.color = .systemRed
-//        }
+
+        AvatarManager.loadAvatar(from: participant?.avatarURL, into: cell.profilePictureImageView)
 
         return cell
     }

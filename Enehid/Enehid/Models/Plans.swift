@@ -57,7 +57,7 @@ struct Plans {
 
         for (uid, username) in participants {
             let status = self.status(for: uid)
-            result[status, default: []].append(Participant(uid: uid, name: username))
+            result[status, default: []].append(Participant(uid: uid, name: username, avatarURL: nil))
         }
         return result
     }
@@ -67,6 +67,7 @@ struct Plans {
 struct Participant {
     let uid: String
     let name: String
+    let avatarURL: String?
 }
 
 
