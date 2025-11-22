@@ -10,4 +10,11 @@ import UIKit
 class SectionHeaderView: UICollectionReusableView {
         
     @IBOutlet weak var titleLabel: UILabel!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 10)
+        titleLabel.textColor = UIColor.darkGray
+    }
+
 }
