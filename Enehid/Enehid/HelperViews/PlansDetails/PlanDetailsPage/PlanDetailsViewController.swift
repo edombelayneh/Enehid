@@ -12,6 +12,7 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var activityNameLabel: UILabel!
     
+//    @IBOutlet weak var statusIcon: UIButton!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
@@ -36,13 +37,6 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
         //        timeLabel.text = plan?.date
         locationLabel.text = plan?.location
         
-//        
-//        collectionView.register(
-//            UINib(nibName: "SectionHeaderView", bundle: nil),
-//            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-//            withReuseIdentifier: "SectionHeaderView"
-//        )
-        
         
         
         // Do any additional setup after loading the view.
@@ -63,15 +57,6 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
      }
      */
     
-    //    func registerCollectionView() {
-    //        collectionView.register(
-    //            UINib(nibName: "ParticipantCell", bundle: nil),
-    //            forCellWithReuseIdentifier: "ParticipantCell"
-    //        )
-    //
-    //    }
-    
-    
     func setupParticipantsBySection() {
         guard let plan = plan else { return }
         
@@ -86,19 +71,19 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
     
     func createLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
-            let sectionType = ParticipantSection.allCases[sectionIndex]
+//            let sectionType = ParticipantSection.allCases[sectionIndex]
             
             // Item (ParticipantCell)
             let itemSize = NSCollectionLayoutSize(
-                widthDimension: .absolute(60),
+                widthDimension: .absolute(80),
                 heightDimension: .absolute(80)
             )
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
             
             // Group
             let groupSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .absolute(90)
+                widthDimension: .estimated(90),
+                heightDimension: .absolute(60)
             )
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
             group.interItemSpacing = .fixed(12)
@@ -110,7 +95,7 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
             // Header
             let headerSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
-                heightDimension: .estimated(30)
+                heightDimension: .estimated(10)
             )
             let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
                 layoutSize: headerSize,
@@ -118,6 +103,8 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
                 alignment: .top
             )
             
+            section.interGroupSpacing = 10
+            section.orthogonalScrollingBehavior = .continuous
             section.boundarySupplementaryItems = [sectionHeader]
             return section
         }
@@ -141,8 +128,22 @@ extension PlanDetailsViewController: UICollectionViewDataSource {
         let sectionType = ParticipantSection.allCases[indexPath.section]
         let participant = participantsBySection[sectionType]?[indexPath.row]
         
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ParticipantCell", for: indexPath) as! ParticipantCell
         cell.usernameLabel.text = participant?.name
+        
+//        switch sectionType {
+//        case .accepted:
+//            cell.statusLabel.text = "Accepted"
+////            cell.statusLabel.color = .systemGreen
+//        case .pending:
+//            cell.statusLabel.text = "Pending"
+////            cell.statusLabel.color = .systemBlue
+//        case .declined:
+//            cell.statusLabel.text = "Declined"
+////            cell.statusLabel.color = .systemRed
+//        }
+
         return cell
     }
     
@@ -169,9 +170,9 @@ enum ParticipantSection: Int, CaseIterable {
     
     var title: String {
         switch self {
-        case .accepted: return "Accepted"
-        case .pending: return "Pending"
-        case .declined: return "Declined"
+        case .accepted: return "ACCEPTED"
+        case .pending: return "PENDING"
+        case .declined: return "DECLINED"
         }
     }
 }
