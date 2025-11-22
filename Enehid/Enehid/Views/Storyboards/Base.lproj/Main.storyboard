@@ -3132,6 +3132,7 @@
                         <outlet property="collectionView" destination="eai-1X-wfi" id="Bek-BD-a8e"/>
                         <outlet property="dateLabel" destination="940-bL-mhi" id="dX5-mc-0Z5"/>
                         <outlet property="locationLabel" destination="X7H-eC-JB8" id="HtP-Jh-1qk"/>
+                        <outlet property="mapView" destination="Oq6-rD-8fU" id="cGv-33-N0s"/>
                         <outlet property="timeLabel" destination="KM0-X2-pzh" id="m7X-6j-GxG"/>
                     </connections>
                 </viewController>

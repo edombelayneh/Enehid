@@ -6,16 +6,17 @@
 //
 
 import UIKit
+import MapKit
 
 class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var activityNameLabel: UILabel!
-    
-//    @IBOutlet weak var statusIcon: UIButton!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
+    
+    @IBOutlet weak var mapView: MKMapView!
     
     var plan: Plans?
     var participantsBySection: [ParticipantSection: [Participant]] = [:]
@@ -31,19 +32,19 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
         collectionView.delegate = self
         
         activityNameLabel.text = plan?.activityName
-
+        
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-        inputFormatter.locale = Locale(identifier: "en_US_POSIX") // ensures consistency
-
+        inputFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
-
+        
         let timeFormatter = DateFormatter()
         timeFormatter.dateStyle = .none
         timeFormatter.timeStyle = .short
-
+        
         if let dateString = plan?.date, let dateObj = inputFormatter.date(from: dateString) {
             dateLabel.text = dateFormatter.string(from: dateObj) // e.g., "Nov 21, 2025"
             timeLabel.text = timeFormatter.string(from: dateObj) // e.g., "2:30 PM"
@@ -51,18 +52,25 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
             dateLabel.text = plan?.date
             timeLabel.text = ""
         }
-     
+        
         locationLabel.text = plan?.location
-        
-        
-        
+                
         // Do any additional setup after loading the view.
         collectionView.reloadData()
+        
+        collectionView.layer.cornerRadius = 16
+        collectionView.clipsToBounds = true
+        collectionView.layer.borderWidth = 1
+        collectionView.layer.borderColor = UIColor.systemGray4.cgColor
 
+        // Shadow
+        collectionView.layer.shadowColor = UIColor.black.cgColor
+        collectionView.layer.shadowOpacity = 0.15
+        collectionView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        collectionView.layer.shadowRadius = 8
+        setupMap()
+        
     }
-    
-    
-    
     
     /*
      // MARK: - Navigation
@@ -88,7 +96,7 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
     
     func createLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, _ in
-//            let sectionType = ParticipantSection.allCases[sectionIndex]
+            //            let sectionType = ParticipantSection.allCases[sectionIndex]
             
             // Item (ParticipantCell)
             let itemSize = NSCollectionLayoutSize(
@@ -127,6 +135,37 @@ class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
         }
     }
     
+    func setupMap() {
+        guard let plan = plan else { return }
+        
+        let location = CLLocationCoordinate2D(latitude: plan.lat, longitude: plan.lon)
+        
+        // Center the map
+        let region = MKCoordinateRegion(center: location,
+                                        span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        mapView.setRegion(region, animated: true)
+        
+        // Add a pin annotation
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = location
+        annotation.title = plan.location
+        mapView.addAnnotation(annotation)
+        
+        // Rounded corners
+        mapView.layer.cornerRadius = 16
+        mapView.clipsToBounds = true // Important for shadows to show
+
+        // Border
+        mapView.layer.borderWidth = 1
+        mapView.layer.borderColor = UIColor.systemGray4.cgColor
+
+        // Shadow
+        mapView.layer.shadowColor = UIColor.black.cgColor
+        mapView.layer.shadowOpacity = 0.4
+        mapView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        mapView.layer.shadowRadius = 8
+    }
+    
     
     
 }
@@ -148,9 +187,9 @@ extension PlanDetailsViewController: UICollectionViewDataSource {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ParticipantCell", for: indexPath) as! ParticipantCell
         cell.usernameLabel.text = participant?.name
-
+        
         AvatarManager.loadAvatar(from: participant?.avatarURL, into: cell.profilePictureImageView)
-
+        
         return cell
     }
     
