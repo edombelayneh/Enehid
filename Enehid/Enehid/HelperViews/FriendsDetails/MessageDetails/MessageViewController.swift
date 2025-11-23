@@ -62,12 +62,21 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         if let planId = currentPlanId {
             setupGroupChatTitleView(groupName: "Group Chat")
             startGroupChatListener(planId: planId)
+            
+            checkChatAccess(for: planId) { canSend in
+                DispatchQueue.main.async {
+                    self.inputBottomView.isHidden = !canSend
+                    if !canSend {
+                        self.showReadOnlyBanner() // optional helper function
+                    }
+                }
+            }
         } else if let user = recipientUser {
             setupTitleView(user: user)
             ensurePrivateChatExists(with: user)
             startPrivateChatListener(with: user)
         }
-
+        
         
     }
     
@@ -123,31 +132,98 @@ class MessageViewController: UIViewController, UITableViewDelegate {
      }
      */
     
+//    func sendMessage() {
+//        guard let text = messageField.text,
+//              !text.isEmpty,
+//              let user = Auth.auth().currentUser else { return }
+//        
+//        let messageData: [String: Any] = [
+//            "text": text,
+//            "senderId": user.uid,
+//            "username": user.displayName ?? "Unknown",
+//            "timestamp": FieldValue.serverTimestamp()
+//        ]
+//        
+//        if let planId = currentPlanId {
+//            // ✅ Sending to group chat
+//            let messageRef = db.collection("groupChats")
+//                .document(planId)
+//                .collection("messages")
+//                .document()
+//            
+//            messageRef.setData(messageData) { error in
+//                if let error = error {
+//                    print("❌ Error sending group message: \(error)")
+//                } else {
+//                    self.messageField.text = ""
+//                    
+//                    self.db.collection("groupChats")
+//                        .document(planId)
+//                        .updateData([
+//                            "lastMessage": [
+//                                "text": text,
+//                                "timestamp": FieldValue.serverTimestamp()
+//                            ]
+//                        ])
+//                }
+//            }
+//        } else if let friend = recipientUser {
+//            // ✅ Sending to private chat
+//            let chatId = privateChatId(with: friend.id)
+//            
+//            let messageRef = db.collection("privateChats")
+//                .document(chatId)
+//                .collection("messages")
+//                .document()
+//            
+//            messageRef.setData(messageData) { error in
+//                if let error = error {
+//                    print("❌ Error sending private message: \(error)")
+//                } else {
+//                    self.messageField.text = ""
+//                    
+//                    // Optional: store lastMessage in chat metadata if needed
+//                    self.db.collection("privateChats")
+//                        .document(chatId)
+//                        .updateData([
+//                            "lastMessage": [
+//                                "text": text,
+//                                "timestamp": FieldValue.serverTimestamp()
+//                            ]
+//                        ])
+//                }
+//            }
+//        }
+//    }
     func sendMessage() {
         guard let text = messageField.text,
               !text.isEmpty,
-              let user = Auth.auth().currentUser else { return }
+              let user = Auth.auth().currentUser,
+              let planId = currentPlanId else { return }
         
-        let messageData: [String: Any] = [
-            "text": text,
-            "senderId": user.uid,
-            "username": user.displayName ?? "Unknown",
-            "timestamp": FieldValue.serverTimestamp()
-        ]
-        
-        if let planId = currentPlanId {
-            // ✅ Sending to group chat
-            let messageRef = db.collection("groupChats")
+        checkChatAccess(for: planId) { canSend in
+            guard canSend else {
+                print("❌ User is not allowed to send messages")
+                return
+            }
+
+            let messageData: [String: Any] = [
+                "text": text,
+                "senderId": user.uid,
+                "username": user.displayName ?? "Unknown",
+                "timestamp": FieldValue.serverTimestamp()
+            ]
+
+            let messageRef = self.db.collection("groupChats")
                 .document(planId)
                 .collection("messages")
                 .document()
-            
+
             messageRef.setData(messageData) { error in
                 if let error = error {
                     print("❌ Error sending group message: \(error)")
                 } else {
                     self.messageField.text = ""
-                    
                     self.db.collection("groupChats")
                         .document(planId)
                         .updateData([
@@ -158,32 +234,27 @@ class MessageViewController: UIViewController, UITableViewDelegate {
                         ])
                 }
             }
-        } else if let friend = recipientUser {
-            // ✅ Sending to private chat
-            let chatId = privateChatId(with: friend.id)
-            
-            let messageRef = db.collection("privateChats")
-                .document(chatId)
-                .collection("messages")
-                .document()
-            
-            messageRef.setData(messageData) { error in
-                if let error = error {
-                    print("❌ Error sending private message: \(error)")
-                } else {
-                    self.messageField.text = ""
-                    
-                    // Optional: store lastMessage in chat metadata if needed
-                    self.db.collection("privateChats")
-                        .document(chatId)
-                        .updateData([
-                            "lastMessage": [
-                                "text": text,
-                                "timestamp": FieldValue.serverTimestamp()
-                            ]
-                        ])
-                }
+        }
+    }
+
+    
+    func checkChatAccess(for planId: String, completion: @escaping (Bool) -> Void) {
+        let db = Firestore.firestore()
+        guard let uid = Auth.auth().currentUser?.uid else {
+            completion(false)
+            return
+        }
+        
+        let chatRef = db.collection("groupChats").document(planId)
+        chatRef.getDocument { snapshot, error in
+            guard let data = snapshot?.data(),
+                  let participants = data["participants"] as? [String: [String: Any]],
+                  let status = participants[uid]?["status"] as? String else {
+                completion(false) // fallback to read-only
+                return
             }
+            
+            completion(status == "accepted") // true if they can send messages
         }
     }
     
@@ -318,39 +389,39 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         listener?.remove()
     }
     
-//    func setupTitleView(user: User) {
-//        let titleView = UIStackView()
-//        titleView.axis = .horizontal
-//        titleView.spacing = 8
-//        
-//        let imageView = UIImageView()
-//        imageView.image = UIImage(named: "placeholder")  // Load from URL if available
-//        imageView.layer.cornerRadius = 15
-//        imageView.clipsToBounds = true
-//        imageView.contentMode = .scaleAspectFill
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        imageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
-//        imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
-//        
-//        let label = UILabel()
-//        label.text = user.username
-//        label.font = UIFont.boldSystemFont(ofSize: 17)
-//        
-//        titleView.addArrangedSubview(imageView)
-//        titleView.addArrangedSubview(label)
-//        
-//        navigationItem.titleView = titleView
-//    }
+    //    func setupTitleView(user: User) {
+    //        let titleView = UIStackView()
+    //        titleView.axis = .horizontal
+    //        titleView.spacing = 8
+    //
+    //        let imageView = UIImageView()
+    //        imageView.image = UIImage(named: "placeholder")  // Load from URL if available
+    //        imageView.layer.cornerRadius = 15
+    //        imageView.clipsToBounds = true
+    //        imageView.contentMode = .scaleAspectFill
+    //        imageView.translatesAutoresizingMaskIntoConstraints = false
+    //        imageView.widthAnchor.constraint(equalToConstant: 30).isActive = true
+    //        imageView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+    //
+    //        let label = UILabel()
+    //        label.text = user.username
+    //        label.font = UIFont.boldSystemFont(ofSize: 17)
+    //
+    //        titleView.addArrangedSubview(imageView)
+    //        titleView.addArrangedSubview(label)
+    //
+    //        navigationItem.titleView = titleView
+    //    }
     
     func setupTitleView(user: User) {
         let container = UIView()
-
+        
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 8
         stackView.alignment = .center
         stackView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         let imageView = UIImageView()
         imageView.layer.cornerRadius = 17
         imageView.clipsToBounds = true
@@ -358,36 +429,36 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
-
+        
         AvatarManager.loadAvatar(from: user.profilePictureURL, into: imageView, cropToFace: true)
-
+        
         let label = UILabel()
         label.text = user.username
         label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         label.textColor = .label
-
+        
         stackView.addArrangedSubview(imageView)
         stackView.addArrangedSubview(label)
-
+        
         container.addSubview(stackView)
-
+        
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: container.centerYAnchor)
         ])
-
+        
         navigationItem.titleView = container
     }
     
     func setupGroupChatTitleView(groupName: String?) {
         let container = UIView()
-
+        
         let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.spacing = 8
         stackView.alignment = .center
         stackView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "person.3")
         imageView.tintColor = .gray
@@ -395,26 +466,48 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
-
+        
         let label = UILabel()
         label.text = groupName ?? "Group Chat"
         label.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         label.textColor = .label
-
+        
         stackView.addArrangedSubview(imageView)
         stackView.addArrangedSubview(label)
-
+        
         container.addSubview(stackView)
-
+        
         NSLayoutConstraint.activate([
             stackView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
             stackView.centerYAnchor.constraint(equalTo: container.centerYAnchor)
         ])
-
+        
         navigationItem.titleView = container
     }
+    
+    func showReadOnlyBanner() {
+        let banner = UILabel()
+        banner.text = "You haven't accepted this plan yet. Join to chat."
+        banner.font = UIFont.systemFont(ofSize: 13)
+        banner.textAlignment = .center
+        banner.textColor = .white
+        banner.backgroundColor = .systemOrange
+        banner.layer.cornerRadius = 6
+        banner.layer.masksToBounds = true
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(banner)
+        
+        NSLayoutConstraint.activate([
+            banner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            banner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            banner.bottomAnchor.constraint(equalTo: inputBottomView.topAnchor, constant: -8),
+            banner.heightAnchor.constraint(equalToConstant: 32)
+        ])
+    }
 
-
+    
+    
 }
 
 extension MessageViewController: UITableViewDataSource {
@@ -434,11 +527,11 @@ extension MessageViewController: UITableViewDataSource {
             currentUserId: currentUID,
             senderAvatarURL: message.senderId != currentUID ? recipientUser?.profilePictureURL : nil
         )
-
+        
         return cell
     }
-
-
+    
+    
 }
 
 

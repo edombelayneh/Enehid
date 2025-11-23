@@ -193,22 +193,47 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
                 }
             }
             
-            // After plan creation succeeds
-            let chatRef = db.collection("groupChats").document()
-            var participantStatusMap: [String: [String: String]] = [:]
+            // ✅ Create group chat for this plan
+            let groupChatRef = db.collection("groupChats").document(planId) // use same ID as plan
+            var groupChatParticipants: [String: [String: Any]] = [:]
 
             for (uid, username) in fullParticipants {
-                let status = (uid == currentUID) ? "accepted" : "invited"
-                participantStatusMap[uid] = [
+                groupChatParticipants[uid] = [
                     "username": username,
-                    "status": status
+                    "status": uid == currentUID ? "accepted" : "invited"
                 ]
             }
 
-            chatRef.setData([
+            let groupChatData: [String: Any] = [
                 "planId": planId,
-                "participants": participantStatusMap
-            ])
+                "createdAt": Timestamp(date: Date()),
+                "participants": groupChatParticipants
+            ]
+
+            groupChatRef.setData(groupChatData) { error in
+                if let error = error {
+                    print("❌ Failed to create group chat: \(error)")
+                } else {
+                    print("✅ Group chat created!")
+                }
+            }
+            
+            // After plan creation succeeds
+//            let chatRef = db.collection("groupChats").document()
+//            var participantStatusMap: [String: [String: String]] = [:]
+//
+//            for (uid, username) in fullParticipants {
+//                let status = (uid == currentUID) ? "accepted" : "invited"
+//                participantStatusMap[uid] = [
+//                    "username": username,
+//                    "status": status
+//                ]
+//            }
+//
+//            chatRef.setData([
+//                "planId": planId,
+//                "participants": participantStatusMap
+//            ])
 
         }
         
