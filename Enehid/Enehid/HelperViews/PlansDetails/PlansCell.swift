@@ -57,7 +57,6 @@ class PlanCell: UITableViewCell {
             shadowView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             shadowView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
         ])
-
         
         activityLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         locationLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
@@ -66,7 +65,6 @@ class PlanCell: UITableViewCell {
         createdByLabel.textColor = .purple
         waitingLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         waitingLabel.textColor = .gray
-
 
         acceptButton.setTitle("✓", for: .normal)
         acceptButton.setTitleColor(.systemGreen, for: .normal)
@@ -81,13 +79,7 @@ class PlanCell: UITableViewCell {
         declineButton.backgroundColor = UIColor.systemRed.withAlphaComponent(0.1)
         declineButton.layer.cornerRadius = 16
         declineButton.addTarget(self, action: #selector(didTapDecline), for: .touchUpInside)
-        
-//
-//        acceptButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
-//        acceptButton.heightAnchor.constraint(equalToConstant: 32).isActive = true
-//        declineButton.widthAnchor.constraint(equalToConstant: 32).isActive = true
-//        declineButton.heightAnchor.constraint(equalToConstant: 32).isActive = true
-
+    
         acceptButton.translatesAutoresizingMaskIntoConstraints = false
         declineButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -97,9 +89,9 @@ class PlanCell: UITableViewCell {
             declineButton.heightAnchor.constraint(equalToConstant: 32),
         ])
 
-
         buttonStack.axis = .vertical
-        buttonStack.alignment = .center
+//        buttonStack.alignment = .center
+        buttonStack.alignment = .trailing
         buttonStack.spacing = 10
         buttonStack.addArrangedSubview(acceptButton)
         buttonStack.addArrangedSubview(declineButton)
@@ -108,13 +100,32 @@ class PlanCell: UITableViewCell {
         textStack.axis = .vertical
         textStack.spacing = 6
 
+//        mainStack.axis = .horizontal
+//        mainStack.spacing = 24
+//        mainStack.alignment = .center
+//        mainStack.translatesAutoresizingMaskIntoConstraints = false
+//        mainStack.addArrangedSubview(textStack)
+//        mainStack.addArrangedSubview(buttonStack)
+        
+        // Wrap buttonStack in a right-aligned container
+        let buttonContainer = UIView()
+        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
+        buttonContainer.addSubview(buttonStack)
+
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            buttonStack.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
+            buttonStack.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor),
+            buttonStack.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor)
+        ])
+
         mainStack.axis = .horizontal
-        mainStack.spacing = 24
+        mainStack.spacing = 12
         mainStack.alignment = .center
         mainStack.translatesAutoresizingMaskIntoConstraints = false
-
         mainStack.addArrangedSubview(textStack)
-        mainStack.addArrangedSubview(buttonStack)
+        mainStack.addArrangedSubview(buttonContainer)
+
 
         contentView.addSubview(mainStack)
         NSLayoutConstraint.activate([
@@ -150,9 +161,11 @@ class PlanCell: UITableViewCell {
                 waitingLabel.text = "Waiting For Friends"
             } else if declined {
                 waitingLabel.text = "You declined"
+                waitingLabel.textColor = .red
                 acceptButton.isHidden = false
             } else {
                 waitingLabel.text = "Waiting for you"
+                waitingLabel.textColor = .blue
                 acceptButton.isHidden = false
                 declineButton.isHidden = false
             }
