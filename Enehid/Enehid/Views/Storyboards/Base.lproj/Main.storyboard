@@ -820,6 +820,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" name="CreamBackground"/>
                                         <connections>
+                                            <outlet property="messagePreviewLabel" destination="Bvt-Bi-4SM" id="jKk-Lt-aQf"/>
                                             <outlet property="profilePicture" destination="qVq-1b-1uI" id="tTe-Iy-yaP"/>
                                             <outlet property="usernameLabel" destination="d1u-we-dh8" id="QpW-cO-Ocz"/>
                                         </connections>

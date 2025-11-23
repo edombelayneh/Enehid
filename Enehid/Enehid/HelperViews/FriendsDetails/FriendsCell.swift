@@ -11,6 +11,7 @@ class FriendsCell: UITableViewCell {
 
     @IBOutlet weak var profilePicture: UIImageView!
     
+    @IBOutlet weak var messagePreviewLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
 
 }

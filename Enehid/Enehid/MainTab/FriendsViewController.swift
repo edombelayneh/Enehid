@@ -61,55 +61,42 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
 //
 //            var groupPreviews: [GroupChatPreview] = []
 //            let group = DispatchGroup()
-//            
+//
 //            for doc in documents {
 //                let planId = doc.documentID
 //                group.enter()
-//                
+//
 //                self.db.collection("groupChats")
 //                    .document(planId)
 //                    .getDocument { chatSnapshot, error in
+//                        defer { group.leave() }
+//
 //                        guard let chatData = chatSnapshot?.data(),
 //                              let participants = chatData["participants"] as? [String: Any],
-//                              let currentUser = Auth.auth().currentUser?.uid,
-//                              let participantInfo = participants[currentUser] as? [String: Any],
+//                              let participantInfo = participants[uid] as? [String: Any],
 //                              let status = participantInfo["status"] as? String else {
 //                            print("⚠️ Could not find participant status for planId: \(planId)")
-//                            group.leave()
 //                            return
 //                        }
 //
-//                        self.db.collection("groupChats")
-//                            .document(planId)
-//                            .collection("messages")
-//                            .order(by: "timestamp", descending: true)
-//                            .limit(to: 1)
-//                            .getDocuments { messageSnapshot, error in
-//                                defer { group.leave() }
+//                        // Optional fields
+//                        let lastMessage = (chatData["lastMessage"] as? [String: Any])?["text"] as? String ?? ""
+//                        let groupName = chatData["activityName"] as? String ?? "Group Chat"
 //
-//                                guard let messageDoc = messageSnapshot?.documents.first,
-//                                      let data = messageDoc.data() as? [String: Any],
-//                                      let text = data["text"] as? String,
-//                                      let timestamp = data["timestamp"] as? Timestamp else {
-//                                    print("⚠️ No last message found for group \(planId)")
-//                                    return
-//                                }
+//                        let preview = GroupChatPreview(
+//                            planId: planId,
+//                            lastMessageText: lastMessage,
+//                            timestamp: Timestamp(), // Not used for now, default
+//                            groupName: groupName,
+//                            role: status
+//                        )
 //
-//                                let preview = GroupChatPreview(
-//                                    planId: planId,
-//                                    lastMessageText: text,
-//                                    timestamp: timestamp,
-//                                    groupName: "Group Chat",
-//                                    role: status
-//                                )
-//
-//                                groupPreviews.append(preview)
-//                            }
+//                        groupPreviews.append(preview)
 //                    }
 //            }
 //
 //            group.notify(queue: .main) {
-//                completion(groupPreviews.sorted(by: { $0.timestamp.dateValue() > $1.timestamp.dateValue() }))
+//                completion(groupPreviews)
 //            }
 //        }
 //    }
@@ -134,6 +121,8 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
 
             for doc in documents {
                 let planId = doc.documentID
+                let activityName = doc.data()["activityName"] as? String ?? "Group Chat"
+
                 group.enter()
 
                 self.db.collection("groupChats")
@@ -149,11 +138,16 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
                             return
                         }
 
+                        var lastMessage = (chatData["lastMessage"] as? [String: Any])?["text"] as? String ?? ""
+                        if lastMessage == "" {
+                            lastMessage = "Start a conversation with your friends!"
+                        }
+
                         let preview = GroupChatPreview(
                             planId: planId,
-                            lastMessageText: "", // not used anymore
-                            timestamp: Timestamp(), // default
-                            groupName: "Group Chat", // placeholder, customize later
+                            lastMessageText: lastMessage,
+                            timestamp: Timestamp(), // optional
+                            groupName: activityName,
                             role: status
                         )
 
@@ -166,6 +160,7 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
             }
         }
     }
+
 
 
     
@@ -224,91 +219,46 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
 }
 
 extension FriendsViewController: UITableViewDataSource {
-    
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return friends.count
-//    }
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let friend = friends[indexPath.row]
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
-//        cell.usernameLabel.text = friend.username
-//        
-//        AvatarManager.loadAvatar(from: friend.profilePictureURL, into: cell.profilePicture, cropToFace: true)
-//        
-//        return cell
-//    }
-//    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let friend = friends[indexPath.row]
-//        let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
-//        chatVC.recipientUser = friend
-//        navigationController?.pushViewController(chatVC, animated: true)
-//    }
-    
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2 // Section 0: Friends, Section 1: Group Chats
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? friends.count : groupPreviews.count
+        return section == 0 ? groupPreviews.count : friends.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
+        if indexPath.section == 1 {
             let friend = friends[indexPath.row]
             let cell = tableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
             cell.usernameLabel.text = friend.username
+//            cell.messagePreviewLabel.text = friend.
             AvatarManager.loadAvatar(from: friend.profilePictureURL, into: cell.profilePicture, cropToFace: true)
             return cell
         } else {
-//            let chat = groupPreviews[indexPath.row]
-//            let cell = tableView.dequeueReusableCell(withIdentifier: "GroupChatCell", for: indexPath)
-//            cell.textLabel?.text = chat.groupName
-//            cell.detailTextLabel?.text = chat.lastMessageText
-//            
-//            // Gray out if not accepted
-//            if chat.role == "invited" {
-//                cell.textLabel?.textColor = .gray
-//                cell.detailTextLabel?.text = "Tap to Accept Invitation"
-//            } else {
-//                cell.textLabel?.textColor = .label
-//            }
-//            return cell
             let chat = groupPreviews[indexPath.row]
-            let cell = tableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
 
             // Title
-            cell.textLabel?.text = chat.groupName
+            cell.usernameLabel.text = chat.groupName
 
             // Subtitle (optional)
-            cell.detailTextLabel?.text = chat.role == "invited" ? "Tap to accept invite" : "Tap to open chat"
+            cell.messagePreviewLabel.text = chat.role == "invited" ? "Tap to accept invite" : chat.lastMessageText
 
             // Gray out text if not accepted
-            cell.textLabel?.textColor = chat.role == "accepted" ? .label : .gray
+            cell.usernameLabel?.textColor = chat.role == "accepted" ? .label : .gray
             return cell
         }
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0 {
+        if indexPath.section == 1 {
             let friend = friends[indexPath.row]
             let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
             chatVC.recipientUser = friend
             navigationController?.pushViewController(chatVC, animated: true)
         } else {
             let preview = groupPreviews[indexPath.row]
-
-//            if preview.role == "accepted" {
-//                let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
-//                chatVC.currentPlanId = preview.planId
-//                navigationController?.pushViewController(chatVC, animated: true)
-//            } else {
-//                // Show alert or custom action
-//                let alert = UIAlertController(title: "Pending Invitation", message: "You have been invited to this group chat. Accept the invite to participate.", preferredStyle: .alert)
-//                alert.addAction(UIAlertAction(title: "OK", style: .default))
-//                present(alert, animated: true)
-//            }
             if preview.role == "accepted" {
                 let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
                 chatVC.currentPlanId = preview.planId
@@ -324,7 +274,7 @@ extension FriendsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return section == 0 ? "Friends" : "Group Chats"
+        return section == 0 ? "GROUP CHATS" : "FRIENDS"
     }
 
     
