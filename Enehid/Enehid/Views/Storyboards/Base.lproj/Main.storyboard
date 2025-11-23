@@ -1510,14 +1510,14 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="PlansVC" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="H4S-Qn-7L6">
-                                <rect key="frame" x="0.0" y="158" width="393" height="694"/>
+                                <rect key="frame" x="15" y="158" width="363" height="694"/>
                                 <color key="backgroundColor" name="CreamBackground"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PlanInviteeCell" rowHeight="75" id="oUG-QK-XTG" customClass="PlansCell" customModule="Enehid" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="50" width="393" height="75"/>
+                                        <rect key="frame" x="0.0" y="50" width="363" height="75"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="oUG-QK-XTG" id="lVr-46-8WZ">
-                                            <rect key="frame" x="0.0" y="0.0" width="393" height="75"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="363" height="75"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="16i-6d-d3t">
@@ -1529,13 +1529,13 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Activity Name Here" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="R8q-mQ-7gD">
-                                                    <rect key="frame" x="98" y="11" width="195" height="21"/>
+                                                    <rect key="frame" x="98" y="11" width="165" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                                     <color key="textColor" name="PrimaryColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fabiano Gardens" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hIo-AZ-Ghe">
-                                                    <rect key="frame" x="113" y="33" width="210" height="18"/>
+                                                    <rect key="frame" x="113" y="33" width="180" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" name="TextSecondary"/>
                                                     <nil key="highlightedColor"/>
@@ -1551,17 +1551,17 @@
                                                     <color key="textColor" name="TextButton"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="Nov 21, 2025" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SLi-M7-A8Q">
-                                                    <rect key="frame" x="131" y="52" width="93" height="18"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" ambiguous="YES" text="Nov 21, 2025" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SLi-M7-A8Q">
+                                                    <rect key="frame" x="131" y="52" width="0.0" height="18"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" name="TextSecondary"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="JzH-dn-xF2">
-                                                    <rect key="frame" x="284" y="52" width="104" height="19"/>
+                                                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JzH-dn-xF2">
+                                                    <rect key="frame" x="-15" y="52" width="10" height="19"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="253" verticalHuggingPriority="251" text="Waiting For Friends" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rn5-OQ-noP">
-                                                            <rect key="frame" x="5" y="4" width="94" height="11"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="253" verticalHuggingPriority="251" ambiguous="YES" text="Waiting For Friends" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rn5-OQ-noP">
+                                                            <rect key="frame" x="5" y="4" width="0.0" height="11"/>
                                                             <color key="backgroundColor" name="CreamBackground"/>
                                                             <color key="tintColor" systemColor="systemIndigoColor"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="10"/>
@@ -1625,9 +1625,9 @@
                             <constraint firstItem="lvn-6Q-FLM" firstAttribute="top" secondItem="Aga-ZQ-WMB" secondAttribute="top" constant="100" id="0wM-jz-CW7"/>
                             <constraint firstItem="2V5-Nd-UX8" firstAttribute="trailing" secondItem="lvn-6Q-FLM" secondAttribute="trailing" constant="159" id="Djv-qv-CWz"/>
                             <constraint firstAttribute="bottom" secondItem="H4S-Qn-7L6" secondAttribute="bottom" id="IGL-6D-2Wt"/>
-                            <constraint firstItem="H4S-Qn-7L6" firstAttribute="trailing" secondItem="2V5-Nd-UX8" secondAttribute="trailing" id="Q52-GW-ksl"/>
                             <constraint firstItem="lvn-6Q-FLM" firstAttribute="leading" secondItem="2V5-Nd-UX8" secondAttribute="leading" constant="159" id="TKH-zA-6kQ"/>
-                            <constraint firstItem="H4S-Qn-7L6" firstAttribute="leading" secondItem="2V5-Nd-UX8" secondAttribute="leading" id="qom-Ud-p5y"/>
+                            <constraint firstItem="H4S-Qn-7L6" firstAttribute="leading" secondItem="2V5-Nd-UX8" secondAttribute="leading" constant="15" id="VuF-6D-aSN"/>
+                            <constraint firstItem="2V5-Nd-UX8" firstAttribute="trailing" secondItem="H4S-Qn-7L6" secondAttribute="trailing" constant="15" id="iAd-TX-Rjp"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" leftItemsSupplementBackButton="YES" id="GR1-E6-HOG">

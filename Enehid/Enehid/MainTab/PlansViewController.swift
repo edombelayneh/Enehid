@@ -21,8 +21,12 @@ class PlansViewController: UIViewController, UITableViewDelegate {
         plansTableView.delegate = self
         plansTableView.dataSource = self
         // Do any additional setup after loading the view.
+        plansTableView.sectionHeaderHeight = 20
+//        plansTableView.separatorStyle = .none
+//        plansTableView.backgroundColor = UIColor.systemGroupedBackground
+        plansTableView.contentInset.bottom = 20
         plansTableView.register(PlanCell.self, forCellReuseIdentifier: "PlanCell")
-
+       
         fetchPlans{ plansUpdate in
             self.plans = plansUpdate
             self.plansTableView.reloadData()
@@ -180,6 +184,29 @@ extension PlansViewController: UITableViewDataSource {
         detailVC.modalPresentationStyle = .pageSheet
         present(detailVC, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 140 // Estimate based on your card size + desired padding
+    }
+
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let spacing: CGFloat = 15
+        let insets = UIEdgeInsets(top: spacing, left: 16, bottom: spacing, right: 16)
+        cell.contentView.frame = cell.contentView.frame.inset(by: insets)
+
+        cell.contentView.layer.cornerRadius = 16
+        cell.contentView.layer.masksToBounds = true
+        cell.backgroundColor = .clear
+    }
+
+    
+
+
     
     func handleResponse(to plan: Plans, accept: Bool) {
         guard let uid = Auth.auth().currentUser?.uid else { return }

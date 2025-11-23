@@ -1,67 +1,8 @@
-////
-////  PlansCell.swift
-////  Enehid
-////
-////  Created by Edom Belayneh on 9/26/25.
-////
 //
-//import UIKit
+//  PlansCell.swift
+//  Enehid
 //
-//class PlansCell: UITableViewCell {
-//
-//    
-//    @IBOutlet weak var ownerControlsView: UIView?
-//    @IBOutlet weak var inviteeStatusView: UIView?
-//    @IBOutlet weak var waitingLabel: UILabel?
-//    @IBOutlet weak var declineButton: UIButton?
-//    @IBOutlet weak var acceptButton: UIButton?
-//    
-//    
-////    @IBOutlet weak var profileUIImageVIew: UIImageView!
-//    @IBOutlet weak var createdBy: UILabel!
-//    @IBOutlet weak var dateLabel: UILabel!
-//    @IBOutlet weak var locationLabel: UILabel!
-//    @IBOutlet weak var activityNameLabel: UILabel!
-//    
-//    var onAccept: (() -> Void)?
-//    var onDecline: (() -> Void)?
-//    
-//    override func prepareForReuse() {
-//        super.prepareForReuse()
-//        
-//        ownerControlsView?.isHidden = true
-//        inviteeStatusView?.isHidden = true
-//        
-//        acceptButton?.isHidden = true
-//        declineButton?.isHidden = true
-//        
-//        waitingLabel?.text = nil
-//        onAccept = nil
-//        onDecline = nil
-//    }
-//
-//
-//    @IBAction func didTapAcceptButton(_ sender: UIButton) {
-//        print("✅ accept tapped")
-//        onAccept?()
-//    }
-// 
-//    @IBAction func didTapDeclineButton(_ sender: UIButton) {
-//        print("❌ decline tapped")
-//        onDecline?()
-//    }
-//    override func awakeFromNib() {
-//        super.awakeFromNib()
-//        // Initialization code
-//    }
-//
-//    override func setSelected(_ selected: Bool, animated: Bool) {
-//        super.setSelected(selected, animated: animated)
-//
-//        // Configure the view for the selected state
-//    }
-//
-//}
+//  Created by Edom Belayneh on 9/26/25.
 
 import UIKit
 
@@ -95,38 +36,96 @@ class PlanCell: UITableViewCell {
 
     // MARK: - UI Setup
     private func setupUI() {
-        activityLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        locationLabel.font = UIFont.systemFont(ofSize: 14)
-        dateLabel.font = UIFont.systemFont(ofSize: 14)
-        createdByLabel.font = UIFont.systemFont(ofSize: 12)
+        backgroundColor = .clear
+        contentView.backgroundColor = .white
+        contentView.layer.cornerRadius = 20
+        contentView.layer.masksToBounds = true
+
+        let shadowView = UIView()
+        shadowView.backgroundColor = .clear
+        shadowView.layer.shadowColor = UIColor.black.cgColor
+        shadowView.layer.shadowOpacity = 0.05
+        shadowView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        shadowView.layer.shadowRadius = 6
+        shadowView.layer.cornerRadius = 29
+        shadowView.translatesAutoresizingMaskIntoConstraints = false
+
+        insertSubview(shadowView, belowSubview: contentView)
+        NSLayoutConstraint.activate([
+            shadowView.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            shadowView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
+            shadowView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            shadowView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+        ])
+        
+        activityLabel.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        locationLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        dateLabel.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+        createdByLabel.font = UIFont.systemFont(ofSize: 13, weight: .medium)
         createdByLabel.textColor = .purple
-        waitingLabel.font = UIFont.systemFont(ofSize: 13)
+        waitingLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         waitingLabel.textColor = .gray
 
         acceptButton.setTitle("✓", for: .normal)
         acceptButton.setTitleColor(.systemGreen, for: .normal)
+        acceptButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        acceptButton.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.1)
+        acceptButton.layer.cornerRadius = 16
         acceptButton.addTarget(self, action: #selector(didTapAccept), for: .touchUpInside)
 
         declineButton.setTitle("✗", for: .normal)
         declineButton.setTitleColor(.systemRed, for: .normal)
+        declineButton.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        declineButton.backgroundColor = UIColor.systemRed.withAlphaComponent(0.1)
+        declineButton.layer.cornerRadius = 16
         declineButton.addTarget(self, action: #selector(didTapDecline), for: .touchUpInside)
+    
+        acceptButton.translatesAutoresizingMaskIntoConstraints = false
+        declineButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            acceptButton.widthAnchor.constraint(equalToConstant: 32),
+            acceptButton.heightAnchor.constraint(equalToConstant: 32),
+            declineButton.widthAnchor.constraint(equalToConstant: 32),
+            declineButton.heightAnchor.constraint(equalToConstant: 32),
+        ])
 
-        buttonStack.axis = .horizontal
+        buttonStack.axis = .vertical
+//        buttonStack.alignment = .center
+        buttonStack.alignment = .trailing
         buttonStack.spacing = 10
         buttonStack.addArrangedSubview(acceptButton)
         buttonStack.addArrangedSubview(declineButton)
 
         let textStack = UIStackView(arrangedSubviews: [activityLabel, locationLabel, dateLabel, createdByLabel, waitingLabel])
         textStack.axis = .vertical
-        textStack.spacing = 4
+        textStack.spacing = 6
+
+//        mainStack.axis = .horizontal
+//        mainStack.spacing = 24
+//        mainStack.alignment = .center
+//        mainStack.translatesAutoresizingMaskIntoConstraints = false
+//        mainStack.addArrangedSubview(textStack)
+//        mainStack.addArrangedSubview(buttonStack)
+        
+        // Wrap buttonStack in a right-aligned container
+        let buttonContainer = UIView()
+        buttonContainer.translatesAutoresizingMaskIntoConstraints = false
+        buttonContainer.addSubview(buttonStack)
+
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            buttonStack.topAnchor.constraint(equalTo: buttonContainer.topAnchor),
+            buttonStack.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor),
+            buttonStack.bottomAnchor.constraint(equalTo: buttonContainer.bottomAnchor)
+        ])
 
         mainStack.axis = .horizontal
-        mainStack.spacing = 16
+        mainStack.spacing = 12
         mainStack.alignment = .center
         mainStack.translatesAutoresizingMaskIntoConstraints = false
-
         mainStack.addArrangedSubview(textStack)
-        mainStack.addArrangedSubview(buttonStack)
+        mainStack.addArrangedSubview(buttonContainer)
+
 
         contentView.addSubview(mainStack)
         NSLayoutConstraint.activate([
@@ -162,9 +161,11 @@ class PlanCell: UITableViewCell {
                 waitingLabel.text = "Waiting For Friends"
             } else if declined {
                 waitingLabel.text = "You declined"
+                waitingLabel.textColor = .red
                 acceptButton.isHidden = false
             } else {
                 waitingLabel.text = "Waiting for you"
+                waitingLabel.textColor = .blue
                 acceptButton.isHidden = false
                 declineButton.isHidden = false
             }
