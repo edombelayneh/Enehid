@@ -22,11 +22,11 @@ class PlansViewController: UIViewController, UITableViewDelegate {
         plansTableView.dataSource = self
         // Do any additional setup after loading the view.
         plansTableView.sectionHeaderHeight = 20
-//        plansTableView.separatorStyle = .none
-//        plansTableView.backgroundColor = UIColor.systemGroupedBackground
+        //        plansTableView.separatorStyle = .none
+        //        plansTableView.backgroundColor = UIColor.systemGroupedBackground
         plansTableView.contentInset.bottom = 20
         plansTableView.register(PlanCell.self, forCellReuseIdentifier: "PlanCell")
-       
+        
         fetchPlans{ plansUpdate in
             self.plans = plansUpdate
             self.plansTableView.reloadData()
@@ -129,8 +129,8 @@ extension PlansViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let currentUserID = Auth.auth().currentUser?.uid ?? ""
         let plan = plans[indexPath.row]
-//        let id = plan.createdByIsMe ? "PlanOwnerCell" : "PlanInviteeCell"
-//        let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! PlansCell
+        //        let id = plan.createdByIsMe ? "PlanOwnerCell" : "PlanInviteeCell"
+        //        let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! PlansCell
         let cell = tableView.dequeueReusableCell(withIdentifier: "PlanCell", for: indexPath) as! PlanCell
         let currentUserId = Auth.auth().currentUser?.uid ?? ""
         cell.configure(with: plan, currentUserId: currentUserId)
@@ -140,25 +140,25 @@ extension PlansViewController: UITableViewDataSource {
         cell.onDecline = { [weak self] in
             self?.handleResponse(to: plan, accept: false)
         }
-
+        
         // ✅ Always set these core labels
         cell.activityLabel.text = plan.activityName
         cell.locationLabel.text     = plan.location
         
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-
+        
         let outputFormatter = DateFormatter()
         outputFormatter.dateStyle = .medium  // e.g., "Nov 21, 2025"
         outputFormatter.timeStyle = .none
-
+        
         if let dateObj = inputFormatter.date(from: plan.date) {
             cell.dateLabel.text = outputFormatter.string(from: dateObj)
         } else {
             cell.dateLabel.text = plan.date // fallback if parsing fails
         }
-
-
+        
+        
         // ✅ Show who scheduled it
         if plan.createdByIsMe {
             cell.createdByLabel.text = "Scheduled by You"
@@ -171,10 +171,10 @@ extension PlansViewController: UITableViewDataSource {
             }
         }
         
-
+        
         return cell
     }
-
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let plan = plans[indexPath.row]
@@ -188,60 +188,97 @@ extension PlansViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
-
+    
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return 140 // Estimate based on your card size + desired padding
     }
-
+    
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let spacing: CGFloat = 15
         let insets = UIEdgeInsets(top: spacing, left: 16, bottom: spacing, right: 16)
         cell.contentView.frame = cell.contentView.frame.inset(by: insets)
-
+        
         cell.contentView.layer.cornerRadius = 16
         cell.contentView.layer.masksToBounds = true
         cell.backgroundColor = .clear
     }
-
     
-
-
+    
+    
+    
     
     func handleResponse(to plan: Plans, accept: Bool) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
-
+        
         let db = Firestore.firestore()
-
+        
         // Update central plans collection
         let planRef = db.collection("plans").document(plan.id)
         let fieldToUpdate = accept ? "acceptedByIDs" : "declinedByIDs"
         let oppositeField = accept ? "declinedByIDs" : "acceptedByIDs"
-
+        
         let batch = db.batch()
         batch.updateData([
             fieldToUpdate: FieldValue.arrayUnion([uid]),
             oppositeField: FieldValue.arrayRemove([uid])
         ], forDocument: planRef)
-
+        
         // Update user's own subcollection
         let userPlanRef = db.collection("users").document(uid).collection("plans").document(plan.id)
         batch.updateData([
             "status": accept ? "accepted" : "declined"
         ], forDocument: userPlanRef)
-
+        
+        //        batch.commit { error in
+        //            if let error = error {
+        //                print("❌ Failed to update response: \(error)")
+        //            } else {
+        //                print("✅ Updated response")
+        //                self.fetchPlans { updated in
+        //                    self.plans = updated
+        //                    self.plansTableView.reloadData()
+        //                }
+        //            }
+        //        }
+        // 🟡 After batch.commit in handleResponse:
         batch.commit { error in
             if let error = error {
                 print("❌ Failed to update response: \(error)")
             } else {
-                print("✅ Updated response")
+                print("✅ Updated plan response")
+                
+                // 🔽 NEW: Update participant status in groupChat
+                let chatQuery = db.collection("groupChats").whereField("planId", isEqualTo: plan.id)
+                chatQuery.getDocuments { snapshot, error in
+                    guard let docs = snapshot?.documents, let chatDoc = docs.first else {
+                        print("❌ No group chat found for plan \(plan.id)")
+                        return
+                    }
+                    
+                    let groupChatId = chatDoc.documentID
+                    let participantPath = "participants.\(uid).status"
+                    
+                    db.collection("groupChats").document(groupChatId).updateData([
+                        participantPath: accept ? "accepted" : "invited"
+                    ]) { error in
+                        if let error = error {
+                            print("❌ Failed to update chat status: \(error)")
+                        } else {
+                            print("✅ Chat participant status updated to \(accept ? "accepted" : "invited")")
+                        }
+                    }
+                }
+                
+                // 🔁 Refresh the UI
                 self.fetchPlans { updated in
                     self.plans = updated
                     self.plansTableView.reloadData()
                 }
             }
         }
+        
     }
-
+    
     
 }
