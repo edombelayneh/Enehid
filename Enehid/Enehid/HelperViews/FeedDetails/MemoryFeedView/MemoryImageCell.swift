@@ -12,13 +12,6 @@ class MemoryImageCell: UICollectionViewCell {
     
     @IBOutlet weak var memoryImageView: UIImageView!
     
-//    func configure(with urlString: String) {
-//        if let url = URL(string: urlString) {
-//            memoryImageView.clipsToBounds = true
-//            memoryImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholder"))
-//        }
-//    }
-    
     func configure(with urlString: String) {
         if let url = URL(string: urlString) {
             memoryImageView.contentMode = .scaleAspectFill

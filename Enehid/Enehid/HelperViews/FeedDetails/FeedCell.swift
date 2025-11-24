@@ -31,13 +31,14 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         postCollectionView.delegate = self
         postCollectionView.dataSource = self
         
+        postCollectionView.isPagingEnabled = true
+        postCollectionView.showsHorizontalScrollIndicator = false
+
         if let layout = postCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal
             layout.minimumLineSpacing = 0
-            layout.itemSize = postCollectionView.frame.size
-            postCollectionView.isPagingEnabled = true
-            postCollectionView.showsHorizontalScrollIndicator = false
         }
+
     }
 
     func configure(with feedMemories: Memory?) {
@@ -69,7 +70,12 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         onBookmarkTapped?()
     }
     
-    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        if let layout = postCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.itemSize = postCollectionView.frame.size
+        }
+    }
 }
 
 extension FeedCell: UICollectionViewDataSource {
@@ -89,3 +95,5 @@ extension FeedCell: UICollectionViewDataSource {
         return collectionView.frame.size
     }
 }
+
+
