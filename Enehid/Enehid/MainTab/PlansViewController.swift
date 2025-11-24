@@ -44,10 +44,12 @@ class PlansViewController: UIViewController, UITableViewDelegate {
         plansTableView.contentInset.bottom = 20
         plansTableView.register(PlanCell.self, forCellReuseIdentifier: "PlanCell")
         
-        fetchPlans{ plansUpdate in
-            self.plans = plansUpdate
-            self.plansTableView.reloadData()
-        }
+//        fetchPlans{ plansUpdate in
+//            self.plans = plansUpdate
+//            self.plansTableView.reloadData()
+//        }
+        fetchPlans()
+
         plansTableView.reloadData()
         
     }
@@ -63,53 +65,49 @@ class PlansViewController: UIViewController, UITableViewDelegate {
      }
      */
     
-    func fetchPlans(completion: @escaping ([Plans]) -> Void) {
+    var listener: ListenerRegistration?
+
+    func fetchPlans() {
         guard let currentUID = Auth.auth().currentUser?.uid else {
             print("User not logged in")
-            completion([])
             return
         }
-        
+
         let db = Firestore.firestore()
         let userPlansRef = db.collection("users").document(currentUID).collection("plans")
-        
-        userPlansRef.getDocuments(source: .default) { snapshot, error in
+
+        // Remove previous listener if re-fetching
+        listener?.remove()
+
+        listener = userPlansRef.addSnapshotListener { [weak self] snapshot, error in
+            guard let self = self else { return }
+
             if let error = error {
                 print("❌ Failed to get plans: \(error.localizedDescription)")
-                completion([])
                 return
             }
-            
+
             guard let docs = snapshot?.documents else {
                 print("📭 No plans found")
-                completion([])
                 return
             }
-            
-            var plans: [Plans] = []
+
+            var allPlans: [Plans] = []
             let dispatchGroup = DispatchGroup()
-            
+
             for doc in docs {
                 let planId = doc.documentID
                 let status = doc.data()["status"] as? String ?? "pending"
-                
+
                 dispatchGroup.enter()
-                db.collection("plans").document(planId).getDocument(source: .default) { planSnapshot, error in
+                db.collection("plans").document(planId).getDocument { planSnapshot, error in
                     defer { dispatchGroup.leave() }
-                    
-                    if let error = error {
-                        print("❌ Failed to get plan for \(planId): \(error.localizedDescription)")
-                        return
-                    }
-                    
-                    guard let data = planSnapshot?.data() else {
-                        return
-                    }
-                    
+
+                    guard let data = planSnapshot?.data() else { return }
+
                     let acceptedByList = data["acceptedByIDs"] as? [String] ?? []
                     let declinedByList = data["declinedByIDs"] as? [String] ?? []
-                    let currentUID = Auth.auth().currentUser?.uid ?? ""
-                    
+
                     let plan = Plans(
                         id: planSnapshot!.documentID,
                         activityName: data["activityName"] as? String ?? "",
@@ -121,57 +119,170 @@ class PlansViewController: UIViewController, UITableViewDelegate {
                         participants: data["participants"] as? [String: String] ?? [:],
                         acceptedByIDs: Set(acceptedByList),
                         declinedByIDs: Set(declinedByList),
-                        iAccepted: status == "accepted", // pulled from user doc
+                        iAccepted: status == "accepted",
                         iDeclined: status == "declined"
                     )
-                    
-                    plans.append(plan)
+
+                    allPlans.append(plan)
                 }
             }
-            
-//            dispatchGroup.notify(queue: .main) {
-//                completion(plans)
-//            }
-            
+
             dispatchGroup.notify(queue: .main) {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd HH:mm"
-
-                var upcoming: [Plans] = []
-                var pending: [Plans] = []
-                var past: [Plans] = []
-
-                for plan in plans {
-                    guard let planDate = formatter.date(from: plan.date) else {
-                        continue
-                    }
-
-                    if plan.iAccepted {
-                        if planDate >= Date() {
-                            upcoming.append(plan)
-                        } else {
-                            past.append(plan)
-                        }
-                    } else if !plan.iDeclined {
-                        pending.append(plan)
-                    }
-                }
-
-                // Sort: upcoming = closest first, past = oldest last
-                upcoming.sort { ($0.date) < ($1.date) }
-                past.sort { ($0.date) > ($1.date) }
-
-                self.sectionedPlans = [
-                    .upcoming: upcoming,
-                    .pending: pending,
-                    .past: past
-                ]
-
-                self.plansTableView.reloadData()
+                self.sortAndDisplayPlans(allPlans)
             }
-
         }
     }
+    
+    private func sortAndDisplayPlans(_ plans: [Plans]) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+
+        var upcoming: [Plans] = []
+        var pending: [Plans] = []
+        var past: [Plans] = []
+
+        for plan in plans {
+            guard let planDate = formatter.date(from: plan.date) else { continue }
+
+            if plan.iAccepted {
+                if planDate >= Date() {
+                    upcoming.append(plan)
+                } else {
+                    past.append(plan)
+                }
+            } else if !plan.iDeclined {
+                pending.append(plan)
+            }
+        }
+
+        upcoming.sort { $0.date < $1.date }
+        past.sort { $0.date > $1.date }
+
+        self.sectionedPlans = [
+            .upcoming: upcoming,
+            .pending: pending,
+            .past: past
+        ]
+
+        self.plansTableView.reloadData()
+    }
+    
+    deinit {
+        listener?.remove()
+    }
+
+
+
+    
+//    func fetchPlans(completion: @escaping ([Plans]) -> Void) {
+//        guard let currentUID = Auth.auth().currentUser?.uid else {
+//            print("User not logged in")
+//            completion([])
+//            return
+//        }
+//        
+//        let db = Firestore.firestore()
+//        let userPlansRef = db.collection("users").document(currentUID).collection("plans")
+//        
+//        userPlansRef.getDocuments(source: .default) { snapshot, error in
+//            if let error = error {
+//                print("❌ Failed to get plans: \(error.localizedDescription)")
+//                completion([])
+//                return
+//            }
+//            
+//            guard let docs = snapshot?.documents else {
+//                print("📭 No plans found")
+//                completion([])
+//                return
+//            }
+//            
+//            var plans: [Plans] = []
+//            let dispatchGroup = DispatchGroup()
+//            
+//            for doc in docs {
+//                let planId = doc.documentID
+//                let status = doc.data()["status"] as? String ?? "pending"
+//                
+//                dispatchGroup.enter()
+//                db.collection("plans").document(planId).getDocument(source: .default) { planSnapshot, error in
+//                    defer { dispatchGroup.leave() }
+//                    
+//                    if let error = error {
+//                        print("❌ Failed to get plan for \(planId): \(error.localizedDescription)")
+//                        return
+//                    }
+//                    
+//                    guard let data = planSnapshot?.data() else {
+//                        return
+//                    }
+//                    
+//                    let acceptedByList = data["acceptedByIDs"] as? [String] ?? []
+//                    let declinedByList = data["declinedByIDs"] as? [String] ?? []
+//                    let currentUID = Auth.auth().currentUser?.uid ?? ""
+//                    
+//                    let plan = Plans(
+//                        id: planSnapshot!.documentID,
+//                        activityName: data["activityName"] as? String ?? "",
+//                        location: data["location"] as? String ?? "",
+//                        date: data["date"] as? String ?? "",
+//                        createdBy: data["createdBy"] as? String ?? "",
+//                        lat: data["lat"] as? Double ?? 0.0,
+//                        lon: data["lon"] as? Double ?? 0.0,
+//                        participants: data["participants"] as? [String: String] ?? [:],
+//                        acceptedByIDs: Set(acceptedByList),
+//                        declinedByIDs: Set(declinedByList),
+//                        iAccepted: status == "accepted", // pulled from user doc
+//                        iDeclined: status == "declined"
+//                    )
+//                    
+//                    plans.append(plan)
+//                }
+//            }
+//            
+////            dispatchGroup.notify(queue: .main) {
+////                completion(plans)
+////            }
+//            
+//            dispatchGroup.notify(queue: .main) {
+//                let formatter = DateFormatter()
+//                formatter.dateFormat = "yyyy-MM-dd HH:mm"
+//
+//                var upcoming: [Plans] = []
+//                var pending: [Plans] = []
+//                var past: [Plans] = []
+//
+//                for plan in plans {
+//                    guard let planDate = formatter.date(from: plan.date) else {
+//                        continue
+//                    }
+//
+//                    if plan.iAccepted {
+//                        if planDate >= Date() {
+//                            upcoming.append(plan)
+//                        } else {
+//                            past.append(plan)
+//                        }
+//                    } else if !plan.iDeclined {
+//                        pending.append(plan)
+//                    }
+//                }
+//
+//                // Sort: upcoming = closest first, past = oldest last
+//                upcoming.sort { ($0.date) < ($1.date) }
+//                past.sort { ($0.date) > ($1.date) }
+//
+//                self.sectionedPlans = [
+//                    .upcoming: upcoming,
+//                    .pending: pending,
+//                    .past: past
+//                ]
+//
+//                self.plansTableView.reloadData()
+//            }
+//
+//        }
+//    }
     
 }
 
@@ -337,11 +448,12 @@ extension PlansViewController: UITableViewDataSource {
                     }
                 }
                 
-                // 🔁 Refresh the UI
-                self.fetchPlans { updated in
-                    self.plans = updated
-                    self.plansTableView.reloadData()
-                }
+//                // 🔁 Refresh the UI
+//                self.fetchPlans { updated in
+//                    self.plans = updated
+//                    self.plansTableView.reloadData()
+//                }
+                self.fetchPlans()
             }
         }
         
