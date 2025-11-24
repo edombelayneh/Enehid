@@ -94,8 +94,8 @@
             filePath = "Enehid/MainTab/FeedViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "171"
-            endingLineNumber = "171"
+            startingLineNumber = "172"
+            endingLineNumber = "172"
             landmarkName = "fetchFriendFeed(completion:)"
             landmarkType = "7">
          </BreakpointContent>

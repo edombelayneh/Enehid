@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Firebase
 
 class FeedCell: UITableViewCell, UICollectionViewDelegate {
     
@@ -29,17 +30,35 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         // Initialization code
         postCollectionView.delegate = self
         postCollectionView.dataSource = self
+        
+        if let layout = postCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.scrollDirection = .horizontal
+            layout.minimumLineSpacing = 0
+            layout.itemSize = postCollectionView.frame.size
+            postCollectionView.isPagingEnabled = true
+            postCollectionView.showsHorizontalScrollIndicator = false
+        }
     }
-    
+
     func configure(with feedMemories: Memory?) {
         usernameLabel.text = feedMemories?.username ?? "Unknown"
         detailsLabel.text = feedMemories?.caption ?? ""
-//        sharedPostImage.image = feedMemories?.image
-//         = feedMemories?.memoryURLs
-        if let date = feedMemories?.createdAt {
-            dateLabel.text = DateFormatter.dateFormat(fromTemplate: "yyyy-MM-dd HH:mm:ss", options: 0, locale: Locale(identifier: "ar_EG"))
+
+        if let urls = feedMemories?.memoryURLs {
+            self.memoryURLs = urls
+            print("memory urls: \(urls)")
+            postCollectionView.reloadData()
+        }
+
+        if let timestamp = feedMemories?.createdAt as? Timestamp {
+            let date = timestamp.dateValue()
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .short
+            dateLabel.text = formatter.string(from: date)
         }
     }
+
     
     
     @IBAction func onTapRecommendButton(_ sender: UIButton) {
@@ -59,7 +78,7 @@ extension FeedCell: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FeedCollectionCell", for: indexPath) as! FeedCollectionCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MemoryImageCell", for: indexPath) as! MemoryImageCell
         cell.configure(with: memoryURLs[indexPath.item])
         return cell
     }

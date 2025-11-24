@@ -74,52 +74,7 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
      // Pass the selected object to the new view controller.
      }
      */
-
     
-//    func saveMemory(planId: String) {
-//        let memoryId = UUID().uuidString
-//        guard let currentUID = Auth.auth().currentUser?.uid else {
-//            showAlert(title: "User Not Logged In", message: "Please Log In To save Memory")
-//            return
-//        }
-//
-//        let userDocRef = db.collection("users").document(currentUID)
-//        
-//        userDocRef.getDocument { (document, error) in
-//            if let document = document, document.exists {
-//                let username = document.get("username") as? String
-//            } else {
-//                print("Error fetching user: \(error?.localizedDescription)")
-//            }
-//        }
-//        
-//        let memoryData: [String: Any] = [
-//            "id": memoryId,
-//            "ownerId": currentUID,
-//            "username": username,
-//            "caption": captionTextView.text ?? "",
-//            "recommends": 0,
-//            "memoryURLs": uploadedImageURLs,
-//            "bookmarks": 0,
-//            "taggedUIds": taggedUserIds,
-//            "commentsCount": 0,
-//            "createdAt": Timestamp(date: Date()),
-//            "visibility": visibilitySwitch.isOn ? "public" : "friends",
-//            "planId": planId
-//        ]
-//        
-//        db.collection("memories").document(memoryId).setData(memoryData) { [weak self] error in
-//            self?.uploadButton.isEnabled = true
-//            
-//            if let error = error {
-//                self?.showAlert(title: "Error", message: error.localizedDescription)
-//            } else {
-//                self?.showAlert(title: "Success", message: "Memory uploaded!") {
-//                    self?.navigationController?.popViewController(animated: true)
-//                }
-//            }
-//        }
-//    }
     func saveMemory(planId: String) {
         let memoryId = UUID().uuidString
         guard let currentUID = Auth.auth().currentUser?.uid else {
