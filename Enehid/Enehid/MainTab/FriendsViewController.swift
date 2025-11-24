@@ -17,6 +17,8 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
     var friends: [User] = []
+    var groupPreviews: [GroupChatPreview] = []
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,21 +32,80 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
                 self.tableView.reloadData()
             }
             
-            // ✅ Load avatar image
-            //            if let urlString = user.profilePictureURL, let url = URL(string: urlString) {
-            //                URLSession.shared.dataTask(with: url) { data, _, error in
-            //                    if let data = data, error == nil {
-            //                        DispatchQueue.main.async {
-            //                            self.profilePicImageView.image = UIImage(data: data)
-            //                            self.profilePicImageView.contentMode = .scaleAspectFill
-            //                            self.profilePicImageView.layer.cornerRadius = self.profilePicImageView.frame.width / 2
-            //                            self.profilePicImageView.layer.masksToBounds = true
-            //                        }
-            //                    }
-            //                }.resume()
-            //            }
+            
+        }
+        fetchGroupChats { previews in
+            self.groupPreviews = previews
+            print("previews: \(previews)")
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+        
+    }
+    
+    func fetchGroupChats(completion: @escaping ([GroupChatPreview]) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("❌ User not logged in")
+            completion([])
+            return
+        }
+        
+        let userPlansRef = db.collection("users").document(uid).collection("plans")
+        userPlansRef.getDocuments { snapshot, error in
+            guard let documents = snapshot?.documents, error == nil else {
+                print("❌ Failed to fetch user plans: \(error?.localizedDescription ?? "Unknown error")")
+                completion([])
+                return
+            }
+            
+            var groupPreviews: [GroupChatPreview] = []
+            let group = DispatchGroup()
+            
+            for doc in documents {
+                let planId = doc.documentID
+                let activityName = doc.data()["activityName"] as? String ?? "Group Chat"
+                
+                group.enter()
+                
+                self.db.collection("groupChats")
+                    .document(planId)
+                    .getDocument { chatSnapshot, error in
+                        defer { group.leave() }
+                        
+                        guard let chatData = chatSnapshot?.data(),
+                              let participants = chatData["participants"] as? [String: Any],
+                              let participantInfo = participants[uid] as? [String: Any],
+                              let status = participantInfo["status"] as? String else {
+                            print("⚠️ Could not find participant status for planId: \(planId)")
+                            return
+                        }
+                        
+                        var lastMessage = (chatData["lastMessage"] as? [String: Any])?["text"] as? String ?? ""
+                        if lastMessage == "" {
+                            lastMessage = "Start a conversation with your friends!"
+                        }
+                        
+                        let preview = GroupChatPreview(
+                            planId: planId,
+                            lastMessageText: lastMessage,
+                            timestamp: Timestamp(), // optional
+                            groupName: activityName,
+                            role: status
+                        )
+                        
+                        groupPreviews.append(preview)
+                    }
+            }
+            
+            group.notify(queue: .main) {
+                completion(groupPreviews)
+            }
         }
     }
+    
+    
+    
     
     func fetchFriends(completion: @escaping ([User]) -> Void) {
         guard let currentUID = Auth.auth().currentUser?.uid else {
@@ -98,29 +159,132 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
             }
         }
     }
+    
+    func generateGroupAvatar(from urls: [String], size: CGFloat) -> UIView {
+        let container = UIView(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        
+        let avatarSize = size * 0.6
+        let overlapOffset = avatarSize * 0.4
+        
+        for (index, urlString) in urls.prefix(3).enumerated() {
+            let imageView = UIImageView()
+            imageView.frame = CGRect(x: CGFloat(index) * overlapOffset, y: 0, width: avatarSize, height: avatarSize)
+            imageView.layer.cornerRadius = avatarSize / 2
+            imageView.clipsToBounds = true
+            imageView.contentMode = .scaleAspectFill
+            
+            // Assuming you already have a working AvatarManager
+            AvatarManager.loadAvatar(from: urlString, into: imageView, cropToFace: true)
+            
+            container.addSubview(imageView)
+        }
+        
+        return container
+    }
+    
+    func fetchParticipantAvatars(for planId: String, completion: @escaping ([String]) -> Void) {
+        db.collection("groupChats").document(planId).getDocument { snapshot, error in
+            guard let data = snapshot?.data(),
+                  let participants = data["participants"] as? [String: Any] else {
+                completion([])
+                return
+            }
+
+            var urls: [String] = []
+            for (_, value) in participants {
+                if let info = value as? [String: Any],
+                   let url = info["profilePictureURL"] as? String {
+                    urls.append(url)
+                }
+            }
+            completion(urls)
+        }
+    }
+
+    
 }
 
 extension FriendsViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2 // Section 0: Friends, Section 1: Group Chats
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return friends.count
+        return section == 0 ? groupPreviews.count : friends.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let friend = friends[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
-        cell.usernameLabel.text = friend.username
-        
-        AvatarManager.loadAvatar(from: friend.profilePictureURL, into: cell.profilePicture, cropToFace: true)
-        
-        return cell
+        if indexPath.section == 1 {
+            let friend = friends[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
+            cell.usernameLabel.text = friend.username
+            //            cell.messagePreviewLabel.text = friend.
+            AvatarManager.loadAvatar(from: friend.profilePictureURL, into: cell.profilePicture, cropToFace: true)
+            return cell
+        } else {
+            let chat = groupPreviews[indexPath.row]
+            let cell = tableView.dequeueReusableCell(withIdentifier: "FriendsCell", for: indexPath) as! FriendsCell
+            
+            // Title
+            cell.usernameLabel.text = chat.groupName
+            
+            // Subtitle (optional)
+            cell.messagePreviewLabel.text = chat.role == "invited" ? "Tap to accept invite" : chat.lastMessageText
+            
+            // Gray out text if not accepted
+            cell.usernameLabel?.textColor = chat.role == "accepted" ? .label : .gray
+            
+            // 👇 Dynamically generate group avatar
+            let avatarSize = cell.profilePicture.frame.width
+            fetchParticipantAvatars(for: chat.planId) { urls in
+                DispatchQueue.main.async {
+                    let avatarView = self.generateGroupAvatar(from: urls, size: avatarSize)
+                    avatarView.frame = cell.profilePicture.bounds
+                    cell.profilePicture.subviews.forEach { $0.removeFromSuperview() } // clear previous
+                    cell.profilePicture.addSubview(avatarView)
+                }
+            }
+            return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let friend = friends[indexPath.row]
-        let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
-        chatVC.recipientUser = friend
-        navigationController?.pushViewController(chatVC, animated: true)
+        if indexPath.section == 1 {
+            let friend = friends[indexPath.row]
+            let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
+            chatVC.recipientUser = friend
+            navigationController?.pushViewController(chatVC, animated: true)
+        } else {
+            let preview = groupPreviews[indexPath.row]
+            if preview.role == "accepted" {
+                let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
+                chatVC.currentPlanId = preview.planId
+                navigationController?.pushViewController(chatVC, animated: true)
+            } else {
+                let alert = UIAlertController(title: "Pending Invitation", message: "You have been invited to this group chat. Accept the invite to participate.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+            }
+            
+            
+        }
     }
     
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return section == 0 ? "GROUP CHATS" : "FRIENDS"
+    }
+    
+    
+    //    func didSelectGroupChat(at index: Int) {
+    //        let preview = groupPreviews[index]
+    //
+    //        let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
+    //        chatVC.currentPlanId = preview.planId
+    //        navigationController?.pushViewController(chatVC, animated: true)
+    //    }
+    
+    
 }
+
+
 

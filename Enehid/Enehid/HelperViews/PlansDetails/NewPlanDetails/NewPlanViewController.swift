@@ -144,6 +144,8 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
             var fullParticipants = participants
             fullParticipants[currentUID] = creatorUsername
             
+            
+            
             let planData: [String: Any] = [
                 "activityName": activityName,
                 "location": location,
@@ -190,9 +192,32 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
                     }
                 }
             }
+            
+            // ✅ Create group chat for this plan
+            let groupChatRef = db.collection("groupChats").document(planId) // use same ID as plan
+            var groupChatParticipants: [String: [String: Any]] = [:]
+
+            for (uid, username) in fullParticipants {
+                groupChatParticipants[uid] = [
+                    "username": username,
+                    "status": uid == currentUID ? "accepted" : "invited"
+                ]
+            }
+
+            let groupChatData: [String: Any] = [
+                "planId": planId,
+                "createdAt": Timestamp(date: Date()),
+                "participants": groupChatParticipants
+            ]
+
+            groupChatRef.setData(groupChatData) { error in
+                if let error = error {
+                    print("❌ Failed to create group chat: \(error)")
+                } else {
+                    print("✅ Group chat created!")
+                }
+            }
         }
-        
-        
     }
     
     func presentFriendPicker() {

@@ -16,3 +16,12 @@ struct Message {
     let timestamp: Timestamp
 }
 
+
+struct GroupChatPreview {
+    let planId: String
+    let lastMessageText: String
+    let timestamp: Timestamp
+    let groupName: String
+    let role: String // "invited" or "accepted"
+}
+
