@@ -12,6 +12,7 @@ import FirebaseAuth
 class FeedViewController: UIViewController, UITableViewDelegate, UICollectionViewDelegate {
     
     
+    @IBOutlet weak var postCollectionView: UICollectionView!
     @IBOutlet weak var storyCollectionView: UICollectionView!
     @IBOutlet weak var feedTableView: UITableView!
     
