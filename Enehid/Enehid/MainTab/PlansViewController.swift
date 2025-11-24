@@ -13,6 +13,23 @@ class PlansViewController: UIViewController, UITableViewDelegate {
     
     @IBOutlet weak var plansTableView: UITableView!
     
+    enum PlanSection: Int, CaseIterable {
+        case upcoming
+        case pending
+        case past
+
+        var title: String {
+            switch self {
+            case .upcoming: return "Upcoming"
+            case .pending: return "Pending"
+            case .past: return "Past"
+            }
+        }
+    }
+
+    var sectionedPlans: [PlanSection: [Plans]] = [:]
+
+    
     
     var plans: [Plans] = []
     
@@ -112,9 +129,47 @@ class PlansViewController: UIViewController, UITableViewDelegate {
                 }
             }
             
+//            dispatchGroup.notify(queue: .main) {
+//                completion(plans)
+//            }
+            
             dispatchGroup.notify(queue: .main) {
-                completion(plans)
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd HH:mm"
+
+                var upcoming: [Plans] = []
+                var pending: [Plans] = []
+                var past: [Plans] = []
+
+                for plan in plans {
+                    guard let planDate = formatter.date(from: plan.date) else {
+                        continue
+                    }
+
+                    if plan.iAccepted {
+                        if planDate >= Date() {
+                            upcoming.append(plan)
+                        } else {
+                            past.append(plan)
+                        }
+                    } else if !plan.iDeclined {
+                        pending.append(plan)
+                    }
+                }
+
+                // Sort: upcoming = closest first, past = oldest last
+                upcoming.sort { ($0.date) < ($1.date) }
+                past.sort { ($0.date) > ($1.date) }
+
+                self.sectionedPlans = [
+                    .upcoming: upcoming,
+                    .pending: pending,
+                    .past: past
+                ]
+
+                self.plansTableView.reloadData()
             }
+
         }
     }
     
@@ -122,15 +177,24 @@ class PlansViewController: UIViewController, UITableViewDelegate {
 
 
 extension PlansViewController: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return plans.count
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return PlanSection.allCases.count
     }
-    
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let sectionType = PlanSection(rawValue: section)!
+        return sectionedPlans[sectionType]?.count ?? 0
+    }
+
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let sectionType = PlanSection(rawValue: section)
+        return sectionType?.title
+    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let currentUserID = Auth.auth().currentUser?.uid ?? ""
-        let plan = plans[indexPath.row]
-        //        let id = plan.createdByIsMe ? "PlanOwnerCell" : "PlanInviteeCell"
-        //        let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! PlansCell
+        let sectionType = PlanSection(rawValue: indexPath.section)!
+        let plan = sectionedPlans[sectionType]![indexPath.row]
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "PlanCell", for: indexPath) as! PlanCell
         let currentUserId = Auth.auth().currentUser?.uid ?? ""
         cell.configure(with: plan, currentUserId: currentUserId)
@@ -171,13 +235,28 @@ extension PlansViewController: UITableViewDataSource {
             }
         }
         
-        
         return cell
     }
+
+    
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return plans.count
+//    }
+//    
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let currentUserID = Auth.auth().currentUser?.uid ?? ""
+//        let plan = plans[indexPath.row]
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "PlanCell", for: indexPath) as! PlanCell
+//        
+//        
+//        return cell
+//    }
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let plan = plans[indexPath.row]
+//        let plan = plans[indexPath.row]
+        let sectionType = PlanSection(rawValue: indexPath.section)!
+        let plan = sectionedPlans[sectionType]![indexPath.row]
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let detailVC = storyboard.instantiateViewController(identifier: "PlanDetailsViewController") as! PlanDetailsViewController
         detailVC.plan = plan
@@ -229,19 +308,7 @@ extension PlansViewController: UITableViewDataSource {
         batch.updateData([
             "status": accept ? "accepted" : "declined"
         ], forDocument: userPlanRef)
-        
-        //        batch.commit { error in
-        //            if let error = error {
-        //                print("❌ Failed to update response: \(error)")
-        //            } else {
-        //                print("✅ Updated response")
-        //                self.fetchPlans { updated in
-        //                    self.plans = updated
-        //                    self.plansTableView.reloadData()
-        //                }
-        //            }
-        //        }
-        // 🟡 After batch.commit in handleResponse:
+    
         batch.commit { error in
             if let error = error {
                 print("❌ Failed to update response: \(error)")
@@ -282,3 +349,5 @@ extension PlansViewController: UITableViewDataSource {
     
     
 }
+
+
