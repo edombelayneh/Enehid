@@ -19,6 +19,9 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
     var friends: [User] = []
     var groupPreviews: [GroupChatPreview] = []
     
+    var groupChatListener: ListenerRegistration?
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,35 +34,32 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
                 self.friends = user
                 self.tableView.reloadData()
             }
-            
-            
-        }
-        fetchGroupChats { previews in
-            self.groupPreviews = previews
-            print("previews: \(previews)")
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
         }
         
+        observeGroupChats()
+        
     }
-    
-    func fetchGroupChats(completion: @escaping ([GroupChatPreview]) -> Void) {
+
+    func observeGroupChats() {
         guard let uid = Auth.auth().currentUser?.uid else {
             print("❌ User not logged in")
-            completion([])
             return
         }
         
         let userPlansRef = db.collection("users").document(uid).collection("plans")
-        userPlansRef.getDocuments { snapshot, error in
+        
+        // Remove old listener if it exists
+        groupChatListener?.remove()
+        
+        groupChatListener = userPlansRef.addSnapshotListener { [weak self] snapshot, error in
+            guard let self = self else { return }
+            
             guard let documents = snapshot?.documents, error == nil else {
-                print("❌ Failed to fetch user plans: \(error?.localizedDescription ?? "Unknown error")")
-                completion([])
+                print("❌ Failed to listen for user plans: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
             
-            var groupPreviews: [GroupChatPreview] = []
+            var updatedPreviews: [GroupChatPreview] = []
             let group = DispatchGroup()
             
             for doc in documents {
@@ -68,38 +68,36 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
                 
                 group.enter()
                 
-                self.db.collection("groupChats")
-                    .document(planId)
-                    .getDocument { chatSnapshot, error in
-                        defer { group.leave() }
-                        
-                        guard let chatData = chatSnapshot?.data(),
-                              let participants = chatData["participants"] as? [String: Any],
-                              let participantInfo = participants[uid] as? [String: Any],
-                              let status = participantInfo["status"] as? String else {
-                            print("⚠️ Could not find participant status for planId: \(planId)")
-                            return
-                        }
-                        
-                        var lastMessage = (chatData["lastMessage"] as? [String: Any])?["text"] as? String ?? ""
-                        if lastMessage == "" {
-                            lastMessage = "Start a conversation with your friends!"
-                        }
-                        
-                        let preview = GroupChatPreview(
-                            planId: planId,
-                            lastMessageText: lastMessage,
-                            timestamp: Timestamp(), // optional
-                            groupName: activityName,
-                            role: status
-                        )
-                        
-                        groupPreviews.append(preview)
+                self.db.collection("groupChats").document(planId).getDocument { chatSnapshot, error in
+                    defer { group.leave() }
+                    
+                    guard let chatData = chatSnapshot?.data(),
+                          let participants = chatData["participants"] as? [String: Any],
+                          let participantInfo = participants[uid] as? [String: Any],
+                          let status = participantInfo["status"] as? String else {
+                        return
                     }
+                    
+                    var lastMessage = (chatData["lastMessage"] as? [String: Any])?["text"] as? String ?? ""
+                    if lastMessage == "" {
+                        lastMessage = "Start a conversation with your friends!"
+                    }
+                    
+                    let preview = GroupChatPreview(
+                        planId: planId,
+                        lastMessageText: lastMessage,
+                        timestamp: Timestamp(), // optionally replace with real timestamp
+                        groupName: activityName,
+                        role: status
+                    )
+                    
+                    updatedPreviews.append(preview)
+                }
             }
             
             group.notify(queue: .main) {
-                completion(groupPreviews)
+                self.groupPreviews = updatedPreviews
+                self.tableView.reloadData()
             }
         }
     }
@@ -189,7 +187,7 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
                 completion([])
                 return
             }
-
+            
             var urls: [String] = []
             for (_, value) in participants {
                 if let info = value as? [String: Any],
@@ -200,7 +198,12 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
             completion(urls)
         }
     }
-
+    
+    deinit {
+        groupChatListener?.remove()
+    }
+    
+    
     
 }
 
@@ -273,17 +276,6 @@ extension FriendsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return section == 0 ? "GROUP CHATS" : "FRIENDS"
     }
-    
-    
-    //    func didSelectGroupChat(at index: Int) {
-    //        let preview = groupPreviews[index]
-    //
-    //        let chatVC = storyboard?.instantiateViewController(withIdentifier: "MessageViewController") as! MessageViewController
-    //        chatVC.currentPlanId = preview.planId
-    //        navigationController?.pushViewController(chatVC, animated: true)
-    //    }
-    
-    
 }
 
 
