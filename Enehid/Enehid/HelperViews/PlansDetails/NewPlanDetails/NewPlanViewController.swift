@@ -217,27 +217,7 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
                     print("✅ Group chat created!")
                 }
             }
-            
-            // After plan creation succeeds
-//            let chatRef = db.collection("groupChats").document()
-//            var participantStatusMap: [String: [String: String]] = [:]
-//
-//            for (uid, username) in fullParticipants {
-//                let status = (uid == currentUID) ? "accepted" : "invited"
-//                participantStatusMap[uid] = [
-//                    "username": username,
-//                    "status": status
-//                ]
-//            }
-//
-//            chatRef.setData([
-//                "planId": planId,
-//                "participants": participantStatusMap
-//            ])
-
         }
-        
-        
     }
     
     func presentFriendPicker() {
