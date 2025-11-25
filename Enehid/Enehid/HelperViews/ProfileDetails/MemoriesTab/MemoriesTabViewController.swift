@@ -29,7 +29,7 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
     func fetchMemories() {
         guard let currentUID = Auth.auth().currentUser?.uid else { return }
         print("🧠 Current UID from fetchmemories: \(currentUID)")
-
+        
         let userRef = db.collection("users").document(currentUID).collection("memories")
         
         userRef.order(by: "createdAt", descending: true).getDocuments { snapshot, error in
@@ -42,12 +42,6 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
             
             for id in memoryIds {
                 memoryFetchGroup.enter()
-//                self.db.collection("memories").document(id).getDocument { doc, error in
-//                    if let data = doc?.data(), let memory = Memory(from: data) {
-//                        fetchedMemories.append(memory)
-//                    }
-//                    memoryFetchGroup.leave()
-//                }
                 
                 self.db.collection("memories").document(id).getDocument { doc, error in
                     if let data = doc?.data() {
@@ -89,63 +83,44 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
             print("🖼️ First image URL: \(firstImageURL)")
             cell.memoryImageView.sd_setImage(with: URL(string: firstImageURL), placeholderImage: UIImage(named: "placeholder"))
         }
-
+        
         return cell
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let selectedMemory = memories[indexPath.item]
-//        // Navigate to memory detail screen using selectedMemory.id
-//    }
-
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        
-//        let spacing: CGFloat = 1.0
-//        let numberOfColumns: CGFloat = 3.0
-//        
-//        let totalWidth = collectionView.frame.width
-//        let totalSpacing = (numberOfColumns - 1) * spacing
-//        let availableWidth = totalWidth - totalSpacing
-//        
-//        let cellWidth = availableWidth / numberOfColumns
-//        return CGSize(width: cellWidth, height: cellWidth)
-//    }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-
+        
         let numberOfColumns: CGFloat = 3
         let spacing: CGFloat = 1
-
+        
         // Total spacing between items = (columns - 1) * spacing
         let totalSpacing = (numberOfColumns - 1) * spacing
-
+        
         // Adjusted width based on total spacing
         let width = (collectionView.bounds.width - totalSpacing) / numberOfColumns
-
+        
         return CGSize(width: floor(width), height: floor(width)) // square cells
     }
-
+    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 1, left: 0, bottom: 1, right: 0)
     }
-
+    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 1
     }
-
+    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 1
     }
-
+    
     
     
 }
