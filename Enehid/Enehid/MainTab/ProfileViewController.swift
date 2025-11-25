@@ -68,6 +68,9 @@ class ProfileViewController: UIViewController {
         // Do any additional setup after loading the view.
         fetchUserAndCounters()
         postSegmentedControl.selectedSegmentIndex = 0
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            Animation.addPulseAnimationAroundAvatar(profilePicImage: self.profilePicImageView)
+        }
     }
     
     private func fetchUserAndCounters() {
@@ -75,50 +78,50 @@ class ProfileViewController: UIViewController {
             print("🚨 No user signed in")
             return
         }
-
+        
         let userRef = db.collection("users").document(currentUID)
-
+        
         userRef.getDocument { [weak self] snapshot, error in
             guard let self = self else { return }
             guard let data = snapshot?.data(), error == nil else {
                 print("❌ Failed to fetch user: \(error?.localizedDescription ?? "Unknown error")")
                 return
             }
-
+            
             let username = data["username"] as? String ?? "Unknown"
             let profilePictureURL = data["profilePictureURL"] as? String
             DispatchQueue.main.async {
                 self.usernameLabel.text = username
                 AvatarManager.loadAvatar(from: profilePictureURL, into: self.profilePicImageView)
             }
-
+            
             // Now fetch the counters
             self.fetchAndDisplayCounters(uid: currentUID)
         }
     }
-
+    
     private func fetchAndDisplayCounters(uid: String) {
         let userDoc = db.collection("users").document(uid)
-
+        
         userDoc.collection("memories").getDocuments { snapshot, _ in
             DispatchQueue.main.async {
                 self.memoriesCounterLabel.text = "\(snapshot?.count ?? 0)"
             }
         }
-
+        
         userDoc.collection("stars").getDocuments { snapshot, _ in
             DispatchQueue.main.async {
                 self.starsCounterLabel.text = "\(snapshot?.count ?? 0)"
             }
         }
-
+        
         userDoc.collection("recommends").getDocuments { snapshot, _ in
             DispatchQueue.main.async {
                 self.recommendsCounterLabel.text = "\(snapshot?.count ?? 0)"
             }
         }
     }
-
+    
     /*
      // MARK: - Navigation
      
