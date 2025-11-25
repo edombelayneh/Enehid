@@ -20,17 +20,14 @@ class PlansViewController: UIViewController, UITableViewDelegate {
 
         var title: String {
             switch self {
-            case .upcoming: return "Upcoming"
-            case .pending: return "Pending"
-            case .past: return "Past"
+            case .upcoming: return "UPCOMING"
+            case .pending: return "PENDING"
+            case .past: return "PAST"
             }
         }
     }
 
     var sectionedPlans: [PlanSection: [Plans]] = [:]
-
-    
-    
     var plans: [Plans] = []
     
     override func viewDidLoad() {
@@ -44,10 +41,6 @@ class PlansViewController: UIViewController, UITableViewDelegate {
         plansTableView.contentInset.bottom = 20
         plansTableView.register(PlanCell.self, forCellReuseIdentifier: "PlanCell")
         
-//        fetchPlans{ plansUpdate in
-//            self.plans = plansUpdate
-//            self.plansTableView.reloadData()
-//        }
         fetchPlans()
 
         plansTableView.reloadData()
@@ -235,24 +228,8 @@ extension PlansViewController: UITableViewDataSource {
         
         return cell
     }
-
-    
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return plans.count
-//    }
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let currentUserID = Auth.auth().currentUser?.uid ?? ""
-//        let plan = plans[indexPath.row]
-//        let cell = tableView.dequeueReusableCell(withIdentifier: "PlanCell", for: indexPath) as! PlanCell
-//        
-//        
-//        return cell
-//    }
-    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let plan = plans[indexPath.row]
         let sectionType = PlanSection(rawValue: indexPath.section)!
         let plan = sectionedPlans[sectionType]![indexPath.row]
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -267,7 +244,7 @@ extension PlansViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 140 // Estimate based on your card size + desired padding
+        return 140
     }
     
     
@@ -334,12 +311,6 @@ extension PlansViewController: UITableViewDataSource {
                         }
                     }
                 }
-                
-//                // 🔁 Refresh the UI
-//                self.fetchPlans { updated in
-//                    self.plans = updated
-//                    self.plansTableView.reloadData()
-//                }
                 self.fetchPlans()
             }
         }

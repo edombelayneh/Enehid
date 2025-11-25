@@ -14,7 +14,7 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
     @objc func dismissKeyboard() {
         view.endEditing(true)
     }
-
+    
     @IBOutlet weak var uploadButton: UIButton!
     @IBOutlet weak var planPickerButton: UIButton!
     @IBOutlet weak var captionTextView: UITextView!
@@ -81,15 +81,15 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
             showAlert(title: "User Not Logged In", message: "Please Log In To save Memory")
             return
         }
-
+        
         let userDocRef = db.collection("users").document(currentUID)
-
+        
         userDocRef.getDocument { [weak self] (document, error) in
             guard let self = self else { return }
-
+            
             if let document = document, document.exists {
                 let username = document.get("username") as? String ?? "Unknown"
-
+                
                 let memoryData: [String: Any] = [
                     "id": memoryId,
                     "ownerId": currentUID,
@@ -104,10 +104,24 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
                     "visibility": self.visibilitySwitch.isOn ? "public" : "friends",
                     "planId": planId
                 ]
-
-                self.db.collection("memories").document(memoryId).setData(memoryData) { error in
+                
+                // Save to global collection
+                let globalRef = self.db.collection("memories").document(memoryId)
+                
+                // USER memory subcollection
+                let userMemoriesRef = self.db.collection("users").document(currentUID).collection("memories").document(memoryId)
+                
+                let userMemoryRefData: [String: Any] = [
+                    "memoryId": memoryId,
+                    "createdAt": Timestamp(date: Date())
+                ]
+                
+                let batch = self.db.batch()
+                batch.setData(memoryData, forDocument: globalRef)
+                batch.setData(userMemoryRefData, forDocument: userMemoriesRef)
+                
+                batch.commit { error in
                     self.uploadButton.isEnabled = true
-
                     if let error = error {
                         self.showAlert(title: "Error", message: error.localizedDescription)
                     } else {
@@ -121,54 +135,71 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
             }
         }
     }
-
+    //
+    //                self.db.collection("memories").document(memoryId).setData(memoryData) { error in
+    //                    self.uploadButton.isEnabled = true
+    //
+    //                    if let error = error {
+    //                        self.showAlert(title: "Error", message: error.localizedDescription)
+    //                    } else {
+    //                        self.showAlert(title: "Success", message: "Memory uploaded!") {
+    //                            self.navigationController?.popViewController(animated: true)
+    //                        }
+    //                    }
+    //                }
+    //            } else {
+    //                self.showAlert(title: "Error", message: "Could not fetch username.")
+    //            }
+    //        }
+    //    }
+    
     
     func setupCollectionView() {
         photosCollectionView.dataSource = self
         photosCollectionView.delegate = self
-//        photosCollectionView.register(UINib(nibName: "MediaPreviewCell", bundle: nil), forCellWithReuseIdentifier: "MediaPreviewCell")
+        //        photosCollectionView.register(UINib(nibName: "MediaPreviewCell", bundle: nil), forCellWithReuseIdentifier: "MediaPreviewCell")
     }
     
     func showPlanSelector() {
         let alert = UIAlertController(title: "Select Plan", message: nil, preferredStyle: .actionSheet)
-
+        
         guard let currUserId = Auth.auth().currentUser?.uid else {
             print("User not logged in.")
             return
         }
-
+        
         let userPlansRef = db.collection("users").document(currUserId).collection("plans")
-
+        
         userPlansRef.getDocuments { [weak self] snapshot, error in
             guard let self = self else { return }
-
+            
             if let error = error {
                 print("Error fetching user plans: \(error.localizedDescription)")
                 return
             }
-
+            
             guard let documents = snapshot?.documents, !documents.isEmpty else {
                 self.presentNoPlansAlert()
                 return
             }
-
+            
             var fetchedPlans: [(String, String)] = []
             let dispatchGroup = DispatchGroup()
             let now = Date()
-
+            
             // Setup formatter to convert string date to Date
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd HH:mm"
             formatter.locale = Locale(identifier: "en_US_POSIX")
-
+            
             for doc in documents {
                 let planId = doc.documentID
                 let status = doc.get("status") as? String ?? "pending"
                 let dateString = doc.get("date") as? String ?? ""
-
+                
                 if let planDate = formatter.date(from: dateString), status == "accepted", planDate < now {
                     dispatchGroup.enter()
-
+                    
                     self.db.collection("plans").document(planId).getDocument { planDoc, error in
                         if let planDoc = planDoc, planDoc.exists {
                             let planName = planDoc.get("activityName") as? String ?? "Unnamed Plan"
@@ -180,26 +211,26 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
                     }
                 }
             }
-
+            
             dispatchGroup.notify(queue: .main) {
                 if fetchedPlans.isEmpty {
                     self.presentNoPlansAlert()
                     return
                 }
-
+                
                 for (name, id) in fetchedPlans {
                     alert.addAction(UIAlertAction(title: name, style: .default, handler: { _ in
                         self.planPickerButton.setTitle(name, for: .normal)
                         self.selectedPlanId = id
                     }))
                 }
-
+                
                 alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
                 self.present(alert, animated: true)
             }
         }
     }
-
+    
     private func presentNoPlansAlert() {
         let noPlansAlert = UIAlertController(
             title: "No Eligible Plans",
@@ -209,86 +240,86 @@ class NewMemoryViewController: UIViewController, UICollectionViewDelegate {
         noPlansAlert.addAction(UIAlertAction(title: "OK", style: .default))
         self.present(noPlansAlert, animated: true)
     }
-
     
-//    func showPlanSelector() {
-//        let alert = UIAlertController(title: "Select Plan", message: nil, preferredStyle: .actionSheet)
-//
-//        guard let currUserId = Auth.auth().currentUser?.uid else {
-//            print("User not logged in.")
-//            return
-//        }
-//
-//        let userPlansRef = db.collection("users").document(currUserId).collection("plans")
-//
-//        userPlansRef.getDocuments { [weak self] snapshot, error in
-//            guard let self = self else { return }
-//
-//            if let error = error {
-//                print("Error fetching user plans: \(error.localizedDescription)")
-//                return
-//            }
-//
-//            guard let documents = snapshot?.documents, !documents.isEmpty else {
-//                self.presentNoPlansAlert()
-//                return
-//            }
-//
-//            var fetchedPlans: [(String, String)] = []
-//            let dispatchGroup = DispatchGroup()
-//            let now = Date()
-//
-//            for doc in documents {
-//                let planId = doc.documentID
-//                let status = doc.get("status") as? String ?? "pending"
-//                let timestamp = doc.get("date") as? Timestamp
-//                let planDate = timestamp?.dateValue() ?? Date.distantFuture
-//                
-//                // Filter only accepted and past plans
-//                if status == "accepted", planDate < now {
-//                    dispatchGroup.enter()
-//                    
-//                    self.db.collection("plans").document(planId).getDocument { planDoc, error in
-//                        if let planDoc = planDoc, planDoc.exists {
-//                            let planName = planDoc.get("activityName") as? String ?? "Unnamed Plan"
-//                            fetchedPlans.append((planName, planId))
-//                        } else {
-//                            print("Plan document \(planId) not found: \(error?.localizedDescription ?? "")")
-//                        }
-//                        dispatchGroup.leave()
-//                    }
-//                }
-//            }
-//
-//            dispatchGroup.notify(queue: .main) {
-//                if fetchedPlans.isEmpty {
-//                    self.presentNoPlansAlert()
-//                    return
-//                }
-//
-//                for (name, id) in fetchedPlans {
-//                    alert.addAction(UIAlertAction(title: name, style: .default, handler: { _ in
-//                        self.planPickerButton.setTitle(name, for: .normal)
-//                        self.selectedPlanId = id
-//                    }))
-//                }
-//
-//                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-//                self.present(alert, animated: true)
-//            }
-//        }
-//    }
-//
-//    private func presentNoPlansAlert() {
-//        let noPlansAlert = UIAlertController(
-//            title: "No Eligible Plans",
-//            message: "You don't have any completed plans with friends. Memories can only be posted after accepted plans that have already occurred.",
-//            preferredStyle: .alert
-//        )
-//        noPlansAlert.addAction(UIAlertAction(title: "OK", style: .default))
-//        self.present(noPlansAlert, animated: true)
-//    }
-
+    
+    //    func showPlanSelector() {
+    //        let alert = UIAlertController(title: "Select Plan", message: nil, preferredStyle: .actionSheet)
+    //
+    //        guard let currUserId = Auth.auth().currentUser?.uid else {
+    //            print("User not logged in.")
+    //            return
+    //        }
+    //
+    //        let userPlansRef = db.collection("users").document(currUserId).collection("plans")
+    //
+    //        userPlansRef.getDocuments { [weak self] snapshot, error in
+    //            guard let self = self else { return }
+    //
+    //            if let error = error {
+    //                print("Error fetching user plans: \(error.localizedDescription)")
+    //                return
+    //            }
+    //
+    //            guard let documents = snapshot?.documents, !documents.isEmpty else {
+    //                self.presentNoPlansAlert()
+    //                return
+    //            }
+    //
+    //            var fetchedPlans: [(String, String)] = []
+    //            let dispatchGroup = DispatchGroup()
+    //            let now = Date()
+    //
+    //            for doc in documents {
+    //                let planId = doc.documentID
+    //                let status = doc.get("status") as? String ?? "pending"
+    //                let timestamp = doc.get("date") as? Timestamp
+    //                let planDate = timestamp?.dateValue() ?? Date.distantFuture
+    //
+    //                // Filter only accepted and past plans
+    //                if status == "accepted", planDate < now {
+    //                    dispatchGroup.enter()
+    //
+    //                    self.db.collection("plans").document(planId).getDocument { planDoc, error in
+    //                        if let planDoc = planDoc, planDoc.exists {
+    //                            let planName = planDoc.get("activityName") as? String ?? "Unnamed Plan"
+    //                            fetchedPlans.append((planName, planId))
+    //                        } else {
+    //                            print("Plan document \(planId) not found: \(error?.localizedDescription ?? "")")
+    //                        }
+    //                        dispatchGroup.leave()
+    //                    }
+    //                }
+    //            }
+    //
+    //            dispatchGroup.notify(queue: .main) {
+    //                if fetchedPlans.isEmpty {
+    //                    self.presentNoPlansAlert()
+    //                    return
+    //                }
+    //
+    //                for (name, id) in fetchedPlans {
+    //                    alert.addAction(UIAlertAction(title: name, style: .default, handler: { _ in
+    //                        self.planPickerButton.setTitle(name, for: .normal)
+    //                        self.selectedPlanId = id
+    //                    }))
+    //                }
+    //
+    //                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+    //                self.present(alert, animated: true)
+    //            }
+    //        }
+    //    }
+    //
+    //    private func presentNoPlansAlert() {
+    //        let noPlansAlert = UIAlertController(
+    //            title: "No Eligible Plans",
+    //            message: "You don't have any completed plans with friends. Memories can only be posted after accepted plans that have already occurred.",
+    //            preferredStyle: .alert
+    //        )
+    //        noPlansAlert.addAction(UIAlertAction(title: "OK", style: .default))
+    //        self.present(noPlansAlert, animated: true)
+    //    }
+    
     func uploadImages(images: [UIImage], completion: @escaping ([String]) -> Void) {
         var urls: [String] = []
         let group = DispatchGroup()
@@ -344,8 +375,8 @@ extension NewMemoryViewController: UICollectionViewDataSource {
         return cell
     }
     
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: 280, height: 180)
-//    }
+    //    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    //        return CGSize(width: 280, height: 180)
+    //    }
 }
 

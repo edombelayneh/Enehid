@@ -17,11 +17,9 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     var feedMemories: [Memory] = []
     var feedStories : [Story] = []
     var selectedStory: Story?
-    
-    
+
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
-    
     
     @IBAction func onTappedNewMemory(_ sender: UIButton) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -140,14 +138,12 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                     .getDocuments { snapshot, error in
                         if let error = error {
                             print("error: \(error.localizedDescription)")
-                            
                             completion([])
                         }
-                        
+                
                         if let docs = snapshot?.documents {
                             print(docs)
                             let memories = docs.compactMap { doc -> Memory in
-                                
                                 print(doc)
                                 let data = doc.data()
                                 
@@ -276,14 +272,9 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             }
         }
     }
-    
-    
-    
 }
 
 extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource {
-    
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.feedMemories.count
     }
@@ -319,36 +310,6 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             }
         }
         
-//        bookmarkRef.getDocument { snapshot, _ in
-//            let isBookmarked = snapshot?.exists == true
-//            let iconName = isBookmarked ? "bookmark.fill" : "bookmark"
-//            DispatchQueue.main.async {
-//                cell.bookmarkButton.setImage(UIImage(systemName: iconName), for: .normal)
-//            }
-            
-//        }
-        
-        // Set tap behavior
-//        cell.onRecommendTapped = { [weak self] in
-//            self?.toggleRecommend(for: postId) { isRecommended in
-//                DispatchQueue.main.async {
-//                    let iconName = isRecommended ? "megaphone.fill" : "megaphone"
-//                    cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
-//                }
-//            }
-//        }
-//        
-//        cell.onBookmarkTapped = { [weak self] in
-//            self?.toggleBookmark(for: postId) { isBookmarked in
-//                DispatchQueue.main.async {
-//                    let iconName = isBookmarked ? "bookmark.fill" : "bookmark"
-//                    cell.bookmarkButton.setImage(UIImage(systemName: iconName), for: .normal)
-//                }
-//            }
-//        }
-    
-        
-        
         return cell
     }
     
@@ -364,7 +325,6 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
         cell.configure(with: feedStories[indexPath.item])
         return cell
     }
-    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowPostSegue" {
@@ -391,6 +351,5 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             }
         }
     }
-    
 }
 
