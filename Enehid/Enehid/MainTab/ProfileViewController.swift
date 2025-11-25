@@ -4,8 +4,6 @@
 //
 //  Created by Edom Belayneh on 4/8/25.
 //
-
-
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
@@ -86,6 +84,20 @@ class ProfileViewController: UIViewController {
             )
             
             completion(user)
+        }
+    }
+    
+    func fetchCounterLabels() {
+        db.collection("users").document(currentUID).collection("memories").getDocuments { snapshot, _ in
+            self.memoriesCounterLabel.text = "\(snapshot?.count ?? 0)"
+        }
+        
+        db.collection("users").document(currentUID).collection("stars").getDocuments { snapshot, _ in
+            self.starsCounterLabel.text = "\(snapshot?.count ?? 0)"
+        }
+        
+        db.collection("users").document(currentUID).collection("recommends").getDocuments { snapshot, _ in
+            self.recommendsCounterLabel.text = "\(snapshot?.count ?? 0)"
         }
     }
     
