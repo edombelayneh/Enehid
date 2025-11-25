@@ -10,12 +10,13 @@ import Firebase
 
 class FeedCell: UITableViewCell, UICollectionViewDelegate {
     
+    @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var profilePictureImageView: UIImageView!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var postCollectionView: UICollectionView!
     @IBOutlet weak var reecommendButton: UIButton!
-    @IBOutlet weak var bookmarkButton: UIButton!
-    @IBOutlet weak var mapsButton: UIButton!
+//    @IBOutlet weak var bookmarkButton: UIButton!
+//    @IBOutlet weak var mapsButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
     
     @IBOutlet weak var detailsLabel: UILabel!
@@ -23,6 +24,10 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     
     var onRecommendTapped: (() -> Void)?
     var onBookmarkTapped: (() -> Void)?
+    
+    var onStarTapped: (() -> Void)?
+    var onOpenMapsTapped: (() -> Void)?
+
     
     var memoryURLs: [String] = []
     override func awakeFromNib() {
@@ -68,6 +73,24 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     
     @IBAction func onTapBookmarkButton(_ sender: UIButton) {
         onBookmarkTapped?()
+    }
+    
+    
+    @IBAction func onTapMoreButton(_ sender: UIButton) {
+        let menu = UIMenu(title: "", children: [
+                UIAction(title: "Star", image: UIImage(systemName: "star")) { [weak self] _ in
+                    self?.onStarTapped?()
+                },
+                UIAction(title: "Open in Maps", image: UIImage(systemName: "map")) { [weak self] _ in
+                    self?.onOpenMapsTapped?()
+                },
+                UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { [weak self] _ in
+                    self?.onBookmarkTapped?()
+                }
+            ])
+            
+            moreButton.showsMenuAsPrimaryAction = true
+            moreButton.menu = menu
     }
     
     override func layoutSubviews() {

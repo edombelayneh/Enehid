@@ -11,8 +11,6 @@ import FirebaseAuth
 
 class FeedViewController: UIViewController, UITableViewDelegate, UICollectionViewDelegate {
     
-    
-    @IBOutlet weak var postCollectionView: UICollectionView!
     @IBOutlet weak var storyCollectionView: UICollectionView!
     @IBOutlet weak var feedTableView: UITableView!
     
@@ -321,33 +319,34 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             }
         }
         
-        bookmarkRef.getDocument { snapshot, _ in
-            let isBookmarked = snapshot?.exists == true
-            let iconName = isBookmarked ? "bookmark.fill" : "bookmark"
-            DispatchQueue.main.async {
-                cell.bookmarkButton.setImage(UIImage(systemName: iconName), for: .normal)
-            }
+//        bookmarkRef.getDocument { snapshot, _ in
+//            let isBookmarked = snapshot?.exists == true
+//            let iconName = isBookmarked ? "bookmark.fill" : "bookmark"
+//            DispatchQueue.main.async {
+//                cell.bookmarkButton.setImage(UIImage(systemName: iconName), for: .normal)
+//            }
             
-        }
+//        }
         
         // Set tap behavior
-        cell.onRecommendTapped = { [weak self] in
-            self?.toggleRecommend(for: postId) { isRecommended in
-                DispatchQueue.main.async {
-                    let iconName = isRecommended ? "megaphone.fill" : "megaphone"
-                    cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
-                }
-            }
-        }
-        
-        cell.onBookmarkTapped = { [weak self] in
-            self?.toggleBookmark(for: postId) { isBookmarked in
-                DispatchQueue.main.async {
-                    let iconName = isBookmarked ? "bookmark.fill" : "bookmark"
-                    cell.bookmarkButton.setImage(UIImage(systemName: iconName), for: .normal)
-                }
-            }
-        }
+//        cell.onRecommendTapped = { [weak self] in
+//            self?.toggleRecommend(for: postId) { isRecommended in
+//                DispatchQueue.main.async {
+//                    let iconName = isRecommended ? "megaphone.fill" : "megaphone"
+//                    cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
+//                }
+//            }
+//        }
+//        
+//        cell.onBookmarkTapped = { [weak self] in
+//            self?.toggleBookmark(for: postId) { isBookmarked in
+//                DispatchQueue.main.async {
+//                    let iconName = isBookmarked ? "bookmark.fill" : "bookmark"
+//                    cell.bookmarkButton.setImage(UIImage(systemName: iconName), for: .normal)
+//                }
+//            }
+//        }
+    
         
         
         return cell
