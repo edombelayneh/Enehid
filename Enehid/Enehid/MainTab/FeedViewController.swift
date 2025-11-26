@@ -274,6 +274,82 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
             }
         }
     }
+    
+    func handleAddToPlan(for memory: Memory) {
+        let planId = memory.planId
+        let db = Firestore.firestore()
+        
+        db.collection("plans").document(planId).getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Failed to fetch plan: \(error)")
+                return
+            }
+
+            guard let data = snapshot?.data() else {
+                print("❌ No plan data found")
+                return
+            }
+
+            guard let location = data["location"] as? String,
+                  let activityName = data["activityName"] as? String,
+                  let date = data["date"] as? String,
+                  let createdBy = data["createdBy"] as? String,
+                  let lat = data["lat"] as? Double,
+                  let lon = data["lon"] as? Double,
+                  let participants = data["participants"] as? [String: String],
+                  let acceptedByIDs = data["acceptedByIDs"] as? [String],
+                  let declinedByIDs = data["declinedByIDs"] as? [String] else {
+                print("❌ Malformed plan data")
+                return
+            }
+
+            // Construct the Plans object
+            let plan = Plans(
+                id: planId,
+                activityName: activityName,
+                location: location,
+                date: date,
+                createdBy: createdBy,
+                lat: lat,
+                lon: lon,
+                participants: participants,
+                acceptedByIDs: Set(acceptedByIDs),
+                declinedByIDs: Set(declinedByIDs),
+                iAccepted: acceptedByIDs.contains(currentUserUID),
+                iDeclined: declinedByIDs.contains(currentUserUID)
+            )
+
+            // Push to new plan screen
+            self.goToNewPlanScreen(prefillPlan: plan)
+        }
+    }
+    
+    func goToNewPlanScreen(prefillPlan: Plans) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let newPlanVC = storyboard.instantiateViewController(withIdentifier: "NewPlanViewController") as! NewPlanViewController
+
+        newPlanVC.prefillFromPlan = prefillPlan  // ← we'll define this in the next step
+
+        self.navigationController?.pushViewController(newPlanVC, animated: true)
+    }
+    
+    func openComments(for memoryId: String) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "CommentViewController") as! CommentViewController
+        vc.memoryId = memoryId
+
+        // Show as a bottom sheet modal
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+
+        present(vc, animated: true)
+    }
+
+
+
+
 }
 
 extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource {
@@ -288,6 +364,12 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
         
         let memory = feedMemories[indexPath.row]
         cell.configure(with: memory)
+        cell.onAddToPlanTapped = { [weak self] memory in
+            self?.handleAddToPlan(for: memory)
+        }
+        cell.onCommentTapped = { [weak self] in
+            self?.openComments(for: memory.id)
+        }
         
         // Configure recommend icon based on current state
         let postId = memory.id
@@ -324,6 +406,7 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StoryCell", for: indexPath) as? StoryCell else {
             return UICollectionViewCell()
         }
+        
         cell.configure(with: feedStories[indexPath.item])
         return cell
     }

@@ -15,10 +15,11 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var postCollectionView: UICollectionView!
     @IBOutlet weak var reecommendButton: UIButton!
-//    @IBOutlet weak var bookmarkButton: UIButton!
-//    @IBOutlet weak var mapsButton: UIButton!
+    //    @IBOutlet weak var bookmarkButton: UIButton!
+    //    @IBOutlet weak var mapsButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
     
+    @IBOutlet weak var addToPlan: UIButton!
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
     
@@ -27,29 +28,33 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     
     var onStarTapped: (() -> Void)?
     var onOpenMapsTapped: (() -> Void)?
+    var onAddToPlanTapped: ((Memory) -> Void)?
+    var onCommentTapped: (() -> Void)?
 
+    
+    var feedMemory: Memory?
     
     var memoryURLs: [String] = []
     
     override func awakeFromNib() {
         super.awakeFromNib()
-
-        backgroundColor = .clear 
+        
+        backgroundColor = .clear
         // Collection View setup
         postCollectionView.delegate = self
         postCollectionView.dataSource = self
         postCollectionView.isPagingEnabled = true
         postCollectionView.showsHorizontalScrollIndicator = false
-
+        
         if let layout = postCollectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.scrollDirection = .horizontal
             layout.minimumLineSpacing = 0
         }
-
+        
         // ✅ Style the bubble appearance
         contentView.layer.cornerRadius = 30
         contentView.layer.masksToBounds = true // Rounded corners clip subviews
-
+        
         // Add shadow to the CELL layer (not contentView)
         layer.shadowColor = UIColor.systemPurple.cgColor  // Or use UIColor(named: "SoftPurple")
         layer.shadowOpacity = 0.5
@@ -57,18 +62,20 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         layer.shadowRadius = 10
         layer.masksToBounds = false
     }
-
-
+    
+    
     func configure(with feedMemories: Memory?) {
+        self.feedMemory = feedMemories
+        
         usernameLabel.text = feedMemories?.username ?? "Unknown"
         detailsLabel.text = feedMemories?.caption ?? ""
-
+        
         if let urls = feedMemories?.memoryURLs {
             self.memoryURLs = urls
             print("memory urls: \(urls)")
             postCollectionView.reloadData()
         }
-
+        
         if let timestamp = feedMemories?.createdAt as? Timestamp {
             let date = timestamp.dateValue()
             let formatter = DateFormatter()
@@ -77,7 +84,7 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
             dateLabel.text = formatter.string(from: date)
         }
     }
-
+    
     
     
     @IBAction func onTapRecommendButton(_ sender: UIButton) {
@@ -88,22 +95,31 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         onBookmarkTapped?()
     }
     
+    @IBAction func onTapCommentButton(_ sender: UIButton) {
+        onCommentTapped?()
+    }
+    
+    @IBAction func onTapAddToPlan(_ sender: UIButton) {
+        if let memory = feedMemory {
+            onAddToPlanTapped?(memory)
+        }
+    }
     
     @IBAction func onTapMoreButton(_ sender: UIButton) {
         let menu = UIMenu(title: "", children: [
-                UIAction(title: "Star", image: UIImage(systemName: "star")) { [weak self] _ in
-                    self?.onStarTapped?()
-                },
-                UIAction(title: "Open in Maps", image: UIImage(systemName: "map")) { [weak self] _ in
-                    self?.onOpenMapsTapped?()
-                },
-                UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { [weak self] _ in
-                    self?.onBookmarkTapped?()
-                }
-            ])
-            
-            moreButton.showsMenuAsPrimaryAction = true
-            moreButton.menu = menu
+            UIAction(title: "Star", image: UIImage(systemName: "star")) { [weak self] _ in
+                self?.onStarTapped?()
+            },
+            UIAction(title: "Open in Maps", image: UIImage(systemName: "map")) { [weak self] _ in
+                self?.onOpenMapsTapped?()
+            },
+            UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { [weak self] _ in
+                self?.onBookmarkTapped?()
+            }
+        ])
+        
+        moreButton.showsMenuAsPrimaryAction = true
+        moreButton.menu = menu
     }
     
     override func layoutSubviews() {
@@ -122,6 +138,7 @@ extension FeedCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MemoryImageCell", for: indexPath) as! MemoryImageCell
         cell.configure(with: memoryURLs[indexPath.item])
+        
         return cell
     }
     

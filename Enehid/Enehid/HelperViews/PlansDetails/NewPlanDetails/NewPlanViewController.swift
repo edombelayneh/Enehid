@@ -21,6 +21,8 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
     @IBOutlet weak var locationTextField: UITextField!
     
     var selectedFriends: [User] = []
+    var prefillFromPlan: Plans?
+
     
     let searchCompleter = MKLocalSearchCompleter()
     var searchResults: [MKLocalSearchCompletion] = []
@@ -46,6 +48,14 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let plan = prefillFromPlan {
+            activityTextField.text = plan.activityName
+            locationTextField.text = plan.location
+            selectedLocation = (plan.location, plan.lat, plan.lon)
+        }
+        
+        
         activityTextField.applyEnehidTFStyle()
         locationTextField.applyEnehidTFStyle()
         searchCompleter.delegate = self
@@ -196,20 +206,20 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
             // ✅ Create group chat for this plan
             let groupChatRef = db.collection("groupChats").document(planId) // use same ID as plan
             var groupChatParticipants: [String: [String: Any]] = [:]
-
+            
             for (uid, username) in fullParticipants {
                 groupChatParticipants[uid] = [
                     "username": username,
                     "status": uid == currentUID ? "accepted" : "invited"
                 ]
             }
-
+            
             let groupChatData: [String: Any] = [
                 "planId": planId,
                 "createdAt": Timestamp(date: Date()),
                 "participants": groupChatParticipants
             ]
-
+            
             groupChatRef.setData(groupChatData) { error in
                 if let error = error {
                     print("❌ Failed to create group chat: \(error)")
