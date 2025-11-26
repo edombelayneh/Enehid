@@ -15,9 +15,7 @@ class MemoryImageCell: UICollectionViewCell {
     func configure(with urlString: String) {
         if let url = URL(string: urlString) {
             memoryImageView.clipsToBounds = true
-            memoryImageView.sd_setImage(with: url, placeholderImage: UIImage(named: "placeholder"))
+            memoryImageView.sd_setImage(with: url, placeholderImage: UIImage(systemName: "person"))
         }
     }
-
-
 }
