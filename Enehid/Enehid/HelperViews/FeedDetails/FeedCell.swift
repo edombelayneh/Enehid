@@ -29,6 +29,8 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     var onStarTapped: (() -> Void)?
     var onOpenMapsTapped: (() -> Void)?
     var onAddToPlanTapped: ((Memory) -> Void)?
+    var onCommentTapped: (() -> Void)?
+
     
     var feedMemory: Memory?
     
@@ -93,6 +95,9 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         onBookmarkTapped?()
     }
     
+    @IBAction func onTapCommentButton(_ sender: UIButton) {
+        onCommentTapped?()
+    }
     
     @IBAction func onTapAddToPlan(_ sender: UIButton) {
         if let memory = feedMemory {

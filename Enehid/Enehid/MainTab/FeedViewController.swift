@@ -332,6 +332,21 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
 
         self.navigationController?.pushViewController(newPlanVC, animated: true)
     }
+    
+    func openComments(for memoryId: String) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "CommentViewController") as! CommentViewController
+        vc.memoryId = memoryId
+
+        // Show as a bottom sheet modal
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+
+        present(vc, animated: true)
+    }
+
 
 
 
@@ -352,8 +367,10 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
         cell.onAddToPlanTapped = { [weak self] memory in
             self?.handleAddToPlan(for: memory)
         }
-
-
+        cell.onCommentTapped = { [weak self] in
+            self?.openComments(for: memory.id)
+        }
+        
         // Configure recommend icon based on current state
         let postId = memory.id
         let currentUID = Auth.auth().currentUser?.uid ?? ""
