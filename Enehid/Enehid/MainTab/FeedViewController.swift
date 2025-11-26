@@ -33,6 +33,8 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         feedTableView.delegate = self
         feedTableView.dataSource = self
         
+        feedTableView.backgroundColor = UIColor(named: "SoftPurple")
+        
         storyCollectionView.delegate = self
         storyCollectionView.dataSource = self
         

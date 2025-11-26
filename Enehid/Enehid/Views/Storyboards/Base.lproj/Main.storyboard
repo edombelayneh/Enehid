@@ -1163,7 +1163,7 @@
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Dp7-id-YQ5">
                                 <rect key="frame" x="0.0" y="162" width="393" height="128"/>
-                                <color key="backgroundColor" name="CreamBackground"/>
+                                <color key="backgroundColor" name="SoftPurple"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="128" id="2c1-I7-Q8t"/>
                                 </constraints>
@@ -1206,6 +1206,7 @@
                                                 <constraint firstAttribute="bottom" secondItem="WJR-eX-suI" secondAttribute="bottom" constant="4" id="zIf-mt-mKa"/>
                                             </constraints>
                                         </collectionViewCellContentView>
+                                        <color key="backgroundColor" name="CreamBackground"/>
                                         <connections>
                                             <outlet property="profileImage" destination="SBk-4A-MTN" id="mEY-J8-Vk0"/>
                                             <outlet property="username" destination="WJR-eX-suI" id="oHV-2k-Dqy"/>
@@ -1214,11 +1215,11 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="singleLineEtched" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="IBa-SN-yQM">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="IBa-SN-yQM">
                                 <rect key="frame" x="0.0" y="290" width="393" height="562"/>
                                 <color key="backgroundColor" name="CreamBackground"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleAspectFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedCell" rowHeight="509" id="cUM-t1-mjs" customClass="FeedCell" customModule="Enehid" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleAspectFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="FeedCell" rowHeight="509" id="cUM-t1-mjs" customClass="FeedCell" customModule="Enehid" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="393" height="509"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cUM-t1-mjs" id="wCJ-Uy-rCO">
@@ -1403,7 +1404,7 @@
                                                 <constraint firstAttribute="trailing" secondItem="U5B-xG-ioz" secondAttribute="trailing" constant="40" id="ylQ-s3-Rdf"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="0.22745099660000001" green="0.22745099660000001" blue="0.2352941036" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <color key="backgroundColor" name="SoftPurple"/>
                                         <connections>
                                             <outlet property="commentButton" destination="DgJ-bB-Hpw" id="uci-wb-jKb"/>
                                             <outlet property="dateLabel" destination="GH5-bS-Eto" id="JZK-8l-kY7"/>
@@ -1419,7 +1420,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="TUZ-Sq-565"/>
-                        <color key="backgroundColor" name="CreamBackground"/>
+                        <color key="backgroundColor" name="SoftPurple"/>
                         <constraints>
                             <constraint firstItem="IBa-SN-yQM" firstAttribute="top" secondItem="Dp7-id-YQ5" secondAttribute="bottom" id="Bqt-zm-cDy"/>
                             <constraint firstItem="IBa-SN-yQM" firstAttribute="trailing" secondItem="TUZ-Sq-565" secondAttribute="trailing" id="Cjc-2h-9XW"/>

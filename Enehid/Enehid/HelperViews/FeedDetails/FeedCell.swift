@@ -30,12 +30,14 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
 
     
     var memoryURLs: [String] = []
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+
+        backgroundColor = .clear 
+        // Collection View setup
         postCollectionView.delegate = self
         postCollectionView.dataSource = self
-        
         postCollectionView.isPagingEnabled = true
         postCollectionView.showsHorizontalScrollIndicator = false
 
@@ -44,7 +46,18 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
             layout.minimumLineSpacing = 0
         }
 
+        // ✅ Style the bubble appearance
+        contentView.layer.cornerRadius = 30
+        contentView.layer.masksToBounds = true // Rounded corners clip subviews
+
+        // Add shadow to the CELL layer (not contentView)
+        layer.shadowColor = UIColor.systemPurple.cgColor  // Or use UIColor(named: "SoftPurple")
+        layer.shadowOpacity = 0.5
+        layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowRadius = 10
+        layer.masksToBounds = false
     }
+
 
     func configure(with feedMemories: Memory?) {
         usernameLabel.text = feedMemories?.username ?? "Unknown"
@@ -110,6 +123,12 @@ extension FeedCell: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MemoryImageCell", for: indexPath) as! MemoryImageCell
         cell.configure(with: memoryURLs[indexPath.item])
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let spacer = UIView()
+        spacer.backgroundColor = .clear
+        return spacer
     }
     
     // Layout for horizontal scrolling
