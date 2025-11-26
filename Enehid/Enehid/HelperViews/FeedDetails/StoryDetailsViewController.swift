@@ -25,8 +25,10 @@ class StoryDetailsViewController: UIViewController {
         profilePicImage.layer.cornerRadius = profilePicImage.frame.size.width / 2
         profilePicImage.clipsToBounds = true
 
-        usernameLabel.text = story?.username
+        // ✅ Set username
+        usernameLabel.text = story?.username ?? "Unknown"
 
+        // ✅ Load profile picture
         if let avatarURL = story?.profilePictureURL {
             AvatarManager.loadAvatar(from: avatarURL, into: profilePicImage, cropToFace: true)
         } else if let ownerId = story?.ownerId {
@@ -37,17 +39,26 @@ class StoryDetailsViewController: UIViewController {
             }
         }
 
-        // Display story media
+        // ✅ Load story image
         if let mediaURL = story?.mediaURL, let url = URL(string: mediaURL) {
             URLSession.shared.dataTask(with: url) { data, _, error in
-                if let data = data {
-                    DispatchQueue.main.async {
-                        self.storyImage.image = UIImage(data: data)
-                    }
+                if let error = error {
+                    print("❌ Error loading story image: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let data = data, let image = UIImage(data: data) else {
+                    print("❌ Could not convert data to image.")
+                    return
+                }
+
+                DispatchQueue.main.async {
+                    self.storyImage.image = image
                 }
             }.resume()
         }
     }
+
 
     private func fetchAvatar(for uid: String, completion: @escaping (String?) -> Void) {
         Firestore.firestore().collection("users").document(uid).getDocument { snapshot, error in
@@ -58,20 +69,6 @@ class StoryDetailsViewController: UIViewController {
             }
         }
     }
-
-    
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//
-//        // Do any additional setup after loading the view.
-//        profilePicImage.layer.cornerRadius = profilePicImage.frame.size.width / 2
-//        profilePicImage.clipsToBounds = true
-//        
-//        usernameLabel.text = story?.username
-////        profilePicImage.image = story?.image
-////        storyImage.image = story?.story
-//    }
-    
 
     /*
     // MARK: - Navigation

@@ -8,6 +8,11 @@
 import UIKit
 import AVFoundation
 import PhotosUI
+import Firebase
+import FirebaseStorage
+import FirebaseAuth
+import FirebaseFirestore
+
 
 class CameraViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     

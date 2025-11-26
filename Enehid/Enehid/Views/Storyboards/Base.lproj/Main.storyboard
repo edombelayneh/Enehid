@@ -768,7 +768,7 @@
         <!--Story Preview View Controller-->
         <scene sceneID="APG-L6-hdT">
             <objects>
-                <viewController storyboardIdentifier="StoryPreviewViewController" id="hZF-MA-cRp" customClass="StoryPreviewViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="StoryPreviewViewController" hidesBottomBarWhenPushed="YES" id="hZF-MA-cRp" customClass="StoryPreviewViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="CeH-wC-Sys">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -3210,7 +3210,7 @@
         <!--Camera View Controller-->
         <scene sceneID="KYF-cx-CWC">
             <objects>
-                <viewController id="gnF-Zc-IzX" customClass="CameraViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController hidesBottomBarWhenPushed="YES" id="gnF-Zc-IzX" customClass="CameraViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="S3R-Or-a6K">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -3218,26 +3218,39 @@
                             <view contentMode="scaleToFill" restorationIdentifier="previewView" translatesAutoresizingMaskIntoConstraints="NO" id="btV-ST-5Is">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wey-en-0a2">
-                                        <rect key="frame" x="159" y="782" width="75" height="35"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wBp-Tp-8rE">
+                                        <rect key="frame" x="24" y="771" width="56" height="47"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
-                                        <connections>
-                                            <action selector="onTapCapturePhoto:" destination="gnF-Zc-IzX" eventType="touchUpInside" id="jrc-YZ-XWg"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wBp-Tp-8rE">
-                                        <rect key="frame" x="24" y="782" width="75" height="35"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain">
+                                            <imageReference key="image" image="photo.fill.on.rectangle.fill" catalog="system" symbolScale="large"/>
+                                            <color key="baseForegroundColor" name="PrimaryColor"/>
+                                        </buttonConfiguration>
                                         <connections>
                                             <action selector="onTapOpenLibrary:" destination="gnF-Zc-IzX" eventType="touchUpInside" id="rgL-Re-o5t"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wey-en-0a2">
+                                        <rect key="frame" x="172" y="777" width="49.666666666666657" height="34.333333333333371"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain">
+                                            <imageReference key="image" image="circle.inset.filled" catalog="system" symbolScale="large"/>
+                                            <color key="baseForegroundColor" name="PrimaryColor"/>
+                                        </buttonConfiguration>
+                                        <connections>
+                                            <action selector="onTapCapturePhoto:" destination="gnF-Zc-IzX" eventType="touchUpInside" id="jrc-YZ-XWg"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="wey-en-0a2" firstAttribute="leading" secondItem="wBp-Tp-8rE" secondAttribute="trailing" constant="92" id="7WN-A7-Q1n"/>
+                                    <constraint firstItem="wBp-Tp-8rE" firstAttribute="leading" secondItem="btV-ST-5Is" secondAttribute="leading" constant="24" id="8qx-si-nmI"/>
+                                    <constraint firstAttribute="trailing" secondItem="wey-en-0a2" secondAttribute="trailing" constant="171.33000000000001" id="Bhp-tk-WHC"/>
+                                    <constraint firstItem="wBp-Tp-8rE" firstAttribute="top" secondItem="btV-ST-5Is" secondAttribute="top" constant="771" id="ZRx-dt-vn3"/>
+                                    <constraint firstAttribute="bottom" secondItem="wBp-Tp-8rE" secondAttribute="bottom" constant="34" id="dG3-Zt-9Sn"/>
+                                    <constraint firstAttribute="bottom" secondItem="wey-en-0a2" secondAttribute="bottom" constant="40.670000000000002" id="iDs-8s-gOI"/>
+                                    <constraint firstItem="wey-en-0a2" firstAttribute="top" secondItem="btV-ST-5Is" secondAttribute="top" constant="777" id="uba-OE-CIc"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="u5p-QN-CVu"/>
@@ -3268,6 +3281,7 @@
         <image name="calendar" catalog="system" width="128" height="107"/>
         <image name="calendar.badge.plus" catalog="system" width="128" height="109"/>
         <image name="checkmark" catalog="system" width="128" height="114"/>
+        <image name="circle.inset.filled" catalog="system" width="128" height="123"/>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="enehidLaunch" width="500" height="191"/>
         <image name="eye" catalog="system" width="128" height="79"/>
@@ -3288,6 +3302,7 @@
         <image name="person.3.sequence" catalog="system" width="128" height="64"/>
         <image name="person.circle" catalog="system" width="128" height="123"/>
         <image name="person.crop.circle" catalog="system" width="128" height="123"/>
+        <image name="photo.fill.on.rectangle.fill" catalog="system" width="128" height="102"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <image name="plus.circle.fill" catalog="system" width="128" height="123"/>
         <image name="rectangle.and.pencil.and.ellipsis" catalog="system" width="128" height="85"/>

@@ -93,7 +93,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                                         ownerId: data["ownerId"] as? String ?? "",
                                         username: data["username"] as? String ?? "",
                                         profilePictureURL: avatarURL,
-                                        mediaURL: data["mediaURL"] as? String ?? "",
+                                        mediaURL: data["storyImageURL"] as? String ?? "",
                                         createdAt: (data["createdAt"] as? Timestamp)?.dateValue() ?? Date()
                                         //                                        isExpired: data["isExpired"] as? Bool ?? false
                                     )
