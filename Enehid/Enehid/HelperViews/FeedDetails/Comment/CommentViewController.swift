@@ -41,7 +41,7 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                     print("Error loading comments: \(error)")
                     return
                 }
-
+                
                 self.comments = snapshot?.documents.compactMap { doc in
                     let data = doc.data()
                     return Comment(
@@ -52,11 +52,11 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
                         profilePictureURL: data["profilePictureURL"] as? String
                     )
                 } ?? []
-
+                
                 self.tableView.reloadData()
             }
     }
-
+    
     
     func loadCurrentUserAvatar() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
@@ -86,27 +86,53 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
             .collection("comments")
             .document()
         
-        // ✅ Fetch user info first (so we can store profilePictureURL)
-        db.collection("users").document(user.uid).getDocument { snapshot, error in
-            let avatarURL = snapshot?.data()?["profilePictureURL"] as? String ?? ""
-            
-            let data: [String: Any] = [
-                "text": text,
-                "username": user.displayName ?? "Anonymous",
-                "userId": user.uid,
-                "timestamp": Timestamp(),
-                "profilePictureURL": avatarURL // ✅ saved into comment!
-            ]
-            
-            commentRef.setData(data) { error in
-                if let error = error {
-                    print("Failed to save comment: \(error)")
-                } else {
-                    self.commentInputField.text = ""
-                    self.loadComments()
+        Firestore.firestore()
+            .collection("users")
+            .document(user.uid)
+            .getDocument { snapshot, error in
+                
+                let avatarURL = snapshot?.data()?["profilePictureURL"] as? String ?? ""
+                let username = snapshot?.data()?["username"] as? String ?? "Anonymous"
+                
+                let data: [String: Any] = [
+                    "text": text,
+                    "username": username,
+                    "userId": user.uid,
+                    "timestamp": Timestamp(),
+                    "profilePictureURL": avatarURL
+                ]
+                
+                commentRef.setData(data) { error in
+                    if let error = error {
+                        print("Failed to save comment: \(error)")
+                    } else {
+                        self.commentInputField.text = ""
+                        self.loadComments()
+                    }
                 }
             }
-        }
+        
+        //        // ✅ Fetch user info first (so we can store profilePictureURL)
+        //        db.collection("users").document(user.uid).getDocument { snapshot, error in
+        //            let avatarURL = snapshot?.data()?["profilePictureURL"] as? String ?? ""
+        //
+        //            let data: [String: Any] = [
+        //                "text": text,
+        //                "username": user.displayName ?? "Anonymous",
+        //                "userId": user.uid,
+        //                "timestamp": Timestamp(),
+        //                "profilePictureURL": avatarURL // ✅ saved into comment!
+        //            ]
+        //
+        //            commentRef.setData(data) { error in
+        //                if let error = error {
+        //                    print("Failed to save comment: \(error)")
+        //                } else {
+        //                    self.commentInputField.text = ""
+        //                    self.loadComments()
+        //                }
+        //            }
+        //        }
     }
     
     // MARK: - TableView
@@ -121,8 +147,19 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         
         let comment = comments[indexPath.row]
         cell.configure(with: comment)
+        
+        // 💅 Round styling
+//        cell.backgroundColor = UIColor.creamBackground
+//        cell.layer.cornerRadius = 20
+//        cell.layer.masksToBounds = true
+//        cell.layer.shadowColor = UIColor.black.cgColor
+//        cell.layer.shadowOpacity = 0.5
+//        cell.layer.shadowOffset = CGSize(width: 0, height: 3)
+//        cell.layer.shadowRadius = 6
+//        cell.selectionStyle = .none
+        
         return cell
     }
-
+    
 }
 
