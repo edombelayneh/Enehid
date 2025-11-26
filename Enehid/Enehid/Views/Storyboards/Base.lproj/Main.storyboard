@@ -1363,7 +1363,7 @@
                                                         <imageReference key="image" image="calendar.badge.plus" catalog="system" symbolScale="medium"/>
                                                     </buttonConfiguration>
                                                     <connections>
-                                                        <action selector="onTapAddToPlans:" destination="4Th-fV-C6H" eventType="touchUpInside" id="hJa-DA-St4"/>
+                                                        <action selector="onTapAddToPlan:" destination="cUM-t1-mjs" eventType="touchUpInside" id="JTT-10-a3h"/>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nkh-ua-79u">
@@ -1453,6 +1453,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" name="SoftPurple"/>
                                         <connections>
+                                            <outlet property="addToPlan" destination="w2q-U5-BM1" id="lXw-O8-be5"/>
                                             <outlet property="commentButton" destination="DgJ-bB-Hpw" id="uci-wb-jKb"/>
                                             <outlet property="dateLabel" destination="GH5-bS-Eto" id="JZK-8l-kY7"/>
                                             <outlet property="detailsLabel" destination="RQ0-g5-pHp" id="22i-0Q-7iN"/>
