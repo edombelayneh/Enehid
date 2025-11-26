@@ -4,8 +4,6 @@
 //
 //  Created by Edom Belayneh on 4/8/25.
 //
-
-
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
@@ -63,49 +61,66 @@ class ProfileViewController: UIViewController {
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
-    func fetchUser(completion: @escaping (User?) -> Void) {
-        self.db.collection("users").document(self.currentUID).getDocument { snapshot, error in
-            if let error = error {
-                print("Error fetching user: \(error.localizedDescription)")
-                completion(nil)
-                return
-            }
-            
-            guard let data = snapshot?.data() else {
-                print("User not found")
-                completion(nil)
-                return
-            }
-            
-            let user = User (
-                id: self.currentUID,
-                username: data["username"] as? String ?? "",
-                email: data["email"] as? String ?? "",
-                profilePictureURL: data["profilePictureURL"] as? String,
-                friends: data["friends"] as? [String:String] ?? [:],
-            )
-            
-            completion(user)
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPageViewController()
         
         // Do any additional setup after loading the view.
-        fetchUser { user in
-            guard let user = user else { return }
-            DispatchQueue.main.async {
-                self.usernameLabel.text = user.username
-                self.memoriesCounterLabel.text = "\(user.friends.count)"
-                AvatarManager.loadAvatar(from: user.profilePictureURL, into: self.profilePicImageView)
-                print("👀 Loading avatar from: \(user.profilePictureURL ?? "nil")")
-            }
-        }
+        fetchUserAndCounters()
         postSegmentedControl.selectedSegmentIndex = 0
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            Animation.addPulseAnimationAroundAvatar(profilePicImage: self.profilePicImageView)
+        }
     }
     
+    private func fetchUserAndCounters() {
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            print("🚨 No user signed in")
+            return
+        }
+        
+        let userRef = db.collection("users").document(currentUID)
+        
+        userRef.getDocument { [weak self] snapshot, error in
+            guard let self = self else { return }
+            guard let data = snapshot?.data(), error == nil else {
+                print("❌ Failed to fetch user: \(error?.localizedDescription ?? "Unknown error")")
+                return
+            }
+            
+            let username = data["username"] as? String ?? "Unknown"
+            let profilePictureURL = data["profilePictureURL"] as? String
+            DispatchQueue.main.async {
+                self.usernameLabel.text = username
+                AvatarManager.loadAvatar(from: profilePictureURL, into: self.profilePicImageView)
+            }
+            
+            // Now fetch the counters
+            self.fetchAndDisplayCounters(uid: currentUID)
+        }
+    }
+    
+    private func fetchAndDisplayCounters(uid: String) {
+        let userDoc = db.collection("users").document(uid)
+        
+        userDoc.collection("memories").getDocuments { snapshot, _ in
+            DispatchQueue.main.async {
+                self.memoriesCounterLabel.text = "\(snapshot?.count ?? 0)"
+            }
+        }
+        
+        userDoc.collection("stars").getDocuments { snapshot, _ in
+            DispatchQueue.main.async {
+                self.starsCounterLabel.text = "\(snapshot?.count ?? 0)"
+            }
+        }
+        
+        userDoc.collection("recommends").getDocuments { snapshot, _ in
+            DispatchQueue.main.async {
+                self.recommendsCounterLabel.text = "\(snapshot?.count ?? 0)"
+            }
+        }
+    }
     
     /*
      // MARK: - Navigation
@@ -146,8 +161,6 @@ class ProfileViewController: UIViewController {
         pageViewController.didMove(toParent: self)
         pageViewController.setViewControllers([orderedViewControllers[0]], direction: .forward, animated:false)
     }
-    
-    
 }
 
 extension ProfileViewController: UIPageViewControllerDataSource {
