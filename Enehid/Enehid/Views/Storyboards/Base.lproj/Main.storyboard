@@ -2633,7 +2633,7 @@
                                 <segments>
                                     <segment title="" image="memories" catalog="system"/>
                                     <segment title="" image="star" catalog="system"/>
-                                    <segment title="" image="rectangle.and.pencil.and.ellipsis" catalog="system"/>
+                                    <segment title="" image="megaphone" catalog="system"/>
                                 </segments>
                                 <color key="tintColor" name="TextButton"/>
                                 <color key="selectedSegmentTintColor" name="SoftPurple"/>

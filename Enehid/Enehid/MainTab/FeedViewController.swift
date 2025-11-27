@@ -364,9 +364,22 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
         
         let memory = feedMemories[indexPath.row]
         cell.configure(with: memory)
+        // Recommend button
+        cell.onRecommendTapped = { [weak self] in
+            guard let self = self else { return }
+
+            self.toggleRecommend(for: memory.id) { isRecommended in
+                DispatchQueue.main.async {
+                    let iconName = isRecommended ? "megaphone.fill" : "megaphone"
+                    cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
+                }
+            }
+        }
+        // Add to plan Button
         cell.onAddToPlanTapped = { [weak self] memory in
             self?.handleAddToPlan(for: memory)
         }
+        // Comment button
         cell.onCommentTapped = { [weak self] in
             self?.openComments(for: memory.id)
         }
@@ -393,7 +406,6 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
                 cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
             }
         }
-        
         return cell
     }
     
