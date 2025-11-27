@@ -106,8 +106,18 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
+        
+        let numberOfItems = collectionView.numberOfItems(inSection: section)
+        
+        // If only 1 item, align it to the left
+        if numberOfItems == 1 {
+            return UIEdgeInsets(top: 1, left: 0, bottom: 1, right: collectionView.bounds.width / 1.5)
+        }
+        
+        // Normal grid layout for multiple items
         return UIEdgeInsets(top: 1, left: 0, bottom: 1, right: 0)
     }
+
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,

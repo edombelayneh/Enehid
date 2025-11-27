@@ -22,6 +22,9 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     @IBOutlet weak var addToPlan: UIButton!
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var bookmarkStatusIcon: UIButton!
+    @IBOutlet weak var starStatusIcon: UIButton!
+
     
     var onRecommendTapped: (() -> Void)?
     var onBookmarkTapped: (() -> Void)?
@@ -128,6 +131,12 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
             layout.itemSize = postCollectionView.frame.size
         }
     }
+    
+    func updateStatusIcons(isBookmarked: Bool, isStarred: Bool) {
+        bookmarkStatusIcon.isHidden = !isBookmarked
+        starStatusIcon.isHidden = !isStarred
+    }
+
 }
 
 extension FeedCell: UICollectionViewDataSource {

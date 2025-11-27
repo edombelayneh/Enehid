@@ -1569,21 +1569,31 @@
                                                 </collectionView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YUi-bo-iBJ">
                                                     <rect key="frame" x="360.66666666666669" y="40" width="25" height="25"/>
+                                                    <accessibility key="accessibilityConfiguration">
+                                                        <accessibilityTraits key="traits" button="YES" notEnabled="YES"/>
+                                                    </accessibility>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="25" id="YqZ-Tg-eWa"/>
                                                         <constraint firstAttribute="width" constant="25" id="nVi-Ep-9z0"/>
                                                     </constraints>
                                                     <state key="normal" title="Button"/>
-                                                    <buttonConfiguration key="configuration" style="plain" image="bookmark.fill"/>
+                                                    <buttonConfiguration key="configuration" style="plain" image="bookmark.fill">
+                                                        <color key="baseForegroundColor" name="SoftPurple"/>
+                                                    </buttonConfiguration>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0El-Hz-7bC">
                                                     <rect key="frame" x="7.6666666666666679" y="40" width="25.000000000000004" height="25"/>
+                                                    <accessibility key="accessibilityConfiguration">
+                                                        <accessibilityTraits key="traits" button="YES" notEnabled="YES"/>
+                                                    </accessibility>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="25" id="Zhw-A3-reR"/>
                                                         <constraint firstAttribute="width" constant="25" id="avP-5q-wQm"/>
                                                     </constraints>
                                                     <state key="normal" title="Button"/>
-                                                    <buttonConfiguration key="configuration" style="plain" image="star.fill"/>
+                                                    <buttonConfiguration key="configuration" style="plain" image="star.fill">
+                                                        <color key="baseForegroundColor" name="SoftPurple"/>
+                                                    </buttonConfiguration>
                                                 </button>
                                             </subviews>
                                             <color key="backgroundColor" name="CreamBackground"/>
@@ -1620,6 +1630,7 @@
                                         <color key="backgroundColor" name="SoftPurple"/>
                                         <connections>
                                             <outlet property="addToPlan" destination="w2q-U5-BM1" id="lXw-O8-be5"/>
+                                            <outlet property="bookmarkStatusIcon" destination="YUi-bo-iBJ" id="2GE-Lh-Dxf"/>
                                             <outlet property="commentButton" destination="DgJ-bB-Hpw" id="uci-wb-jKb"/>
                                             <outlet property="dateLabel" destination="GH5-bS-Eto" id="JZK-8l-kY7"/>
                                             <outlet property="detailsLabel" destination="RQ0-g5-pHp" id="22i-0Q-7iN"/>
@@ -1627,6 +1638,7 @@
                                             <outlet property="postCollectionView" destination="U5B-xG-ioz" id="5bv-MO-LHV"/>
                                             <outlet property="profilePictureImageView" destination="UnV-kB-m0s" id="YEa-tw-YrI"/>
                                             <outlet property="reecommendButton" destination="Nkh-ua-79u" id="2n6-Kz-8hp"/>
+                                            <outlet property="starStatusIcon" destination="0El-Hz-7bC" id="xA7-ZZ-rOU"/>
                                             <outlet property="usernameLabel" destination="pUW-bx-4J9" id="x24-bn-keG"/>
                                         </connections>
                                     </tableViewCell>

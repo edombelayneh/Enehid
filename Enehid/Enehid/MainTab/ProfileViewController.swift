@@ -109,7 +109,7 @@ class ProfileViewController: UIViewController {
             }
         }
         
-        userDoc.collection("stars").getDocuments { snapshot, _ in
+        userDoc.collection("starred").getDocuments { snapshot, _ in
             DispatchQueue.main.async {
                 self.starsCounterLabel.text = "\(snapshot?.count ?? 0)"
             }
