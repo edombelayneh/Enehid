@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
+import CoreLocation
 
 class FeedViewController: UIViewController, UITableViewDelegate, UICollectionViewDelegate {
     
@@ -17,7 +18,10 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     var feedMemories: [Memory] = []
     var feedStories : [Story] = []
     var selectedStory: Story?
-
+    
+    var isBookmarked = false
+    var isStarred = false
+    
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
@@ -142,7 +146,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                             print("error: \(error.localizedDescription)")
                             completion([])
                         }
-                
+                        
                         if let docs = snapshot?.documents {
                             print(docs)
                             let memories = docs.compactMap { doc -> Memory in
@@ -275,6 +279,56 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         }
     }
     
+    func toggleStarred(for postId: String, completion: @escaping (Bool) -> Void) {
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            completion(false)
+            return
+        }
+        
+        let db = Firestore.firestore()
+        let starredRef = db
+            .collection("users")
+            .document(currentUID)
+            .collection("starred")
+            .document(postId)
+        
+        starredRef.getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error checking starred status: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+            
+            if snapshot?.exists == true {
+                // ❌ Unstar
+                starredRef.delete { error in
+                    if let error = error {
+                        print("❌ Failed to unstar: \(error.localizedDescription)")
+                        completion(false)
+                    } else {
+                        print("⭐️ Unstarred post \(postId)")
+                        completion(false) // no longer starred
+                    }
+                }
+            } else {
+                // ✅ Star
+                starredRef.setData([
+                    "postId": postId,
+                    "starredAt": Timestamp()
+                ]) { error in
+                    if let error = error {
+                        print("❌ Failed to star: \(error.localizedDescription)")
+                        completion(false)
+                    } else {
+                        print("🌟 Starred post \(postId)")
+                        completion(true)
+                    }
+                }
+            }
+        }
+    }
+    
+    
     func handleAddToPlan(for memory: Memory) {
         let planId = memory.planId
         let db = Firestore.firestore()
@@ -284,12 +338,12 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                 print("❌ Failed to fetch plan: \(error)")
                 return
             }
-
+            
             guard let data = snapshot?.data() else {
                 print("❌ No plan data found")
                 return
             }
-
+            
             guard let location = data["location"] as? String,
                   let activityName = data["activityName"] as? String,
                   let date = data["date"] as? String,
@@ -302,7 +356,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                 print("❌ Malformed plan data")
                 return
             }
-
+            
             // Construct the Plans object
             let plan = Plans(
                 id: planId,
@@ -318,7 +372,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
                 iAccepted: acceptedByIDs.contains(currentUserUID),
                 iDeclined: declinedByIDs.contains(currentUserUID)
             )
-
+            
             // Push to new plan screen
             self.goToNewPlanScreen(prefillPlan: plan)
         }
@@ -327,9 +381,9 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
     func goToNewPlanScreen(prefillPlan: Plans) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let newPlanVC = storyboard.instantiateViewController(withIdentifier: "NewPlanViewController") as! NewPlanViewController
-
+        
         newPlanVC.prefillFromPlan = prefillPlan  // ← we'll define this in the next step
-
+        
         self.navigationController?.pushViewController(newPlanVC, animated: true)
     }
     
@@ -337,19 +391,19 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "CommentViewController") as! CommentViewController
         vc.memoryId = memoryId
-
+        
         // Show as a bottom sheet modal
         if let sheet = vc.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
             sheet.prefersGrabberVisible = true
         }
-
+        
         present(vc, animated: true)
     }
-
-
-
-
+    
+    
+    
+    
 }
 
 extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource {
@@ -364,12 +418,77 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
         
         let memory = feedMemories[indexPath.row]
         cell.configure(with: memory)
+        // Recommend button
+        cell.onRecommendTapped = { [weak self] in
+            guard let self = self else { return }
+            
+            self.toggleRecommend(for: memory.id) { isRecommended in
+                DispatchQueue.main.async {
+                    let iconName = isRecommended ? "megaphone.fill" : "megaphone"
+                    cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
+                }
+            }
+        }
+        // Add to plan Button
         cell.onAddToPlanTapped = { [weak self] memory in
             self?.handleAddToPlan(for: memory)
         }
+        // Comment button
         cell.onCommentTapped = { [weak self] in
             self?.openComments(for: memory.id)
         }
+        // Bookmark Button - in more
+        cell.onBookmarkTapped = { [weak self] in
+            guard let self = self else { return }
+            
+            self.toggleBookmark(for: memory.id) { isBookmarked in
+                DispatchQueue.main.async {
+                    print("📎 Bookmark toggled: \(isBookmarked)")
+                    // Optional: update icon here if needed
+                }
+            }
+        }
+        // Star Button - in more
+        cell.onStarTapped = { [weak self] in
+            guard let self = self else { return }
+            
+            self.toggleStarred(for: memory.id) { isStarred in
+                DispatchQueue.main.async {
+                    print("🌟 Memory was Starred toggled: \(isStarred)")
+                }
+            }
+        }
+        // Open In Maps Button - in more
+        cell.onOpenMapsTapped = { [weak self] memory in
+            guard let self = self else { return }
+            
+            let planId = memory.planId
+            Firestore.firestore().collection("plans").document(planId).getDocument { snapshot, error in
+                if let error = error {
+                    print("❌ Failed to fetch plan for map: \(error)")
+                    return
+                }
+                
+                guard let data = snapshot?.data(),
+                      let lat = data["lat"] as? Double,
+                      let lon = data["lon"] as? Double,
+                      let location = data["location"] as? String else {
+                    print("❌ Missing lat/lon or location in plan")
+                    return
+                }
+                
+                // Push to MapViewController
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                if let mapVC = storyboard.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController {
+                    mapVC.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                    mapVC.locationName = location
+                    self.navigationController?.pushViewController(mapVC, animated: true)
+                }
+            }
+        }
+        
+        
+        
         
         // Configure recommend icon based on current state
         let postId = memory.id
@@ -386,6 +505,12 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             .collection("bookmarked")
             .document(postId)
         
+        let starredRef = Firestore.firestore()
+            .collection("users")
+            .document(currentUID)
+            .collection("starred")
+            .document(postId)
+        
         recommendRef.getDocument { snapshot, _ in
             let isRecommended = snapshot?.exists == true
             let iconName = isRecommended ? "megaphone.fill" : "megaphone"
@@ -393,6 +518,21 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
                 cell.reecommendButton.setImage(UIImage(systemName: iconName), for: .normal)
             }
         }
+        
+        // Bookmark
+        bookmarkRef.getDocument { snapshot, _ in
+            self.isBookmarked = snapshot?.exists == true
+            
+            // Starred
+            starredRef.getDocument { snapshot, _ in
+                self.isStarred = snapshot?.exists == true
+                
+                DispatchQueue.main.async {
+                    cell.updateStatusIcons(isBookmarked: self.isBookmarked, isStarred: self.isStarred)
+                }
+            }
+        }
+        
         
         return cell
     }

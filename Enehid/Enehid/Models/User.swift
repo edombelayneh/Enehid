@@ -16,7 +16,7 @@ struct User: Codable, Identifiable {
     var email: String
     var profilePictureURL: String?
    
-    var avatarSkin: String?        // e.g. "skin_tone_05"
+    var avatarSkin: String?      
     var avatarEyes: String?
     var avatarMouth: String?
     var avatarAccessory: String?

@@ -22,12 +22,14 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     @IBOutlet weak var addToPlan: UIButton!
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var bookmarkStatusIcon: UIButton!
+    @IBOutlet weak var starStatusIcon: UIButton!
+
     
     var onRecommendTapped: (() -> Void)?
     var onBookmarkTapped: (() -> Void)?
-    
     var onStarTapped: (() -> Void)?
-    var onOpenMapsTapped: (() -> Void)?
+    var onOpenMapsTapped: ((Memory) -> Void)?
     var onAddToPlanTapped: ((Memory) -> Void)?
     var onCommentTapped: (() -> Void)?
 
@@ -111,7 +113,8 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
                 self?.onStarTapped?()
             },
             UIAction(title: "Open in Maps", image: UIImage(systemName: "map")) { [weak self] _ in
-                self?.onOpenMapsTapped?()
+                guard let self = self, let memory = self.feedMemory else { return }
+                self.onOpenMapsTapped?(memory)
             },
             UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { [weak self] _ in
                 self?.onBookmarkTapped?()
@@ -128,6 +131,12 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
             layout.itemSize = postCollectionView.frame.size
         }
     }
+    
+    func updateStatusIcons(isBookmarked: Bool, isStarred: Bool) {
+        bookmarkStatusIcon.isHidden = !isBookmarked
+        starStatusIcon.isHidden = !isStarred
+    }
+
 }
 
 extension FeedCell: UICollectionViewDataSource {
