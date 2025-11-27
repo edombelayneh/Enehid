@@ -2472,33 +2472,11 @@
                                                     <color key="textColor" name="TextSecondary"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rXC-Yk-Yuu">
-                                                    <rect key="frame" x="335" y="126" width="47" height="35"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="47" id="xbm-38-Jho"/>
-                                                    </constraints>
-                                                    <color key="tintColor" name="TextButton"/>
-                                                    <state key="normal" title="Button"/>
-                                                    <buttonConfiguration key="configuration" style="plain" image="megaphone" catalog="system"/>
-                                                    <connections>
-                                                        <action selector="onTapRecommend:" destination="uf6-g6-BeG" eventType="touchUpInside" id="AxA-JT-4Gv"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OUa-Tq-5sR">
-                                                    <rect key="frame" x="223" y="126" width="47" height="35"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="47" id="9BJ-Kj-pO7"/>
-                                                        <constraint firstAttribute="height" constant="35" id="ttq-5N-wtP"/>
-                                                    </constraints>
-                                                    <color key="tintColor" name="TextButton"/>
-                                                    <state key="normal" title="Button"/>
-                                                    <buttonConfiguration key="configuration" style="plain" image="rectangle.and.pencil.and.ellipsis" catalog="system"/>
-                                                    <connections>
-                                                        <action selector="onTapComment:" destination="uf6-g6-BeG" eventType="touchUpInside" id="Qzt-mT-IPN"/>
-                                                    </connections>
-                                                </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="friend-username" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fkf-oL-5Oc">
                                                     <rect key="frame" x="20" y="139" width="189" height="35"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="189" id="IMf-hC-Gxb"/>
+                                                    </constraints>
                                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
                                                     <color key="textColor" name="PrimaryColor"/>
                                                     <nil key="highlightedColor"/>
@@ -2530,40 +2508,65 @@
                                                         <action selector="onTapBookmark:" destination="uf6-g6-BeG" eventType="touchUpInside" id="fu1-VI-NVa"/>
                                                     </connections>
                                                 </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zJG-Xo-M8I">
+                                                    <rect key="frame" x="223" y="126" width="47" height="35"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="35" id="E91-9b-XmF"/>
+                                                        <constraint firstAttribute="width" constant="47" id="pQz-rH-P5z"/>
+                                                    </constraints>
+                                                    <color key="tintColor" name="TextButton"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" image="megaphone" catalog="system" title=""/>
+                                                    <connections>
+                                                        <action selector="onTapRecommend:" destination="uf6-g6-BeG" eventType="touchUpInside" id="oUR-I5-0hU"/>
+                                                    </connections>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Exu-MJ-MAY">
+                                                    <rect key="frame" x="335" y="126" width="47" height="35"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="35" id="F4Y-Vv-4d3"/>
+                                                        <constraint firstAttribute="width" constant="47" id="kZG-op-auD"/>
+                                                    </constraints>
+                                                    <color key="tintColor" name="TextButton"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" image="calendar.badge.plus" catalog="system"/>
+                                                    <connections>
+                                                        <action selector="onTapAddToPlans:" destination="uf6-g6-BeG" eventType="touchUpInside" id="Anq-fc-XWP"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="bottom" secondItem="Fkf-oL-5Oc" secondAttribute="bottom" id="1SE-Yo-1dd"/>
                                                 <constraint firstAttribute="trailing" secondItem="EYj-DX-cfa" secondAttribute="trailing" constant="11" id="218-fn-gBC"/>
-                                                <constraint firstItem="OUa-Tq-5sR" firstAttribute="top" secondItem="EYj-DX-cfa" secondAttribute="bottom" constant="5" id="2bO-Tz-kgl"/>
                                                 <constraint firstItem="Fkf-oL-5Oc" firstAttribute="leading" secondItem="ubO-mO-yI6" secondAttribute="leading" constant="20" id="3jd-Yl-pYM"/>
+                                                <constraint firstItem="5Iq-E5-2Eo" firstAttribute="leading" secondItem="zJG-Xo-M8I" secondAttribute="trailing" constant="9" id="8gh-MV-nc3"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="5Iq-E5-2Eo" secondAttribute="bottom" constant="2" id="9c5-7v-Sjq"/>
+                                                <constraint firstItem="Exu-MJ-MAY" firstAttribute="top" secondItem="EYj-DX-cfa" secondAttribute="bottom" constant="5" id="9n2-tW-L4h"/>
+                                                <constraint firstAttribute="bottom" secondItem="Exu-MJ-MAY" secondAttribute="bottom" constant="13" id="Atc-6k-VBQ"/>
                                                 <constraint firstItem="HDX-UZ-kjM" firstAttribute="leading" secondItem="IfB-eg-BSH" secondAttribute="trailing" constant="147" id="AxW-1l-brf"/>
                                                 <constraint firstItem="IfB-eg-BSH" firstAttribute="top" secondItem="ubO-mO-yI6" secondAttribute="topMargin" constant="2" id="BDz-5J-fwk"/>
-                                                <constraint firstItem="OUa-Tq-5sR" firstAttribute="leading" secondItem="Fkf-oL-5Oc" secondAttribute="trailing" constant="14" id="D39-4v-kO3"/>
                                                 <constraint firstAttribute="trailing" secondItem="HDX-UZ-kjM" secondAttribute="trailing" constant="10" id="Hd6-ld-TlN"/>
-                                                <constraint firstAttribute="bottom" secondItem="rXC-Yk-Yuu" secondAttribute="bottom" constant="13" id="Hrb-df-W7M"/>
                                                 <constraint firstItem="HDX-UZ-kjM" firstAttribute="top" secondItem="ubO-mO-yI6" secondAttribute="top" constant="10" id="QRk-I6-znM"/>
                                                 <constraint firstItem="IfB-eg-BSH" firstAttribute="leading" secondItem="ubO-mO-yI6" secondAttribute="leadingMargin" id="UTm-BD-UMe"/>
-                                                <constraint firstItem="OUa-Tq-5sR" firstAttribute="leading" secondItem="IfB-eg-BSH" secondAttribute="trailing" constant="14" id="V4h-sV-r4u"/>
-                                                <constraint firstAttribute="trailing" secondItem="rXC-Yk-Yuu" secondAttribute="trailing" constant="11" id="Vko-6d-HbV"/>
+                                                <constraint firstItem="Exu-MJ-MAY" firstAttribute="leading" secondItem="5Iq-E5-2Eo" secondAttribute="trailing" constant="9" id="UxP-TW-vS7"/>
                                                 <constraint firstItem="5Iq-E5-2Eo" firstAttribute="top" secondItem="EYj-DX-cfa" secondAttribute="bottom" constant="5" id="a09-zl-Fxh"/>
                                                 <constraint firstItem="Fkf-oL-5Oc" firstAttribute="top" secondItem="IfB-eg-BSH" secondAttribute="bottom" constant="1" id="gW8-w9-QUT"/>
-                                                <constraint firstItem="rXC-Yk-Yuu" firstAttribute="leading" secondItem="5Iq-E5-2Eo" secondAttribute="trailing" constant="9" id="iGg-OE-ClS"/>
                                                 <constraint firstItem="EYj-DX-cfa" firstAttribute="leading" secondItem="IfB-eg-BSH" secondAttribute="trailing" constant="14" id="lO3-oo-Wta"/>
-                                                <constraint firstItem="5Iq-E5-2Eo" firstAttribute="leading" secondItem="OUa-Tq-5sR" secondAttribute="trailing" constant="9" id="lv6-T8-xhO"/>
-                                                <constraint firstAttribute="bottomMargin" secondItem="OUa-Tq-5sR" secondAttribute="bottom" constant="2" id="oAr-0z-REt"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="zJG-Xo-M8I" secondAttribute="bottom" constant="2" id="mwg-fC-TLm"/>
+                                                <constraint firstItem="zJG-Xo-M8I" firstAttribute="top" secondItem="EYj-DX-cfa" secondAttribute="bottom" constant="5" id="o3H-qh-eLG"/>
+                                                <constraint firstItem="zJG-Xo-M8I" firstAttribute="leading" secondItem="Fkf-oL-5Oc" secondAttribute="trailing" constant="14" id="q40-eK-Dv8"/>
                                                 <constraint firstItem="EYj-DX-cfa" firstAttribute="top" secondItem="HDX-UZ-kjM" secondAttribute="bottom" constant="6" id="v0e-er-mpE"/>
-                                                <constraint firstItem="rXC-Yk-Yuu" firstAttribute="top" secondItem="EYj-DX-cfa" secondAttribute="bottom" constant="5" id="zFf-hv-SLl"/>
+                                                <constraint firstAttribute="trailing" secondItem="Exu-MJ-MAY" secondAttribute="trailing" constant="11" id="xxE-Ws-7PI"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" name="CreamBackground"/>
                                         <connections>
+                                            <outlet property="addToPlanButton" destination="Exu-MJ-MAY" id="szk-hp-Nfq"/>
                                             <outlet property="bookmarkedButton" destination="HDX-UZ-kjM" id="EcO-sL-9v4"/>
-                                            <outlet property="commentButton" destination="OUa-Tq-5sR" id="EdV-8P-c2C"/>
                                             <outlet property="detailsLabel" destination="EYj-DX-cfa" id="3RT-5s-Vxg"/>
                                             <outlet property="memoryImageView" destination="IfB-eg-BSH" id="0xF-Wm-jdw"/>
                                             <outlet property="openInMapsButton" destination="5Iq-E5-2Eo" id="gZ4-TH-Z1I"/>
-                                            <outlet property="recommendButton" destination="rXC-Yk-Yuu" id="BhY-PP-vpN"/>
+                                            <outlet property="recommendButton" destination="zJG-Xo-M8I" id="2Cz-ln-GyJ"/>
                                             <outlet property="usernameLabel" destination="Fkf-oL-5Oc" id="et8-g0-zUS"/>
                                         </connections>
                                     </tableViewCell>
@@ -3459,8 +3462,8 @@
         <image name="arrow.right.circle.fill" catalog="system" width="128" height="123"/>
         <image name="arrowtriangle.down.circle" catalog="system" width="128" height="123"/>
         <image name="bookmark" catalog="system" width="110" height="128"/>
-        <image name="bookmark.fill" catalog="system" width="110" height="128"/>
         <image name="bookmark.fill" width="128" height="128"/>
+        <image name="bookmark.fill" catalog="system" width="110" height="128"/>
         <image name="calendar" catalog="system" width="128" height="107"/>
         <image name="calendar.badge.plus" catalog="system" width="128" height="109"/>
         <image name="checkmark" catalog="system" width="128" height="114"/>
