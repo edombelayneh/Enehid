@@ -27,7 +27,7 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     var onBookmarkTapped: (() -> Void)?
     
     var onStarTapped: (() -> Void)?
-    var onOpenMapsTapped: (() -> Void)?
+    var onOpenMapsTapped: ((Memory) -> Void)?
     var onAddToPlanTapped: ((Memory) -> Void)?
     var onCommentTapped: (() -> Void)?
 
@@ -111,7 +111,8 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
                 self?.onStarTapped?()
             },
             UIAction(title: "Open in Maps", image: UIImage(systemName: "map")) { [weak self] _ in
-                self?.onOpenMapsTapped?()
+                guard let self = self, let memory = self.feedMemory else { return }
+                self.onOpenMapsTapped?(memory)
             },
             UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { [weak self] _ in
                 self?.onBookmarkTapped?()

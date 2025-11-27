@@ -1819,7 +1819,7 @@
         <!--Map View Controller-->
         <scene sceneID="z19-fy-IFY">
             <objects>
-                <viewController id="qEP-br-LQ8" customClass="MapViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MapViewController" id="qEP-br-LQ8" customClass="MapViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="YsP-yj-zsf">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1834,6 +1834,9 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
                     <navigationItem key="navigationItem" id="y3x-3e-PfX"/>
+                    <connections>
+                        <outlet property="mapView" destination="F0f-Td-CEa" id="xgy-3y-kxj"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qJf-rw-Gmz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

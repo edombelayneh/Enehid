@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseFirestore
 import FirebaseAuth
+import CoreLocation
 
 class FeedViewController: UIViewController, UITableViewDelegate, UICollectionViewDelegate {
     
@@ -383,6 +384,47 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
         cell.onCommentTapped = { [weak self] in
             self?.openComments(for: memory.id)
         }
+        // Bookmark Button - in more 
+        cell.onBookmarkTapped = { [weak self] in
+            guard let self = self else { return }
+
+            self.toggleBookmark(for: memory.id) { isBookmarked in
+                DispatchQueue.main.async {
+                    print("📎 Bookmark toggled: \(isBookmarked)")
+                    // Optional: update icon here if needed
+                }
+            }
+        }
+        // Open In Maps Button - in more
+        cell.onOpenMapsTapped = { [weak self] memory in
+            guard let self = self else { return }
+
+            let planId = memory.planId
+            Firestore.firestore().collection("plans").document(planId).getDocument { snapshot, error in
+                if let error = error {
+                    print("❌ Failed to fetch plan for map: \(error)")
+                    return
+                }
+
+                guard let data = snapshot?.data(),
+                      let lat = data["lat"] as? Double,
+                      let lon = data["lon"] as? Double,
+                      let location = data["location"] as? String else {
+                    print("❌ Missing lat/lon or location in plan")
+                    return
+                }
+
+                // Push to MapViewController
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                if let mapVC = storyboard.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController {
+                    mapVC.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                    mapVC.locationName = location
+                    self.navigationController?.pushViewController(mapVC, animated: true)
+                }
+            }
+        }
+
+
         
         // Configure recommend icon based on current state
         let postId = memory.id
