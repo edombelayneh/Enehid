@@ -25,7 +25,6 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     
     var onRecommendTapped: (() -> Void)?
     var onBookmarkTapped: (() -> Void)?
-    
     var onStarTapped: (() -> Void)?
     var onOpenMapsTapped: ((Memory) -> Void)?
     var onAddToPlanTapped: ((Memory) -> Void)?

@@ -276,6 +276,56 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         }
     }
     
+    func toggleStarred(for postId: String, completion: @escaping (Bool) -> Void) {
+        guard let currentUID = Auth.auth().currentUser?.uid else {
+            completion(false)
+            return
+        }
+        
+        let db = Firestore.firestore()
+        let starredRef = db
+            .collection("users")
+            .document(currentUID)
+            .collection("starred")
+            .document(postId)
+        
+        starredRef.getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error checking starred status: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+            
+            if snapshot?.exists == true {
+                // ❌ Unstar
+                starredRef.delete { error in
+                    if let error = error {
+                        print("❌ Failed to unstar: \(error.localizedDescription)")
+                        completion(false)
+                    } else {
+                        print("⭐️ Unstarred post \(postId)")
+                        completion(false) // no longer starred
+                    }
+                }
+            } else {
+                // ✅ Star
+                starredRef.setData([
+                    "postId": postId,
+                    "starredAt": Timestamp()
+                ]) { error in
+                    if let error = error {
+                        print("❌ Failed to star: \(error.localizedDescription)")
+                        completion(false)
+                    } else {
+                        print("🌟 Starred post \(postId)")
+                        completion(true)
+                    }
+                }
+            }
+        }
+    }
+
+    
     func handleAddToPlan(for memory: Memory) {
         let planId = memory.planId
         let db = Firestore.firestore()
@@ -395,6 +445,16 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
                 }
             }
         }
+        // Star Button - in more
+        cell.onStarTapped = { [weak self] in
+            guard let self = self else { return }
+
+            self.toggleStarred(for: memory.id) { isStarred in
+                DispatchQueue.main.async {
+                    print("🌟 Memory was Starred toggled: \(isStarred)")
+                }
+            }
+        }
         // Open In Maps Button - in more
         cell.onOpenMapsTapped = { [weak self] memory in
             guard let self = self else { return }
@@ -423,6 +483,7 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
                 }
             }
         }
+        
 
 
         
