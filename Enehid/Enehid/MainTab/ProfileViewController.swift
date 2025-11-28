@@ -67,6 +67,7 @@ class ProfileViewController: UIViewController {
         
         // Do any additional setup after loading the view.
         fetchUserAndCounters()
+        addShadowToAvatar(profilePicImageView)
         postSegmentedControl.selectedSegmentIndex = 0
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             Animation.addPulseAnimationAroundAvatar(profilePicImage: self.profilePicImageView)
@@ -137,6 +138,14 @@ class ProfileViewController: UIViewController {
         if let editVC = storyboard.instantiateViewController(withIdentifier: "EditAvatarViewController") as? EditAvatarViewController {
             navigationController?.pushViewController(editVC, animated: true)
         }
+    }
+    
+    private func addShadowToAvatar(_ imageView: UIImageView) {
+        imageView.layer.shadowColor = UIColor.textButton.cgColor
+        imageView.layer.shadowOpacity = 0.5
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        imageView.layer.shadowRadius = 6
+        imageView.layer.masksToBounds = false
     }
     
     // MARK: - Setup
