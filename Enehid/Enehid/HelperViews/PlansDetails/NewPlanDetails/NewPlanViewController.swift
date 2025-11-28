@@ -67,8 +67,11 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
         locationResultsTableView.delegate = self
         locationResultsTableView.isHidden = true
         
-       styleScheduleButton()
-
+        styleScheduleButton()
+        applyTextFieldShadow(activityTextField)
+        applyTextFieldShadow(locationTextField)
+        
+        
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false  // <-- This is the fix!
@@ -135,7 +138,29 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
         scheduleButton.layer.shadowOffset = CGSize(width: 0, height: 3)
         scheduleButton.layer.shadowRadius = 6
         scheduleButton.layer.masksToBounds = false
+        
+        //        dateTimePicker.preferredDatePickerStyle = .compact
+        dateTimePicker.tintColor = .softPurple // Your theme color
+        dateTimePicker.layer.cornerRadius = 10
+        dateTimePicker.backgroundColor = .creamBackground
+        dateTimePicker.layer.shadowColor = UIColor.textButton.cgColor
+        dateTimePicker.layer.shadowOpacity = 0.5
+        dateTimePicker.layer.shadowOffset = CGSize(width: 0, height: 2)
+        dateTimePicker.layer.shadowRadius = 10
+        
+        locationResultsTableView.separatorStyle = .none
+        
     }
+    
+    func applyTextFieldShadow(_ textField: UITextField) {
+        textField.layer.shadowColor = UIColor.black.cgColor
+        textField.layer.shadowOpacity = 0.05
+        textField.layer.shadowOffset = CGSize(width: 0, height: 1)
+        textField.layer.shadowRadius = 4
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = false
+    }
+    
     
     func createNewPlan(activityName: String,
                        location: String,
@@ -320,6 +345,16 @@ extension NewPlanViewController: UICollectionViewDataSource, UITableViewDataSour
         
         cell.textLabel?.text = result.title
         cell.detailTextLabel?.text = result.subtitle
+        
+        cell.contentView.layer.cornerRadius = 10
+        cell.contentView.layer.masksToBounds = true
+        cell.contentView.backgroundColor = .creamBackground
+        cell.layer.shadowColor = UIColor.textButton.cgColor
+        cell.layer.shadowOpacity = 0.2
+        cell.layer.shadowOffset = CGSize(width: 0, height: 2)
+        cell.layer.shadowRadius = 3
+        cell.layer.masksToBounds = false
+        
         return cell
     }
     
