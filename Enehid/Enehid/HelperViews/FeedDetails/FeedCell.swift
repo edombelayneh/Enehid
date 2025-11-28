@@ -23,8 +23,6 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     @IBOutlet weak var starStatusIcon: UIButton!
     
     var onRecommendTapped: (() -> Void)?
-    //    var onBookmarkTapped: (() -> Void)?
-    //    var onStarTapped: (() -> Void)?
     var onStarTapped: ((_ completion: @escaping (Bool) -> Void) -> Void)?
     var onBookmarkTapped: ((_ completion: @escaping (Bool) -> Void) -> Void)?
     var onOpenMapsTapped: ((Memory) -> Void)?
@@ -58,6 +56,15 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         layer.shadowOffset = CGSize(width: 0, height: 4)
         layer.shadowRadius = 10
         layer.masksToBounds = false
+        addShadowToAvatar(profilePictureImageView)
+    }
+    
+    private func addShadowToAvatar(_ imageView: UIImageView) {
+        imageView.layer.shadowColor = UIColor.textButton.cgColor
+        imageView.layer.shadowOpacity = 0.5
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        imageView.layer.shadowRadius = 6
+        imageView.layer.masksToBounds = false
     }
     
     
@@ -66,6 +73,25 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         
         usernameLabel.text = feedMemories?.username ?? "Unknown"
         detailsLabel.text = feedMemories?.caption ?? ""
+        
+        if let ownerId = feedMemories?.ownerId {
+            let db = Firestore.firestore()
+            db.collection("users").document(ownerId).getDocument { snapshot, error in
+                if let error = error {
+                    print("Error fetching user document: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let data = snapshot?.data(),
+                      let profileURL = data["profilePictureURL"] as? String else {
+                    print("No profilePictureURL found for user \(ownerId)")
+                    return
+                }
+
+                AvatarManager.loadAvatar(from: profileURL, into: self.profilePictureImageView)
+            }
+        }
+
         
         if let urls = feedMemories?.memoryURLs {
             self.memoryURLs = urls
@@ -87,12 +113,6 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     @IBAction func onTapRecommendButton(_ sender: UIButton) {
         onRecommendTapped?()
     }
-    
-    //    @IBAction func onTapBookmarkButton(_ sender: UIButton) {
-    //        onBookmarkTapped? { [weak self] isNowBookmarked in
-    //               self?.bookmarkStatusIcon.isHidden = !isNowBookmarked
-    //           }
-    //    }
     
     @IBAction func onTapCommentButton(_ sender: UIButton) {
         onCommentTapped?()

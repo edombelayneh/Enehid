@@ -27,8 +27,17 @@ class CommentViewController: UIViewController, UITableViewDataSource, UITableVie
         commentInputField.delegate = self
         loadCurrentUserAvatar()
         loadComments()
-        
+        addShadowToAvatar(profilePictureImageView)
     }
+    
+    private func addShadowToAvatar(_ imageView: UIImageView) {
+        imageView.layer.shadowColor = UIColor.textButton.cgColor
+        imageView.layer.shadowOpacity = 0.5
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        imageView.layer.shadowRadius = 6
+        imageView.layer.masksToBounds = false
+    }
+    
     
     func loadComments() {
         let db = Firestore.firestore()

@@ -16,12 +16,6 @@ class CommentCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        // Round avatar
-        //        avatarImageView.layer.cornerRadius = avatarImageView.frame.width / 2
-        //        avatarImageView.clipsToBounds = true
-        //        avatarImageView.layer.borderWidth = 2
-        //        avatarImageView.layer.borderColor = UIColor.textButton.cgColor // or your brand color
-        
         // Style cardView
         layer.cornerRadius = 20
         layer.masksToBounds = false
@@ -30,19 +24,16 @@ class CommentCell: UITableViewCell {
         layer.shadowOffset = CGSize(width: 0, height: 2)
         layer.shadowRadius = 4
         backgroundColor = UIColor.white // or your design background
+        addShadowToAvatar(avatarImageView)
     }
     
-    //    override func layoutSubviews() {
-    //        super.layoutSubviews()
-    //
-    //        // shadow on cell (if you're not styling this in view controller)
-    //        layer.shadowColor = UIColor.black.cgColor
-    //        layer.shadowOpacity = 0.1
-    //        layer.shadowOffset = CGSize(width: 0, height: 2)
-    //        layer.shadowRadius = 4
-    //        layer.cornerRadius = 20
-    //        layer.masksToBounds = false
-    //    }
+    private func addShadowToAvatar(_ imageView: UIImageView) {
+        imageView.layer.shadowColor = UIColor.textButton.cgColor
+        imageView.layer.shadowOpacity = 0.5
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        imageView.layer.shadowRadius = 6
+        imageView.layer.masksToBounds = false
+    }
     
     
     
