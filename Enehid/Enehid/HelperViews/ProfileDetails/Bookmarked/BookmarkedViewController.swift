@@ -197,6 +197,62 @@ class BookmarkedViewController: UIViewController, UITableViewDelegate  {
             }
         }
     }
+    
+    func handleAddToPlan(for memory: Memory) {
+        let planId = memory.planId
+        let db = Firestore.firestore()
+
+        db.collection("plans").document(planId).getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Failed to fetch plan: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = snapshot?.data() else {
+                print("❌ No plan data found")
+                return
+            }
+
+            guard let location = data["location"] as? String,
+                  let activityName = data["activityName"] as? String,
+                  let date = data["date"] as? String,
+                  let createdBy = data["createdBy"] as? String,
+                  let lat = data["lat"] as? Double,
+                  let lon = data["lon"] as? Double,
+                  let participants = data["participants"] as? [String: String],
+                  let acceptedByIDs = data["acceptedByIDs"] as? [String],
+                  let declinedByIDs = data["declinedByIDs"] as? [String] else {
+                print("❌ Malformed plan data")
+                return
+            }
+
+            let plan = Plans(
+                id: planId,
+                activityName: activityName,
+                location: location,
+                date: date,
+                createdBy: createdBy,
+                lat: lat,
+                lon: lon,
+                participants: participants,
+                acceptedByIDs: Set(acceptedByIDs),
+                declinedByIDs: Set(declinedByIDs),
+                iAccepted: acceptedByIDs.contains(Auth.auth().currentUser?.uid ?? ""),
+                iDeclined: declinedByIDs.contains(Auth.auth().currentUser?.uid ?? "")
+            )
+
+            self.goToNewPlanScreen(prefillPlan: plan)
+        }
+    }
+
+    func goToNewPlanScreen(prefillPlan: Plans) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let newPlanVC = storyboard.instantiateViewController(withIdentifier: "NewPlanViewController") as? NewPlanViewController {
+            newPlanVC.prefillFromPlan = prefillPlan
+            self.navigationController?.pushViewController(newPlanVC, animated: true)
+        }
+    }
+
 
 }
 
@@ -268,6 +324,10 @@ extension BookmarkedViewController: UITableViewDataSource {
             self?.openMap(for: memory)
         }
         
+        cell.onAddToPlanTapped = { [weak self] memory in
+            self?.handleAddToPlan(for: memory)
+        }
+
 
         return cell
     }

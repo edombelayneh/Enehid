@@ -23,6 +23,7 @@ class BookmarkCell: UITableViewCell {
     var onRecommendTapped: (() -> Void)?
     var onBookmarkTapped: (() -> Void)?
     var onOpenMapsTapped: ((Memory) -> Void)?
+    var onAddToPlanTapped: ((Memory) -> Void)?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -55,6 +56,9 @@ class BookmarkCell: UITableViewCell {
         }
     }
     @IBAction func onTapAddToPlans(_ sender: UIButton) {
+        if let memory = memory {
+            onAddToPlanTapped?(memory)
+        }
     }
     @IBAction func onTapBookmark(_ sender: UIButton) {
         onBookmarkTapped?()
