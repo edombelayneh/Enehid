@@ -21,10 +21,12 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var bookmarkStatusIcon: UIButton!
     @IBOutlet weak var starStatusIcon: UIButton!
-
+    
     var onRecommendTapped: (() -> Void)?
-    var onBookmarkTapped: (() -> Void)?
-    var onStarTapped: (() -> Void)?
+    //    var onBookmarkTapped: (() -> Void)?
+    //    var onStarTapped: (() -> Void)?
+    var onStarTapped: ((_ completion: @escaping (Bool) -> Void) -> Void)?
+    var onBookmarkTapped: ((_ completion: @escaping (Bool) -> Void) -> Void)?
     var onOpenMapsTapped: ((Memory) -> Void)?
     var onAddToPlanTapped: ((Memory) -> Void)?
     var onCommentTapped: (() -> Void)?
@@ -86,9 +88,11 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         onRecommendTapped?()
     }
     
-    @IBAction func onTapBookmarkButton(_ sender: UIButton) {
-        onBookmarkTapped?()
-    }
+    //    @IBAction func onTapBookmarkButton(_ sender: UIButton) {
+    //        onBookmarkTapped? { [weak self] isNowBookmarked in
+    //               self?.bookmarkStatusIcon.isHidden = !isNowBookmarked
+    //           }
+    //    }
     
     @IBAction func onTapCommentButton(_ sender: UIButton) {
         onCommentTapped?()
@@ -103,14 +107,18 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     @IBAction func onTapMoreButton(_ sender: UIButton) {
         let menu = UIMenu(title: "", children: [
             UIAction(title: "Star", image: UIImage(systemName: "star")) { [weak self] _ in
-                self?.onStarTapped?()
+                self?.onStarTapped? { isNowStarred in
+                    self?.starStatusIcon.isHidden = !isNowStarred
+                }
             },
             UIAction(title: "Open in Maps", image: UIImage(systemName: "map")) { [weak self] _ in
                 guard let self = self, let memory = self.feedMemory else { return }
                 self.onOpenMapsTapped?(memory)
             },
             UIAction(title: "Bookmark", image: UIImage(systemName: "bookmark")) { [weak self] _ in
-                self?.onBookmarkTapped?()
+                self?.onBookmarkTapped? { [weak self] isNowBookmarked in
+                    self?.bookmarkStatusIcon.isHidden = !isNowBookmarked
+                }
             }
         ])
         
@@ -129,7 +137,7 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
         bookmarkStatusIcon.isHidden = !isBookmarked
         starStatusIcon.isHidden = !isStarred
     }
-
+    
 }
 
 extension FeedCell: UICollectionViewDataSource {
