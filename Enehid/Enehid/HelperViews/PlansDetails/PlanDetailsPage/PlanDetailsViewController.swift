@@ -7,6 +7,8 @@
 
 import UIKit
 import MapKit
+import FirebaseAuth
+import FirebaseFirestore
 
 class PlanDetailsViewController: UIViewController, UICollectionViewDelegate {
     
@@ -188,7 +190,24 @@ extension PlanDetailsViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ParticipantCell", for: indexPath) as! ParticipantCell
         cell.usernameLabel.text = participant?.name
         
-        AvatarManager.loadAvatar(from: participant?.avatarURL, into: cell.profilePictureImageView)
+        if let participantId = participant?.uid {
+            let db = Firestore.firestore()
+            db.collection("users").document(participantId).getDocument { snapshot, error in
+                if let error = error {
+                    print("Error fetching participant user: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let data = snapshot?.data(),
+                      let profileURL = data["profilePictureURL"] as? String else {
+                    print("No profilePictureURL found for participant \(participantId)")
+                    return
+                }
+
+                AvatarManager.loadAvatar(from: profileURL, into: cell.profilePictureImageView)
+            }
+        }
+
         
         return cell
     }

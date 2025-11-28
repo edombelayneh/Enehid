@@ -146,22 +146,6 @@ class SignUpViewController: UIViewController, UITextViewDelegate {
                     
                     let userRef = db.collection("users").document(uid)
                     
-                    //                    db.collection("users").document(uid).setData([
-                    //                        "username": username,
-                    //                        "email": email,
-                    //                        "profilePictureUrl": NSNull(),
-                    //                        "friends": [:],
-                    //                        "incomingRequests": [:],
-                    //                        "outgoingRequests": [:],
-                    
-                    //                    ]) { error in
-                    //                        if let error = error {
-                    //                            let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                    //                            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    //                            self.present(alert, animated: true, completion: nil)
-                    //                            print("❌ Error saving user data: \(error.localizedDescription)")
-                    //                        }
-                    
                     userRef.setData([
                         "username": username,
                         "email": email,
@@ -197,16 +181,16 @@ class SignUpViewController: UIViewController, UITextViewDelegate {
                             }
                             
                             // Continue with navigation
-                            let recommendsRef = userRef.collection("recommends").document("placeholder")
-                            let starredRef = userRef.collection("starred").document("placeholder")
-                            let plannedRef = userRef.collection("plans").document("placeholder")
-                            let bookmarkRef = userRef.collection("bookmarked").document("placeholder")
+//                            let recommendsRef = userRef.collection("recommends").document("placeholder")
+//                            let starredRef = userRef.collection("starred").document("placeholder")
+//                            let plannedRef = userRef.collection("plans").document("placeholder")
+//                            let bookmarkRef = userRef.collection("bookmarked").document("placeholder")
                             
                             
-                            recommendsRef.setData(["init": true])
-                            starredRef.setData(["init": true])
-                            plannedRef.setData(["init": true])
-                            bookmarkRef.setData(["init": true])
+//                            recommendsRef.setData(["init": true])
+//                            starredRef.setData(["init": true])
+//                            plannedRef.setData(["init": true])
+//                            bookmarkRef.setData(["init": true])
                             
                             print("✅ User fully initialized")
                             
@@ -224,32 +208,6 @@ class SignUpViewController: UIViewController, UITextViewDelegate {
                             })
                             self.present(alert, animated: true)
                         }
-                        //                    else {
-                        //                            let recommendsRef = db.collection("users").document(uid).collection("recommends").document("placeholder")
-                        //                            let starredRef = db.collection("users").document(uid).collection("starred").document("placeholder")
-                        //                            let plannedRef = db.collection("users").document(uid).collection("plans").document("placeholder")
-                        //                            let bookmarkRef = db.collection("users").document(uid).collection("bookmarked").document("placeholder")
-                        
-                        
-                        
-                        //                            // Create placeholder documents (optional — remove later)
-                        //                            recommendsRef.setData(["init": true])
-                        //                            starredRef.setData(["init": true])
-                        
-                        
-                        
-                        //                            // Navigate to the next screen or update UI
-                        //                            // ✅ Show success alert
-                        //                            let alert = UIAlertController(title: "Success", message: "Account created successfully!", preferredStyle: .alert)
-                        //                            alert.addAction(UIAlertAction(title: "Enehid", style: .default, handler: { _ in
-                        //                                // ✅ Navigate to TabBarController after OK
-                        //                                if let tabBarVC = self.storyboard?.instantiateViewController(withIdentifier: "MainTabBarController") {
-                        //                                    tabBarVC.modalPresentationStyle = .fullScreen
-                        //                                    self.present(tabBarVC, animated: true, completion: nil)
-                        //                                }
-                        //                            }))
-                        //                            self.present(alert, animated: true, completion: nil)
-                        //                        }
                     }
                 }
             }
