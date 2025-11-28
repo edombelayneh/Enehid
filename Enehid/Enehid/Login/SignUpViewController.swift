@@ -51,6 +51,21 @@ class SignUpViewController: UIViewController, UITextViewDelegate {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
         
+        usernameTextField.applyEnehidTFStyle()
+        emailTextField.applyEnehidTFStyle()
+        passwordTextField.applyEnehidTFStyle()
+        
+        styleButton()
+    }
+    
+    func styleButton() {
+        createAccountButton.layer.cornerRadius = 12
+        createAccountButton.clipsToBounds = true
+        createAccountButton.layer.shadowColor = UIColor.black.cgColor
+        createAccountButton.layer.shadowOpacity = 0.2
+        createAccountButton.layer.shadowOffset = CGSize(width: 0, height: 3)
+        createAccountButton.layer.shadowRadius = 6
+        createAccountButton.layer.masksToBounds = false
     }
     
     @IBAction func onTapAgreed(_ sender: UIButton) {

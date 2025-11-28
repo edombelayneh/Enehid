@@ -16,6 +16,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         view.endEditing(true)
     }
 
+    @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var usernameTextField: UITextField!
     override func viewDidLoad() {
@@ -24,7 +25,23 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         // Do any additional setup after loading the view.
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
+        
+        // Apply theme styles
+        usernameTextField.applyEnehidTFStyle()
+        passwordTextField.applyEnehidTFStyle()
+        
+        styleButton()
 
+    }
+    
+    func styleButton() {
+        loginButton.layer.cornerRadius = 12
+        loginButton.clipsToBounds = true
+        loginButton.layer.shadowColor = UIColor.black.cgColor
+        loginButton.layer.shadowOpacity = 0.2
+        loginButton.layer.shadowOffset = CGSize(width: 0, height: 3)
+        loginButton.layer.shadowRadius = 6
+        loginButton.layer.masksToBounds = false
     }
     
     @IBAction func onTappedLogin(_ sender: UIButton) {

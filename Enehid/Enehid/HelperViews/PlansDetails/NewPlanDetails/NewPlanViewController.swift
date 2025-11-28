@@ -68,11 +68,7 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
         locationResultsTableView.isHidden = false
         
         styleScheduleButton()
-        applyTextFieldShadow(activityTextField)
-        applyTextFieldShadow(locationTextField)
-        
-        
-        
+      
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false  // <-- This is the fix!
         view.addGestureRecognizer(tapGesture)
@@ -81,9 +77,7 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
             UINib(nibName: "InviteFriendCell", bundle: nil),
             forCellWithReuseIdentifier: "InviteFriendCell"
         )
-        
     }
-    
     
     @IBAction func onTappedSchedule(_ sender: UIButton) {
         guard let activity = activityTextField.text, !activity.isEmpty,
@@ -151,16 +145,6 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
         locationResultsTableView.separatorStyle = .none
         
     }
-    
-    func applyTextFieldShadow(_ textField: UITextField) {
-        textField.layer.shadowColor = UIColor.black.cgColor
-        textField.layer.shadowOpacity = 0.05
-        textField.layer.shadowOffset = CGSize(width: 0, height: 1)
-        textField.layer.shadowRadius = 4
-        textField.layer.cornerRadius = 10
-        textField.layer.masksToBounds = false
-    }
-    
     
     func createNewPlan(activityName: String,
                        location: String,
