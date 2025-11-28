@@ -1994,10 +1994,10 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gak-Ta-yfi">
-                                <rect key="frame" x="38" y="698" width="317" height="30"/>
+                                <rect key="frame" x="38" y="688" width="317" height="40"/>
                                 <color key="backgroundColor" name="TextButton"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="LId-Wf-EJs"/>
+                                    <constraint firstAttribute="height" constant="40" id="LId-Wf-EJs"/>
                                 </constraints>
                                 <color key="tintColor" name="TextButton"/>
                                 <state key="normal" title="Button"/>
@@ -2065,7 +2065,7 @@
                             <constraint firstItem="Gak-Ta-yfi" firstAttribute="leading" secondItem="KqO-xG-WCg" secondAttribute="leading" constant="38" id="s5j-c8-dTf"/>
                             <constraint firstItem="I8x-et-voj" firstAttribute="trailing" secondItem="KqO-xG-WCg" secondAttribute="trailing" id="uNi-Ro-TCX"/>
                             <constraint firstAttribute="bottom" secondItem="Gak-Ta-yfi" secondAttribute="bottom" constant="104" id="wup-R0-2dQ"/>
-                            <constraint firstItem="Gak-Ta-yfi" firstAttribute="top" secondItem="I8x-et-voj" secondAttribute="bottom" constant="20" id="yYq-nN-hw5"/>
+                            <constraint firstItem="Gak-Ta-yfi" firstAttribute="top" secondItem="I8x-et-voj" secondAttribute="bottom" constant="10" id="yYq-nN-hw5"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="New Plan" id="rM8-ED-wSn"/>

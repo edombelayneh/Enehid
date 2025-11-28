@@ -67,6 +67,9 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
         locationResultsTableView.delegate = self
         locationResultsTableView.isHidden = true
         
+       styleScheduleButton()
+
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false  // <-- This is the fix!
         view.addGestureRecognizer(tapGesture)
@@ -124,6 +127,16 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
      // Pass the selected object to the new view controller.
      }
      */
+    func styleScheduleButton() {
+        scheduleButton.layer.cornerRadius = 12
+        scheduleButton.clipsToBounds = true
+        scheduleButton.layer.shadowColor = UIColor.black.cgColor
+        scheduleButton.layer.shadowOpacity = 0.2
+        scheduleButton.layer.shadowOffset = CGSize(width: 0, height: 3)
+        scheduleButton.layer.shadowRadius = 6
+        scheduleButton.layer.masksToBounds = false
+    }
+    
     func createNewPlan(activityName: String,
                        location: String,
                        date: String,
