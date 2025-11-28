@@ -22,7 +22,7 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
     
     var selectedFriends: [User] = []
     var prefillFromPlan: Plans?
-
+    
     
     let searchCompleter = MKLocalSearchCompleter()
     var searchResults: [MKLocalSearchCompletion] = []
@@ -277,17 +277,19 @@ extension NewPlanViewController: UICollectionViewDataSource, UITableViewDataSour
         if isAddCell {
             cell.imageView.image = UIImage(systemName: "plus.circle.fill")
             cell.nameLabel.text = "Add"
+            cell.imageView.tintColor = .softPurple
+            cell.imageView.layer.cornerRadius = cell.imageView.frame.width / 2
+            cell.imageView.clipsToBounds = true
+            
         } else {
             let user = selectedFriends[indexPath.item]
             cell.nameLabel.text = user.username
             
-            if let urlStr = user.profilePictureURL,
-               let url = URL(string: urlStr),
-               let data = try? Data(contentsOf: url),
-               let image = UIImage(data: data) {
-                cell.imageView.image = image
+            if let urlStr = user.profilePictureURL {
+                AvatarManager.loadAvatar(from: urlStr, into: cell.imageView, cropToFace: true)
             } else {
-                cell.imageView.image = UIImage(named: "default_avatar")
+                cell.imageView.image = UIImage(systemName: "person")
+                cell.imageView.tintColor = .softPurple
             }
         }
         
