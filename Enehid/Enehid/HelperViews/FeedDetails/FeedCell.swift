@@ -15,27 +15,20 @@ class FeedCell: UITableViewCell, UICollectionViewDelegate {
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var postCollectionView: UICollectionView!
     @IBOutlet weak var reecommendButton: UIButton!
-    //    @IBOutlet weak var bookmarkButton: UIButton!
-    //    @IBOutlet weak var mapsButton: UIButton!
     @IBOutlet weak var commentButton: UIButton!
-    
     @IBOutlet weak var addToPlan: UIButton!
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var bookmarkStatusIcon: UIButton!
     @IBOutlet weak var starStatusIcon: UIButton!
 
-    
     var onRecommendTapped: (() -> Void)?
     var onBookmarkTapped: (() -> Void)?
     var onStarTapped: (() -> Void)?
     var onOpenMapsTapped: ((Memory) -> Void)?
     var onAddToPlanTapped: ((Memory) -> Void)?
     var onCommentTapped: (() -> Void)?
-
-    
     var feedMemory: Memory?
-    
     var memoryURLs: [String] = []
     
     override func awakeFromNib() {

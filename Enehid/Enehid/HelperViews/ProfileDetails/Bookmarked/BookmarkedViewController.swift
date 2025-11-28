@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import CoreLocation
 
 class BookmarkedViewController: UIViewController, UITableViewDelegate  {
 
@@ -263,8 +264,42 @@ extension BookmarkedViewController: UITableViewDataSource {
             }
         }
         
+        cell.onOpenMapsTapped = { [weak self] memory in
+            self?.openMap(for: memory)
+        }
+        
 
         return cell
     }
     
+}
+
+extension BookmarkedViewController {
+    func openMap(for memory: Memory) {
+        let planId = memory.planId
+        let db = Firestore.firestore()
+
+        db.collection("plans").document(planId).getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Failed to fetch plan for map: \(error.localizedDescription)")
+                return
+            }
+
+            guard let data = snapshot?.data(),
+                  let lat = data["lat"] as? Double,
+                  let lon = data["lon"] as? Double,
+                  let location = data["location"] as? String else {
+                print("❌ Missing lat/lon or location in plan")
+                return
+            }
+
+            // Navigate to MapViewController
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            if let mapVC = storyboard.instantiateViewController(withIdentifier: "MapViewController") as? MapViewController {
+                mapVC.coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
+                mapVC.locationName = location
+                self.navigationController?.pushViewController(mapVC, animated: true)
+            }
+        }
+    }
 }

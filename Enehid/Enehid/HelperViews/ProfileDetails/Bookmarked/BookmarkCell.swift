@@ -12,18 +12,27 @@ class BookmarkCell: UITableViewCell {
     
     
     @IBOutlet weak var memoryImageView: UIImageView!
-    
     @IBOutlet weak var recommendButton: UIButton!
-    
     @IBOutlet weak var addToPlanButton: UIButton!
     @IBOutlet weak var openInMapsButton: UIButton!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var detailsLabel: UILabel!
     @IBOutlet weak var bookmarkedButton: UIButton!
+    
+    var memory: Memory?
     var onRecommendTapped: (() -> Void)?
     var onBookmarkTapped: (() -> Void)?
+    var onOpenMapsTapped: ((Memory) -> Void)?
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        memoryImageView.contentMode = .scaleAspectFill
+        memoryImageView.clipsToBounds = true
+    }
     
     func configure(with bookmarked: Memory?) {
+        self.memory = bookmarked
+        
         usernameLabel.text = bookmarked?.username ?? "Unknown"
         detailsLabel.text = bookmarked?.caption ?? ""
         
@@ -41,6 +50,9 @@ class BookmarkCell: UITableViewCell {
         onRecommendTapped?()
     }
     @IBAction func onTapOpenInMaps(_ sender: UIButton) {
+        if let memory = memory {
+            onOpenMapsTapped?(memory)
+        }
     }
     @IBAction func onTapAddToPlans(_ sender: UIButton) {
     }
