@@ -30,6 +30,7 @@ class StoryCell: UICollectionViewCell {
         // Set background color so the cell looks like a bubble
         contentView.backgroundColor = .white // or .systemBackground, or your theme
         
+        addShadowToAvatar(profileImage)
         // Add drop shadow around the bubble (not clipped)
         layer.shadowColor = UIColor.systemPurple.cgColor
         layer.shadowOpacity = 0.5
@@ -58,6 +59,14 @@ class StoryCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: 20).cgPath
+    }
+    
+    private func addShadowToAvatar(_ imageView: UIImageView) {
+        imageView.layer.shadowColor = UIColor.textButton.cgColor
+        imageView.layer.shadowOpacity = 0.5
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        imageView.layer.shadowRadius = 6
+        imageView.layer.masksToBounds = false
     }
     
     

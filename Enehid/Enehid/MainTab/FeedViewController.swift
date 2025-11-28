@@ -438,23 +438,22 @@ extension FeedViewController: UITableViewDataSource, UICollectionViewDataSource 
             self?.openComments(for: memory.id)
         }
         // Bookmark Button - in more
-        cell.onBookmarkTapped = { [weak self] in
+        cell.onBookmarkTapped = { [weak self] completion in
             guard let self = self else { return }
             
-            self.toggleBookmark(for: memory.id) { isBookmarked in
+            self.toggleBookmark(for: memory.id) { isNowBookmarked in
                 DispatchQueue.main.async {
-                    print("📎 Bookmark toggled: \(isBookmarked)")
-                    // Optional: update icon here if needed
+                    completion(isNowBookmarked) // 💥 send updated state BACK to cell
                 }
             }
         }
         // Star Button - in more
-        cell.onStarTapped = { [weak self] in
+        cell.onStarTapped = { [weak self] completion in
             guard let self = self else { return }
             
-            self.toggleStarred(for: memory.id) { isStarred in
+            self.toggleStarred(for: memory.id) { isNowStarred in
                 DispatchQueue.main.async {
-                    print("🌟 Memory was Starred toggled: \(isStarred)")
+                    completion(isNowStarred) // 💥 send updated state BACK to cell
                 }
             }
         }
