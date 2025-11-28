@@ -22,7 +22,7 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
     
     var selectedFriends: [User] = []
     var prefillFromPlan: Plans?
-
+    
     
     let searchCompleter = MKLocalSearchCompleter()
     var searchResults: [MKLocalSearchCompletion] = []
@@ -32,7 +32,7 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
     @objc func locationTextChanged(_ textField: UITextField) {
         guard let query = textField.text, !query.isEmpty else {
             searchResults = []
-            locationResultsTableView.isHidden = true
+            locationResultsTableView.isHidden = false
             locationResultsTableView.reloadData()
             return
         }
@@ -65,7 +65,13 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
         inviteFriendsCollectionView.delegate = self
         locationResultsTableView.dataSource = self
         locationResultsTableView.delegate = self
-        locationResultsTableView.isHidden = true
+        locationResultsTableView.isHidden = false
+        
+        styleScheduleButton()
+        applyTextFieldShadow(activityTextField)
+        applyTextFieldShadow(locationTextField)
+        
+        
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false  // <-- This is the fix!
@@ -124,6 +130,38 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
      // Pass the selected object to the new view controller.
      }
      */
+    func styleScheduleButton() {
+        scheduleButton.layer.cornerRadius = 12
+        scheduleButton.clipsToBounds = true
+        scheduleButton.layer.shadowColor = UIColor.black.cgColor
+        scheduleButton.layer.shadowOpacity = 0.2
+        scheduleButton.layer.shadowOffset = CGSize(width: 0, height: 3)
+        scheduleButton.layer.shadowRadius = 6
+        scheduleButton.layer.masksToBounds = false
+        
+        //        dateTimePicker.preferredDatePickerStyle = .compact
+        dateTimePicker.tintColor = .softPurple // Your theme color
+        dateTimePicker.layer.cornerRadius = 10
+        dateTimePicker.backgroundColor = .creamBackground
+        dateTimePicker.layer.shadowColor = UIColor.textButton.cgColor
+        dateTimePicker.layer.shadowOpacity = 0.5
+        dateTimePicker.layer.shadowOffset = CGSize(width: 0, height: 2)
+        dateTimePicker.layer.shadowRadius = 10
+        
+        locationResultsTableView.separatorStyle = .none
+        
+    }
+    
+    func applyTextFieldShadow(_ textField: UITextField) {
+        textField.layer.shadowColor = UIColor.black.cgColor
+        textField.layer.shadowOpacity = 0.05
+        textField.layer.shadowOffset = CGSize(width: 0, height: 1)
+        textField.layer.shadowRadius = 4
+        textField.layer.cornerRadius = 10
+        textField.layer.masksToBounds = false
+    }
+    
+    
     func createNewPlan(activityName: String,
                        location: String,
                        date: String,
@@ -253,6 +291,27 @@ class NewPlanViewController: UIViewController, UICollectionViewDelegate, UITable
     func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
         print("❌ Search failed: \(error)")
     }
+    
+    func getCurrentLocationAndSetField() {
+        let locationManager = CLLocationManager()
+        locationManager.requestWhenInUseAuthorization()
+        
+        if CLLocationManager.locationServicesEnabled(),
+           let currentLoc = locationManager.location {
+            
+            let lat = currentLoc.coordinate.latitude
+            let lon = currentLoc.coordinate.longitude
+            
+            // Optionally reverse-geocode:
+            let geocoder = CLGeocoder()
+            geocoder.reverseGeocodeLocation(currentLoc) { placemarks, error in
+                let name = placemarks?.first?.name ?? "Current Location"
+                self.locationTextField.text = name
+                self.selectedLocation = (name, lat, lon)
+            }
+        }
+    }
+    
 }
 
 extension NewPlanViewController: UICollectionViewDataSource, UITableViewDataSource {
@@ -277,17 +336,19 @@ extension NewPlanViewController: UICollectionViewDataSource, UITableViewDataSour
         if isAddCell {
             cell.imageView.image = UIImage(systemName: "plus.circle.fill")
             cell.nameLabel.text = "Add"
+            cell.imageView.tintColor = .softPurple
+            cell.imageView.layer.cornerRadius = cell.imageView.frame.width / 2
+            cell.imageView.clipsToBounds = true
+            
         } else {
             let user = selectedFriends[indexPath.item]
             cell.nameLabel.text = user.username
             
-            if let urlStr = user.profilePictureURL,
-               let url = URL(string: urlStr),
-               let data = try? Data(contentsOf: url),
-               let image = UIImage(data: data) {
-                cell.imageView.image = image
+            if let urlStr = user.profilePictureURL {
+                AvatarManager.loadAvatar(from: urlStr, into: cell.imageView, cropToFace: true)
             } else {
-                cell.imageView.image = UIImage(named: "default_avatar")
+                cell.imageView.image = UIImage(systemName: "person")
+                cell.imageView.tintColor = .softPurple
             }
         }
         
@@ -295,16 +356,33 @@ extension NewPlanViewController: UICollectionViewDataSource, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return searchResults.count
+        return searchResults.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let result = searchResults[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "LocationResultCell")
         ?? UITableViewCell(style: .subtitle, reuseIdentifier: "LocationResultCell")
+        if indexPath.row == 0 {
+            cell.textLabel?.text = "📍 My Current Location"
+            cell.detailTextLabel?.text = nil
+        } else {
+            let result = searchResults[indexPath.row - 1]
+            cell.textLabel?.text = result.title
+            cell.detailTextLabel?.text = result.subtitle
+            
+            cell.textLabel?.text = result.title
+            cell.detailTextLabel?.text = result.subtitle
+        }
         
-        cell.textLabel?.text = result.title
-        cell.detailTextLabel?.text = result.subtitle
+        cell.contentView.layer.cornerRadius = 10
+        cell.contentView.layer.masksToBounds = true
+        cell.contentView.backgroundColor = .creamBackground
+        cell.layer.shadowColor = UIColor.textButton.cgColor
+        cell.layer.shadowOpacity = 0.2
+        cell.layer.shadowOffset = CGSize(width: 0, height: 2)
+        cell.layer.shadowRadius = 3
+        cell.layer.masksToBounds = false
+        
         return cell
     }
     
@@ -312,6 +390,11 @@ extension NewPlanViewController: UICollectionViewDataSource, UITableViewDataSour
         let completion = searchResults[indexPath.row]
         let searchRequest = MKLocalSearch.Request(completion: completion)
         let search = MKLocalSearch(request: searchRequest)
+        
+        if indexPath.row == 0 {
+            getCurrentLocationAndSetField()
+            return
+        }
         
         search.start { response, error in
             guard let placemark = response?.mapItems.first?.placemark else { return }
@@ -324,7 +407,7 @@ extension NewPlanViewController: UICollectionViewDataSource, UITableViewDataSour
             self.selectedLocation = (name, lat, lon)
             
             print("📍 Stored: \(name) at (\(lat), \(lon))")
-            self.locationResultsTableView.isHidden = true
+                        self.locationResultsTableView.isHidden = false
         }
     }
     
