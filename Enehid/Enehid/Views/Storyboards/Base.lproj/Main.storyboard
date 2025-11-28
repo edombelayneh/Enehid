@@ -2448,7 +2448,7 @@
                                 <color key="backgroundColor" name="CreamBackground"/>
                                 <color key="sectionIndexBackgroundColor" red="0.22745099660000001" green="0.22745099660000001" blue="0.2352941036" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="BookmarkCell" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="BookmarkCell" rowHeight="174" id="uf6-g6-BeG" customClass="BookmarkCell" customModule="Enehid" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="BookmarkCell" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="BookmarkCell" rowHeight="174" id="uf6-g6-BeG" customClass="BookmarkCell" customModule="Enehid" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="393" height="174"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="uf6-g6-BeG" id="ubO-mO-yI6">
