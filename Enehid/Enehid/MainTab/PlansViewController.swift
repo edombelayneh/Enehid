@@ -9,7 +9,7 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-class PlansViewController: UIViewController, UITableViewDelegate {
+class PlansViewController: RefreshableViewController, UITableViewDelegate {
     
     @IBOutlet weak var plansTableView: UITableView!
     
@@ -47,6 +47,18 @@ class PlansViewController: UIViewController, UITableViewDelegate {
         
     }
     
+    override func handleRefresh() {
+        print("🔁 PlansViewController refreshing...")
+
+        sectionedPlans = [:]
+        plansTableView.reloadData()
+
+        fetchPlans()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.endRefreshing()
+        }
+    }
     
     /*
      // MARK: - Navigation
