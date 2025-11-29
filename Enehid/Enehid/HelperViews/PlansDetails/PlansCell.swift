@@ -100,13 +100,6 @@ class PlanCell: UITableViewCell {
         textStack.axis = .vertical
         textStack.spacing = 6
 
-//        mainStack.axis = .horizontal
-//        mainStack.spacing = 24
-//        mainStack.alignment = .center
-//        mainStack.translatesAutoresizingMaskIntoConstraints = false
-//        mainStack.addArrangedSubview(textStack)
-//        mainStack.addArrangedSubview(buttonStack)
-        
         // Wrap buttonStack in a right-aligned container
         let buttonContainer = UIView()
         buttonContainer.translatesAutoresizingMaskIntoConstraints = false

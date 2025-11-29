@@ -2159,6 +2159,9 @@
                                 <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Plans"/>
+                                <connections>
+                                    <action selector="onTapViewButton:" destination="yS5-Ni-mSb" eventType="touchUpInside" id="4hL-C0-7zK"/>
+                                </connections>
                             </button>
                         </barButtonItem>
                     </navigationItem>
@@ -2167,6 +2170,7 @@
                         <outlet property="inputBottomView" destination="rpz-Gx-kdo" id="Mcb-lZ-eN3"/>
                         <outlet property="messageField" destination="Afi-WD-c2p" id="gsv-Hi-73m"/>
                         <outlet property="tableView" destination="TWM-TH-15d" id="68o-bR-WiR"/>
+                        <outlet property="viewPlansButton" destination="uA7-lH-FJg" id="P1e-zI-r1Y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Sb4-Qg-vRa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

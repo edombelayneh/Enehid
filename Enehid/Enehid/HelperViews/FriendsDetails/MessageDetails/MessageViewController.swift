@@ -18,13 +18,14 @@ class MessageViewController: UIViewController, UITableViewDelegate {
     @IBOutlet weak var messageField: UITextField!
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var viewPlansButton: UIButton!
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
     var messages: [Message] = []
     
     var listener: ListenerRegistration?
-    
+    var currentPlan: Plans?
     var currentPlanId: String?
     var recipientUser: User?
     
@@ -34,7 +35,8 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         view.addGestureRecognizer(tap)
         
         
-        //        navigationItem.title = "GROUP NAME HERE"
+        // Hide or show viewPlansButton based on chat type
+        viewPlansButton.isHidden = (currentPlanId == nil)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillShow),
@@ -82,6 +84,62 @@ class MessageViewController: UIViewController, UITableViewDelegate {
     
     @IBAction func onTapSendMessage(_ sender: UIButton) {
         sendMessage()
+    }
+    @IBAction func onTapViewButton(_ sender: UIButton) {
+        guard let planId = currentPlanId else {
+            print("❌ No planId found.")
+            return
+        }
+        
+        db.collection("plans").document(planId).getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error fetching plan: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let data = snapshot?.data() else {
+                print("❌ Plan document is empty or doesn't exist.")
+                return
+            }
+            
+            // 👇 Parse all required fields manually
+            let activityName = data["activityName"] as? String ?? ""
+            let location = data["location"] as? String ?? ""
+            let date = data["date"] as? String ?? ""
+            let createdBy = data["createdBy"] as? String ?? ""
+            let lat = data["lat"] as? Double ?? 0.0
+            let lon = data["lon"] as? Double ?? 0.0
+            let participants = data["participants"] as? [String: String] ?? [:]
+            let acceptedByIDs = data["acceptedByIDs"] as? Set<String> ?? []
+            let declinedByIDs = data["declinedByIDs"] as? Set<String> ?? []
+            let iAccepted = data["iAccepted"] as? Bool ?? false
+            let iDeclined = data["iDeclined"] as? Bool ?? false
+            
+            let plan = Plans(
+                id: planId,
+                activityName: activityName,
+                location: location,
+                date: date,
+                createdBy: createdBy,
+                lat: lat,
+                lon: lon,
+                participants: participants,
+                acceptedByIDs: acceptedByIDs,
+                declinedByIDs: declinedByIDs,
+                iAccepted: iAccepted,
+                iDeclined: iDeclined
+            )
+            
+            DispatchQueue.main.async {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                if let detailVC = storyboard.instantiateViewController(withIdentifier: "PlanDetailsViewController") as? PlanDetailsViewController {
+                    detailVC.plan = plan
+                    self.navigationController?.pushViewController(detailVC, animated: true)
+                } else {
+                    print("❌ Could not load PlanDetailsViewController")
+                }
+            }
+        }
     }
     
     @objc func keyboardWillShow(notification: Notification) {
@@ -136,14 +194,14 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         guard let text = messageField.text,
               !text.isEmpty,
               let user = Auth.auth().currentUser else { return }
-
+        
         let messageData: [String: Any] = [
             "text": text,
             "senderId": user.uid,
             "username": user.displayName ?? "Unknown",
             "timestamp": FieldValue.serverTimestamp()
         ]
-
+        
         // ✅ GROUP CHAT FLOW (check plan access)
         if let planId = currentPlanId {
             checkChatAccess(for: planId) { canSend in
@@ -151,12 +209,12 @@ class MessageViewController: UIViewController, UITableViewDelegate {
                     print("❌ You must accept the plan to send messages.")
                     return
                 }
-
+                
                 let messageRef = self.db.collection("groupChats")
                     .document(planId)
                     .collection("messages")
                     .document()
-
+                
                 messageRef.setData(messageData) { error in
                     if let error = error {
                         print("❌ Error sending group message: \(error)")
@@ -173,16 +231,16 @@ class MessageViewController: UIViewController, UITableViewDelegate {
                     }
                 }
             }
-
-        // ✅ PRIVATE CHAT FLOW (no access check needed)
+            
+            // ✅ PRIVATE CHAT FLOW (no access check needed)
         } else if let friend = recipientUser {
             let chatId = privateChatId(with: friend.id)
-
+            
             let messageRef = db.collection("privateChats")
                 .document(chatId)
                 .collection("messages")
                 .document()
-
+            
             messageRef.setData(messageData) { error in
                 if let error = error {
                     print("❌ Error sending private message: \(error)")
@@ -200,8 +258,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             }
         }
     }
-
-
+    
     
     func checkChatAccess(for planId: String, completion: @escaping (Bool) -> Void) {
         let db = Firestore.firestore()
@@ -470,7 +527,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             banner.heightAnchor.constraint(equalToConstant: 32)
         ])
     }
-
+    
     
     
 }
