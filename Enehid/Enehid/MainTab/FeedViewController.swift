@@ -10,7 +10,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import CoreLocation
 
-class FeedViewController: UIViewController, UITableViewDelegate, UICollectionViewDelegate {
+class FeedViewController: RefreshableViewController, UITableViewDelegate, UICollectionViewDelegate {
     
     @IBOutlet weak var storyCollectionView: UICollectionView!
     @IBOutlet weak var feedTableView: UITableView!
@@ -50,6 +50,39 @@ class FeedViewController: UIViewController, UITableViewDelegate, UICollectionVie
         fetchStories { feedStories in
             self.feedStories = feedStories
             self.storyCollectionView.reloadData()
+        }
+    }
+    
+    override func handleRefresh() {
+        print("🔁 FeedViewController refreshing...")
+        feedMemories.removeAll()
+        feedStories.removeAll()
+        feedTableView.reloadData()
+        storyCollectionView.reloadData()
+        
+        let group = DispatchGroup()
+        
+        group.enter()
+        fetchFriendFeed { feedMemories in
+            self.feedMemories = feedMemories
+            DispatchQueue.main.async {
+                self.feedTableView.reloadData()
+            }
+            group.leave()
+        }
+        
+        group.enter()
+        fetchStories { feedStories in
+            self.feedStories = feedStories
+            DispatchQueue.main.async {
+                self.storyCollectionView.reloadData()
+            }
+            group.leave()
+        }
+        
+        // End refresh once both calls complete
+        group.notify(queue: .main) {
+            self.endRefreshing()
         }
     }
     
