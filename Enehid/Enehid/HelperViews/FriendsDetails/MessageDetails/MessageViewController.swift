@@ -134,7 +134,9 @@ class MessageViewController: UIViewController, UITableViewDelegate {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 if let detailVC = storyboard.instantiateViewController(withIdentifier: "PlanDetailsViewController") as? PlanDetailsViewController {
                     detailVC.plan = plan
-                    self.navigationController?.pushViewController(detailVC, animated: true)
+                    detailVC.modalPresentationStyle = .pageSheet 
+                    self.present(detailVC, animated: true, completion: nil)
+
                 } else {
                     print("❌ Could not load PlanDetailsViewController")
                 }
