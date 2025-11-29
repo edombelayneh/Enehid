@@ -9,7 +9,7 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 
-class FriendsViewController: UIViewController, UITableViewDelegate {
+class FriendsViewController: RefreshableViewController, UITableViewDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -39,7 +39,36 @@ class FriendsViewController: UIViewController, UITableViewDelegate {
         observeGroupChats()
         
     }
-
+    
+    override func handleRefresh() {
+        print("🔁 FriendsViewController refreshing...")
+        friends = []
+        groupPreviews = []
+        tableView.reloadData()
+        
+        let group = DispatchGroup()
+        
+        group.enter()
+        fetchFriends { users in
+            DispatchQueue.main.async {
+                self.friends = users
+                self.tableView.reloadData()
+            }
+            group.leave()
+        }
+        
+        group.enter()
+        observeGroupChats() // no completion block, so we just assume it's fast
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { // simulate slight delay
+            group.leave()
+        }
+        
+        group.notify(queue: .main) {
+            self.endRefreshing()
+        }
+    }
+    
+    
     func observeGroupChats() {
         guard let uid = Auth.auth().currentUser?.uid else {
             print("❌ User not logged in")
