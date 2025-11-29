@@ -132,100 +132,64 @@ class MessageViewController: UIViewController, UITableViewDelegate {
      }
      */
     
-//    func sendMessage() {
-//        guard let text = messageField.text,
-//              !text.isEmpty,
-//              let user = Auth.auth().currentUser else { return }
-//        
-//        let messageData: [String: Any] = [
-//            "text": text,
-//            "senderId": user.uid,
-//            "username": user.displayName ?? "Unknown",
-//            "timestamp": FieldValue.serverTimestamp()
-//        ]
-//        
-//        if let planId = currentPlanId {
-//            // ✅ Sending to group chat
-//            let messageRef = db.collection("groupChats")
-//                .document(planId)
-//                .collection("messages")
-//                .document()
-//            
-//            messageRef.setData(messageData) { error in
-//                if let error = error {
-//                    print("❌ Error sending group message: \(error)")
-//                } else {
-//                    self.messageField.text = ""
-//                    
-//                    self.db.collection("groupChats")
-//                        .document(planId)
-//                        .updateData([
-//                            "lastMessage": [
-//                                "text": text,
-//                                "timestamp": FieldValue.serverTimestamp()
-//                            ]
-//                        ])
-//                }
-//            }
-//        } else if let friend = recipientUser {
-//            // ✅ Sending to private chat
-//            let chatId = privateChatId(with: friend.id)
-//            
-//            let messageRef = db.collection("privateChats")
-//                .document(chatId)
-//                .collection("messages")
-//                .document()
-//            
-//            messageRef.setData(messageData) { error in
-//                if let error = error {
-//                    print("❌ Error sending private message: \(error)")
-//                } else {
-//                    self.messageField.text = ""
-//                    
-//                    // Optional: store lastMessage in chat metadata if needed
-//                    self.db.collection("privateChats")
-//                        .document(chatId)
-//                        .updateData([
-//                            "lastMessage": [
-//                                "text": text,
-//                                "timestamp": FieldValue.serverTimestamp()
-//                            ]
-//                        ])
-//                }
-//            }
-//        }
-//    }
     func sendMessage() {
         guard let text = messageField.text,
               !text.isEmpty,
-              let user = Auth.auth().currentUser,
-              let planId = currentPlanId else { return }
-        
-        checkChatAccess(for: planId) { canSend in
-            guard canSend else {
-                print("❌ User is not allowed to send messages")
-                return
+              let user = Auth.auth().currentUser else { return }
+
+        let messageData: [String: Any] = [
+            "text": text,
+            "senderId": user.uid,
+            "username": user.displayName ?? "Unknown",
+            "timestamp": FieldValue.serverTimestamp()
+        ]
+
+        // ✅ GROUP CHAT FLOW (check plan access)
+        if let planId = currentPlanId {
+            checkChatAccess(for: planId) { canSend in
+                guard canSend else {
+                    print("❌ You must accept the plan to send messages.")
+                    return
+                }
+
+                let messageRef = self.db.collection("groupChats")
+                    .document(planId)
+                    .collection("messages")
+                    .document()
+
+                messageRef.setData(messageData) { error in
+                    if let error = error {
+                        print("❌ Error sending group message: \(error)")
+                    } else {
+                        self.messageField.text = ""
+                        self.db.collection("groupChats")
+                            .document(planId)
+                            .updateData([
+                                "lastMessage": [
+                                    "text": text,
+                                    "timestamp": FieldValue.serverTimestamp()
+                                ]
+                            ])
+                    }
+                }
             }
 
-            let messageData: [String: Any] = [
-                "text": text,
-                "senderId": user.uid,
-                "username": user.displayName ?? "Unknown",
-                "timestamp": FieldValue.serverTimestamp()
-            ]
+        // ✅ PRIVATE CHAT FLOW (no access check needed)
+        } else if let friend = recipientUser {
+            let chatId = privateChatId(with: friend.id)
 
-            let messageRef = self.db.collection("groupChats")
-                .document(planId)
+            let messageRef = db.collection("privateChats")
+                .document(chatId)
                 .collection("messages")
                 .document()
 
             messageRef.setData(messageData) { error in
                 if let error = error {
-                    print("❌ Error sending group message: \(error)")
+                    print("❌ Error sending private message: \(error)")
                 } else {
                     self.messageField.text = ""
-                    self.db.collection("groupChats")
-                        .document(planId)
+                    self.db.collection("privateChats")
+                        .document(chatId)
                         .updateData([
                             "lastMessage": [
                                 "text": text,
@@ -236,6 +200,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             }
         }
     }
+
 
     
     func checkChatAccess(for planId: String, completion: @escaping (Bool) -> Void) {
