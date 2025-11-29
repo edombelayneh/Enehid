@@ -28,12 +28,14 @@ class MessageViewController: UIViewController, UITableViewDelegate {
     var currentPlan: Plans?
     var currentPlanId: String?
     var recipientUser: User?
+    var groupChatName: String = "Group Chat"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
         
+       
         
         // Hide or show viewPlansButton based on chat type
         viewPlansButton.isHidden = (currentPlanId == nil)
@@ -62,8 +64,10 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         
         
         if let planId = currentPlanId {
-            setupGroupChatTitleView(groupName: "Group Chat")
+            fetchGroupChatName(for: planId)
             startGroupChatListener(planId: planId)
+//            setupGroupChatTitleView(groupName: groupChatName)
+//            startGroupChatListener(planId: planId)
             
             checkChatAccess(for: planId) { canSend in
                 DispatchQueue.main.async {
@@ -134,7 +138,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 if let detailVC = storyboard.instantiateViewController(withIdentifier: "PlanDetailsViewController") as? PlanDetailsViewController {
                     detailVC.plan = plan
-                    detailVC.modalPresentationStyle = .pageSheet 
+                    detailVC.modalPresentationStyle = .pageSheet
                     self.present(detailVC, animated: true, completion: nil)
 
                 } else {
@@ -191,6 +195,24 @@ class MessageViewController: UIViewController, UITableViewDelegate {
      // Pass the selected object to the new view controller.
      }
      */
+    
+    func fetchGroupChatName(for planId: String) {
+        db.collection("plans").document(planId).getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error fetching plan: \(error.localizedDescription)")
+                self.setupGroupChatTitleView(groupName: "Group Chat")
+                return
+            }
+
+            let activityName = snapshot?.data()?["activityName"] as? String ?? "Group Chat"
+
+            DispatchQueue.main.async {
+                self.groupChatName = activityName
+                self.setupGroupChatTitleView(groupName: activityName)
+            }
+        }
+    }
+
     
     func sendMessage() {
         guard let text = messageField.text,

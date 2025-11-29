@@ -838,8 +838,8 @@
                                                     <color key="textColor" name="PrimaryColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="qVq-1b-1uI">
-                                                    <rect key="frame" x="15" y="5" width="74" height="71"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.3" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="qVq-1b-1uI">
+                                                    <rect key="frame" x="15" y="5.6666666666666643" width="74" height="70.666666666666686"/>
                                                     <color key="tintColor" name="TextButton"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="74" id="AF3-zG-GI9"/>
@@ -3471,6 +3471,7 @@
         <image name="paperplane.fill" catalog="system" width="128" height="119"/>
         <image name="person" catalog="system" width="128" height="121"/>
         <image name="person.2.badge.plus" catalog="system" width="128" height="90"/>
+        <image name="person.3" catalog="system" width="128" height="66"/>
         <image name="person.3.sequence" catalog="system" width="128" height="64"/>
         <image name="person.circle" catalog="system" width="128" height="123"/>
         <image name="person.crop.circle" catalog="system" width="128" height="123"/>
