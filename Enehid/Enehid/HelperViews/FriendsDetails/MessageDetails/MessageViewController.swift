@@ -18,23 +18,27 @@ class MessageViewController: UIViewController, UITableViewDelegate {
     @IBOutlet weak var messageField: UITextField!
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var viewPlansButton: UIButton!
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
     var messages: [Message] = []
     
     var listener: ListenerRegistration?
-    
+    var currentPlan: Plans?
     var currentPlanId: String?
     var recipientUser: User?
+    var groupChatName: String = "Group Chat"
     
     override func viewDidLoad() {
         super.viewDidLoad()
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
         
+       
         
-        //        navigationItem.title = "GROUP NAME HERE"
+        // Hide or show viewPlansButton based on chat type
+        viewPlansButton.isHidden = (currentPlanId == nil)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(keyboardWillShow),
@@ -60,9 +64,9 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         
         
         if let planId = currentPlanId {
-            setupGroupChatTitleView(groupName: "Group Chat")
+            fetchGroupChatName(for: planId)
             startGroupChatListener(planId: planId)
-            
+        
             checkChatAccess(for: planId) { canSend in
                 DispatchQueue.main.async {
                     self.inputBottomView.isHidden = !canSend
@@ -82,6 +86,64 @@ class MessageViewController: UIViewController, UITableViewDelegate {
     
     @IBAction func onTapSendMessage(_ sender: UIButton) {
         sendMessage()
+    }
+    @IBAction func onTapViewButton(_ sender: UIButton) {
+        guard let planId = currentPlanId else {
+            print("❌ No planId found.")
+            return
+        }
+        
+        db.collection("plans").document(planId).getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error fetching plan: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let data = snapshot?.data() else {
+                print("❌ Plan document is empty or doesn't exist.")
+                return
+            }
+            
+            // 👇 Parse all required fields manually
+            let activityName = data["activityName"] as? String ?? ""
+            let location = data["location"] as? String ?? ""
+            let date = data["date"] as? String ?? ""
+            let createdBy = data["createdBy"] as? String ?? ""
+            let lat = data["lat"] as? Double ?? 0.0
+            let lon = data["lon"] as? Double ?? 0.0
+            let participants = data["participants"] as? [String: String] ?? [:]
+            let acceptedByIDs = data["acceptedByIDs"] as? Set<String> ?? []
+            let declinedByIDs = data["declinedByIDs"] as? Set<String> ?? []
+            let iAccepted = data["iAccepted"] as? Bool ?? false
+            let iDeclined = data["iDeclined"] as? Bool ?? false
+            
+            let plan = Plans(
+                id: planId,
+                activityName: activityName,
+                location: location,
+                date: date,
+                createdBy: createdBy,
+                lat: lat,
+                lon: lon,
+                participants: participants,
+                acceptedByIDs: acceptedByIDs,
+                declinedByIDs: declinedByIDs,
+                iAccepted: iAccepted,
+                iDeclined: iDeclined
+            )
+            
+            DispatchQueue.main.async {
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                if let detailVC = storyboard.instantiateViewController(withIdentifier: "PlanDetailsViewController") as? PlanDetailsViewController {
+                    detailVC.plan = plan
+                    detailVC.modalPresentationStyle = .pageSheet
+                    self.present(detailVC, animated: true, completion: nil)
+
+                } else {
+                    print("❌ Could not load PlanDetailsViewController")
+                }
+            }
+        }
     }
     
     @objc func keyboardWillShow(notification: Notification) {
@@ -132,100 +194,82 @@ class MessageViewController: UIViewController, UITableViewDelegate {
      }
      */
     
-//    func sendMessage() {
-//        guard let text = messageField.text,
-//              !text.isEmpty,
-//              let user = Auth.auth().currentUser else { return }
-//        
-//        let messageData: [String: Any] = [
-//            "text": text,
-//            "senderId": user.uid,
-//            "username": user.displayName ?? "Unknown",
-//            "timestamp": FieldValue.serverTimestamp()
-//        ]
-//        
-//        if let planId = currentPlanId {
-//            // ✅ Sending to group chat
-//            let messageRef = db.collection("groupChats")
-//                .document(planId)
-//                .collection("messages")
-//                .document()
-//            
-//            messageRef.setData(messageData) { error in
-//                if let error = error {
-//                    print("❌ Error sending group message: \(error)")
-//                } else {
-//                    self.messageField.text = ""
-//                    
-//                    self.db.collection("groupChats")
-//                        .document(planId)
-//                        .updateData([
-//                            "lastMessage": [
-//                                "text": text,
-//                                "timestamp": FieldValue.serverTimestamp()
-//                            ]
-//                        ])
-//                }
-//            }
-//        } else if let friend = recipientUser {
-//            // ✅ Sending to private chat
-//            let chatId = privateChatId(with: friend.id)
-//            
-//            let messageRef = db.collection("privateChats")
-//                .document(chatId)
-//                .collection("messages")
-//                .document()
-//            
-//            messageRef.setData(messageData) { error in
-//                if let error = error {
-//                    print("❌ Error sending private message: \(error)")
-//                } else {
-//                    self.messageField.text = ""
-//                    
-//                    // Optional: store lastMessage in chat metadata if needed
-//                    self.db.collection("privateChats")
-//                        .document(chatId)
-//                        .updateData([
-//                            "lastMessage": [
-//                                "text": text,
-//                                "timestamp": FieldValue.serverTimestamp()
-//                            ]
-//                        ])
-//                }
-//            }
-//        }
-//    }
-    func sendMessage() {
-        guard let text = messageField.text,
-              !text.isEmpty,
-              let user = Auth.auth().currentUser,
-              let planId = currentPlanId else { return }
-        
-        checkChatAccess(for: planId) { canSend in
-            guard canSend else {
-                print("❌ User is not allowed to send messages")
+    func fetchGroupChatName(for planId: String) {
+        db.collection("plans").document(planId).getDocument { snapshot, error in
+            if let error = error {
+                print("❌ Error fetching plan: \(error.localizedDescription)")
+                self.setupGroupChatTitleView(groupName: "Group Chat")
                 return
             }
 
-            let messageData: [String: Any] = [
-                "text": text,
-                "senderId": user.uid,
-                "username": user.displayName ?? "Unknown",
-                "timestamp": FieldValue.serverTimestamp()
-            ]
+            let activityName = snapshot?.data()?["activityName"] as? String ?? "Group Chat"
 
-            let messageRef = self.db.collection("groupChats")
-                .document(planId)
+            DispatchQueue.main.async {
+                self.groupChatName = activityName
+                self.setupGroupChatTitleView(groupName: activityName)
+            }
+        }
+    }
+
+    
+    func sendMessage() {
+        guard let text = messageField.text,
+              !text.isEmpty,
+              let user = Auth.auth().currentUser else { return }
+        
+        let messageData: [String: Any] = [
+            "text": text,
+            "senderId": user.uid,
+            "username": user.displayName ?? "Unknown",
+            "timestamp": FieldValue.serverTimestamp()
+        ]
+        
+        // ✅ GROUP CHAT FLOW (check plan access)
+        if let planId = currentPlanId {
+            checkChatAccess(for: planId) { canSend in
+                guard canSend else {
+                    print("❌ You must accept the plan to send messages.")
+                    return
+                }
+                
+                let messageRef = self.db.collection("groupChats")
+                    .document(planId)
+                    .collection("messages")
+                    .document()
+                
+                messageRef.setData(messageData) { error in
+                    if let error = error {
+                        print("❌ Error sending group message: \(error)")
+                    } else {
+                        self.messageField.text = ""
+                        self.db.collection("groupChats")
+                            .document(planId)
+                            .updateData([
+                                "lastMessage": [
+                                    "text": text,
+                                    "timestamp": FieldValue.serverTimestamp()
+                                ]
+                            ])
+                    }
+                }
+            }
+            
+            // ✅ PRIVATE CHAT FLOW (no access check needed)
+        } else if let friend = recipientUser {
+            let chatId = privateChatId(with: friend.id)
+            
+            let messageRef = db.collection("privateChats")
+                .document(chatId)
                 .collection("messages")
                 .document()
-
+            
             messageRef.setData(messageData) { error in
                 if let error = error {
-                    print("❌ Error sending group message: \(error)")
+                    print("❌ Error sending private message: \(error)")
                 } else {
                     self.messageField.text = ""
-                    self.db.collection("groupChats")
-                        .document(planId)
+                    self.db.collection("privateChats")
+                        .document(chatId)
                         .updateData([
                             "lastMessage": [
                                 "text": text,
@@ -236,7 +280,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             }
         }
     }
-
+    
     
     func checkChatAccess(for planId: String, completion: @escaping (Bool) -> Void) {
         let db = Firestore.firestore()
@@ -250,7 +294,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             guard let data = snapshot?.data(),
                   let participants = data["participants"] as? [String: [String: Any]],
                   let status = participants[uid]?["status"] as? String else {
-                completion(false) // fallback to read-only
+                completion(false)
                 return
             }
             
@@ -430,6 +474,8 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
         
+        addShadowToAvatar(imageView)
+        
         AvatarManager.loadAvatar(from: user.profilePictureURL, into: imageView, cropToFace: true)
         
         let label = UILabel()
@@ -450,6 +496,15 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         navigationItem.titleView = container
     }
     
+    private func addShadowToAvatar(_ imageView: UIImageView) {
+        imageView.layer.shadowColor = UIColor.textButton.cgColor
+        imageView.layer.shadowOpacity = 0.5
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        imageView.layer.shadowRadius = 6
+        imageView.layer.masksToBounds = false
+    }
+
+    
     func setupGroupChatTitleView(groupName: String?) {
         let container = UIView()
         
@@ -461,11 +516,13 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "person.3")
-        imageView.tintColor = .gray
+        imageView.tintColor = .textButton
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
+        
+        addShadowToAvatar(imageView)
         
         let label = UILabel()
         label.text = groupName ?? "Group Chat"
@@ -505,7 +562,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             banner.heightAnchor.constraint(equalToConstant: 32)
         ])
     }
-
+    
     
     
 }

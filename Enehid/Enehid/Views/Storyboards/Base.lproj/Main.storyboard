@@ -838,8 +838,8 @@
                                                     <color key="textColor" name="PrimaryColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="qVq-1b-1uI">
-                                                    <rect key="frame" x="15" y="5" width="74" height="71"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.3" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="qVq-1b-1uI">
+                                                    <rect key="frame" x="15" y="5.6666666666666643" width="74" height="70.666666666666686"/>
                                                     <color key="tintColor" name="TextButton"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="74" id="AF3-zG-GI9"/>
@@ -2156,9 +2156,12 @@
                             <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="uA7-lH-FJg">
                                 <rect key="frame" x="311" y="4.6666666666666679" width="66" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="tintColor" red="0.85490196939999996" green="0.4196078479" blue="0.3058823645" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="tintColor" name="TextButton"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" title="Plans"/>
+                                <connections>
+                                    <action selector="onTapViewButton:" destination="yS5-Ni-mSb" eventType="touchUpInside" id="4hL-C0-7zK"/>
+                                </connections>
                             </button>
                         </barButtonItem>
                     </navigationItem>
@@ -2167,6 +2170,7 @@
                         <outlet property="inputBottomView" destination="rpz-Gx-kdo" id="Mcb-lZ-eN3"/>
                         <outlet property="messageField" destination="Afi-WD-c2p" id="gsv-Hi-73m"/>
                         <outlet property="tableView" destination="TWM-TH-15d" id="68o-bR-WiR"/>
+                        <outlet property="viewPlansButton" destination="uA7-lH-FJg" id="P1e-zI-r1Y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Sb4-Qg-vRa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -3467,6 +3471,7 @@
         <image name="paperplane.fill" catalog="system" width="128" height="119"/>
         <image name="person" catalog="system" width="128" height="121"/>
         <image name="person.2.badge.plus" catalog="system" width="128" height="90"/>
+        <image name="person.3" catalog="system" width="128" height="66"/>
         <image name="person.3.sequence" catalog="system" width="128" height="64"/>
         <image name="person.circle" catalog="system" width="128" height="123"/>
         <image name="person.crop.circle" catalog="system" width="128" height="123"/>
