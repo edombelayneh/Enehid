@@ -8,7 +8,7 @@ import UIKit
 import FirebaseFirestore
 import FirebaseAuth
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: RefreshableViewController {
     
     @IBOutlet weak var editButton: UIButton!
     @IBAction func didTapBookmarked(_ sender: Any) {
@@ -61,9 +61,13 @@ class ProfileViewController: UIViewController {
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
     
+    private let refreshScrollView = UIScrollView()
+    private let refreshControl = UIRefreshControl()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupPageViewController()
+        
         
         // Do any additional setup after loading the view.
         fetchUserAndCounters()
@@ -71,6 +75,20 @@ class ProfileViewController: UIViewController {
         postSegmentedControl.selectedSegmentIndex = 0
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             Animation.addPulseAnimationAroundAvatar(profilePicImage: self.profilePicImageView)
+        }
+    }
+    
+    override func handleRefresh() {
+        print("🔁 ProfileViewController refreshing...")
+        fetchUserAndCounters()
+        
+        // Refresh current tab
+        if let currentVC = pageViewController.viewControllers?.first as? RefreshableTab {
+            currentVC.refreshContent()
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.endRefreshing()
         }
     }
     
@@ -191,4 +209,8 @@ extension ProfileViewController: UIPageViewControllerDelegate {
         currentIndex = idx
         postSegmentedControl.selectedSegmentIndex = idx
     }
+}
+
+protocol RefreshableTab {
+    func refreshContent()
 }

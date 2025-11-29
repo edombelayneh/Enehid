@@ -10,7 +10,8 @@ import FirebaseAuth
 import FirebaseFirestore
 import SDWebImage
 
-class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, RefreshableTab {
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
     let db = Firestore.firestore()
@@ -24,6 +25,11 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
         fetchMemories()
         collectionView.reloadData()
         
+    }
+    
+    func refreshContent() {
+        print("🔁 Refreshing MemoriesVC")
+        fetchMemories()
     }
     
     func fetchMemories() {

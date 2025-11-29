@@ -10,7 +10,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseAuth
 
-class StarsTabViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class StarsTabViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, RefreshableTab {
     @IBOutlet weak var collectionView: UICollectionView!
     
     let db = Firestore.firestore()
@@ -23,6 +23,11 @@ class StarsTabViewController: UIViewController, UICollectionViewDelegate, UIColl
         // Do any additional setup after loading the view
         fetchStarredMemories()
         collectionView.reloadData()
+    }
+    
+    func refreshContent() {
+        print("🔁 Refreshing StarredVC")
+        fetchStarredMemories()
     }
     
     
