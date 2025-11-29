@@ -10,7 +10,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import SDWebImage
 
-class ReviewsTabViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class ReviewsTabViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, RefreshableTab {
     
     @IBOutlet weak var collectionView: UICollectionView!
     let db = Firestore.firestore()
@@ -24,6 +24,11 @@ class ReviewsTabViewController: UIViewController, UICollectionViewDataSource, UI
         
         fetchRecommendedMemories()
         collectionView.reloadData()
+    }
+    
+    func refreshContent() {
+        print("🔁 Refreshing ReviewsVC")
+        fetchRecommendedMemories()
     }
     
     func fetchRecommendedMemories() {
