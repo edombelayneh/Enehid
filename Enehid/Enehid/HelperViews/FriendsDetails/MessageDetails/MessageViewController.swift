@@ -66,9 +66,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         if let planId = currentPlanId {
             fetchGroupChatName(for: planId)
             startGroupChatListener(planId: planId)
-//            setupGroupChatTitleView(groupName: groupChatName)
-//            startGroupChatListener(planId: planId)
-            
+        
             checkChatAccess(for: planId) { canSend in
                 DispatchQueue.main.async {
                     self.inputBottomView.isHidden = !canSend
@@ -296,7 +294,7 @@ class MessageViewController: UIViewController, UITableViewDelegate {
             guard let data = snapshot?.data(),
                   let participants = data["participants"] as? [String: [String: Any]],
                   let status = participants[uid]?["status"] as? String else {
-                completion(false) // fallback to read-only
+                completion(false)
                 return
             }
             
@@ -476,6 +474,8 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
         
+        addShadowToAvatar(imageView)
+        
         AvatarManager.loadAvatar(from: user.profilePictureURL, into: imageView, cropToFace: true)
         
         let label = UILabel()
@@ -496,6 +496,15 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         navigationItem.titleView = container
     }
     
+    private func addShadowToAvatar(_ imageView: UIImageView) {
+        imageView.layer.shadowColor = UIColor.textButton.cgColor
+        imageView.layer.shadowOpacity = 0.5
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
+        imageView.layer.shadowRadius = 6
+        imageView.layer.masksToBounds = false
+    }
+
+    
     func setupGroupChatTitleView(groupName: String?) {
         let container = UIView()
         
@@ -507,11 +516,13 @@ class MessageViewController: UIViewController, UITableViewDelegate {
         
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "person.3")
-        imageView.tintColor = .gray
+        imageView.tintColor = .textButton
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: 34).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 34).isActive = true
+        
+        addShadowToAvatar(imageView)
         
         let label = UILabel()
         label.text = groupName ?? "Group Chat"
