@@ -22,6 +22,7 @@ class RequestsCell: UITableViewCell {
     
     override func awakeFromNib() {
         addShadowToAvatar(profilePicImageView)
+        setupCardStyle()
     }
     
     private func addShadowToAvatar(_ imageView: UIImageView) {
@@ -30,6 +31,20 @@ class RequestsCell: UITableViewCell {
         imageView.layer.shadowOffset = CGSize(width: 0, height: 3)
         imageView.layer.shadowRadius = 6
         imageView.layer.masksToBounds = false
+    }
+    
+    private func setupCardStyle() {
+        // Rounded corners
+        contentView.layer.cornerRadius = 16
+        contentView.layer.masksToBounds = true
+
+        // Shadow on cell (not clipped by contentView)
+        layer.shadowColor = UIColor.textButton.cgColor
+        layer.shadowOpacity = 0.5
+        layer.shadowOffset = CGSize(width: 0, height: 2)
+        layer.shadowRadius = 16
+        layer.masksToBounds = false
+        layer.cornerRadius = 16
     }
     
     @IBAction func onTapAddButton(_ sender: UIButton) {
