@@ -15,6 +15,7 @@ class RequestsViewController: UIViewController, UITableViewDelegate {
     
     var incomingRequests: [User] = []
     
+    
     let db = Firestore.firestore()
     
     override func viewDidLoad() {
@@ -45,7 +46,7 @@ class RequestsViewController: UIViewController, UITableViewDelegate {
     
     func fetchRequests(completion: @escaping ([User]) -> Void) {
         guard let currentUID = Auth.auth().currentUser?.uid else {
-            print("❌ Not logged in R")
+            print("❌ Not logged in Requests")
             completion([])
             return
         }
@@ -73,7 +74,21 @@ class RequestsViewController: UIViewController, UITableViewDelegate {
         }
     }
 
-    
+    func fetchHangoutCount(for user: User, completion: @escaping (Int) -> Void) {
+        let db = Firestore.firestore()
+        let plansRef = db.collection("users").document(user.id).collection("plans")
+
+        plansRef.getDocuments { snapshot, error in
+            if let error = error {
+                print("❌ Failed to fetch plans for \(user.username): \(error.localizedDescription)")
+                completion(0)
+                return
+            }
+
+            let count = snapshot?.documents.count ?? 0
+            completion(count)
+        }
+    }
 
 }
 
@@ -86,8 +101,19 @@ extension RequestsViewController: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "RequestsCell", for: indexPath) as? RequestsCell else {
             return UITableViewCell()
         }
-//        print(cell.usernameLabel)
 
+        let user = incomingRequests[indexPath.row]
+        cell.usernameLabel.text = user.username
+        AvatarManager.loadAvatar(from: user.profilePictureURL, into: cell.profilePicImageView)
+
+        cell.bioLabel.text = "Loading hangouts..."
+
+        fetchHangoutCount(for: user) { count in
+            DispatchQueue.main.async {
+                print("count: \(count)")
+                cell.bioLabel.text = count == 0 ? "New to Enehid" : "\(count) hangouts logged"
+            }
+        }
         
         return cell
         

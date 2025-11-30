@@ -79,7 +79,8 @@ class AddFriendViewController: UIViewController, UISearchBarDelegate, UITableVie
                     return User(
                         id: doc.documentID,
                         username: data["username"] as? String ?? "",
-                        email: data["email"] as? String ?? ""
+                        email: data["email"] as? String ?? "",
+                        profilePictureURL: data["profilePictureURL"] as? String
                     )
                 }
                 
@@ -243,6 +244,23 @@ class AddFriendViewController: UIViewController, UISearchBarDelegate, UITableVie
             }
         }
     }
+    
+    func fetchHangoutCount(for user: User, completion: @escaping (Int) -> Void) {
+        let db = Firestore.firestore()
+        let plansRef = db.collection("users").document(user.id).collection("plans")
+
+        plansRef.getDocuments { snapshot, error in
+            if let error = error {
+                print("❌ Failed to fetch plans for \(user.username): \(error.localizedDescription)")
+                completion(0)
+                return
+            }
+
+            let count = snapshot?.documents.count ?? 0
+            completion(count)
+        }
+    }
+
 
 }
 
@@ -258,6 +276,17 @@ extension AddFriendViewController: UITableViewDataSource {
         
         let user = searchResults[indexPath.row]
         cell.usernameLabel.text = user.username
+        AvatarManager.loadAvatar(from: user.profilePictureURL, into: cell.profilePicImageView)
+        
+        // Default placeholder until count loads
+        cell.bioLabel.text = "Loading hangouts..."
+
+        fetchHangoutCount(for: user) { count in
+            DispatchQueue.main.async {
+                print("count: \(count)")
+                cell.bioLabel.text = count == 0 ? "New to Enehid" : "\(count) hangouts logged"
+            }
+        }
 
         getFriendshipStatus(with: user) { status in
             DispatchQueue.main.async {
