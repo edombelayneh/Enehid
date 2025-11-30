@@ -13,6 +13,8 @@ import SDWebImage
 class ReviewsTabViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, RefreshableTab {
     
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var emptyStateView: UIView!
+    
     let db = Firestore.firestore()
     var recommendedMemories: [Memory] = []
     
@@ -73,6 +75,7 @@ class ReviewsTabViewController: UIViewController, UICollectionViewDataSource, UI
             
             memoryFetchGroup.notify(queue: .main) {
                 self.recommendedMemories = fetchedMemories
+                self.emptyStateView.isHidden = !self.recommendedMemories.isEmpty
                 self.collectionView.reloadData()
             }
         }

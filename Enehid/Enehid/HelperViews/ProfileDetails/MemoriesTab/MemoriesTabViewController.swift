@@ -14,6 +14,7 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
     
     @IBOutlet weak var collectionView: UICollectionView!
     
+    @IBOutlet weak var emptyStateView: UIView!
     let db = Firestore.firestore()
     
     var memories: [Memory] = []
@@ -73,6 +74,7 @@ class MemoriesTabViewController: UIViewController, UICollectionViewDataSource, U
             
             memoryFetchGroup.notify(queue: .main) {
                 self.memories = fetchedMemories
+                self.emptyStateView.isHidden = !self.memories.isEmpty
                 self.collectionView.reloadData()
             }
         }

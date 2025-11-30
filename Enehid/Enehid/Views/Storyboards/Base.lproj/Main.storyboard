@@ -334,6 +334,38 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <view key="backgroundView" contentMode="scaleToFill" id="ly7-9U-wna">
+                                    <rect key="frame" x="0.0" y="-118" width="393" height="852"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="memories_empty" translatesAutoresizingMaskIntoConstraints="NO" id="BLw-lD-NKD">
+                                            <rect key="frame" x="121.66666666666669" y="75" width="150" height="150"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="150" id="MBi-dC-mgu"/>
+                                                <constraint firstAttribute="width" constant="150" id="uOi-z9-Mbp"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5lS-mj-5Ec">
+                                            <rect key="frame" x="106" y="235" width="180" height="47"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="47" id="w8b-gL-WOF"/>
+                                                <constraint firstAttribute="width" constant="180" id="zsB-ao-fS2"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                            <color key="textColor" name="PrimaryColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" name="CreamBackground"/>
+                                    <constraints>
+                                        <constraint firstAttribute="bottom" secondItem="5lS-mj-5Ec" secondAttribute="bottom" constant="570" id="51V-eC-xNe"/>
+                                        <constraint firstAttribute="trailing" secondItem="5lS-mj-5Ec" secondAttribute="trailing" constant="107" id="5E4-CR-2wH"/>
+                                        <constraint firstItem="BLw-lD-NKD" firstAttribute="centerX" secondItem="ly7-9U-wna" secondAttribute="centerX" id="8wQ-uD-Bx8"/>
+                                        <constraint firstItem="5lS-mj-5Ec" firstAttribute="leading" secondItem="ly7-9U-wna" secondAttribute="leading" constant="106" id="Bbe-5n-aH4"/>
+                                        <constraint firstItem="5lS-mj-5Ec" firstAttribute="top" secondItem="BLw-lD-NKD" secondAttribute="bottom" constant="10" id="bzy-zX-F1C"/>
+                                        <constraint firstItem="BLw-lD-NKD" firstAttribute="top" secondItem="ly7-9U-wna" secondAttribute="top" constant="75" id="wIK-pG-E5q"/>
+                                    </constraints>
+                                </view>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MemoryCell" id="sId-jV-Pdf" customClass="MemoryCell" customModule="Enehid" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
@@ -365,11 +397,12 @@
                     <navigationItem key="navigationItem" id="Vgy-zO-sQP"/>
                     <connections>
                         <outlet property="collectionView" destination="ark-8F-nP2" id="D0V-Iq-4PC"/>
+                        <outlet property="emptyStateView" destination="ly7-9U-wna" id="KRG-ME-9P5"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JjI-jf-GHP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2598" y="2356"/>
+            <point key="canvasLocation" x="2597.709923664122" y="2355.6338028169016"/>
         </scene>
         <!--ReviewsTab View Controller-->
         <scene sceneID="ZWt-vN-27x">
@@ -389,6 +422,38 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <view key="backgroundView" contentMode="scaleToFill" id="iVm-Bh-aCg">
+                                    <rect key="frame" x="0.0" y="-118" width="393" height="852"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="recommends_empty" translatesAutoresizingMaskIntoConstraints="NO" id="bKX-bV-DAO">
+                                            <rect key="frame" x="121.66666666666669" y="75" width="150" height="150"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="150" id="76q-gR-DQE"/>
+                                                <constraint firstAttribute="width" constant="150" id="I6x-84-lMB"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MYO-Lo-gyg">
+                                            <rect key="frame" x="106" y="235" width="180" height="47"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="47" id="9KM-Ui-9ix"/>
+                                                <constraint firstAttribute="width" constant="180" id="pOP-Ff-BIs"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                            <color key="textColor" name="PrimaryColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" name="CreamBackground"/>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="MYO-Lo-gyg" secondAttribute="trailing" constant="107" id="eM9-Mi-uq0"/>
+                                        <constraint firstItem="MYO-Lo-gyg" firstAttribute="top" secondItem="bKX-bV-DAO" secondAttribute="bottom" constant="10" id="fat-m2-2gT"/>
+                                        <constraint firstItem="bKX-bV-DAO" firstAttribute="centerX" secondItem="iVm-Bh-aCg" secondAttribute="centerX" id="gf2-fq-02g"/>
+                                        <constraint firstItem="bKX-bV-DAO" firstAttribute="top" secondItem="iVm-Bh-aCg" secondAttribute="top" constant="75" id="qxR-i8-thS"/>
+                                        <constraint firstItem="MYO-Lo-gyg" firstAttribute="leading" secondItem="iVm-Bh-aCg" secondAttribute="leading" constant="106" id="wzl-i7-fhS"/>
+                                        <constraint firstAttribute="bottom" secondItem="MYO-Lo-gyg" secondAttribute="bottom" constant="570" id="zt1-Fc-rlh"/>
+                                    </constraints>
+                                </view>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ReviewsCell" id="1Bv-Wi-vCc" customClass="ReviewsCell" customModule="Enehid" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
@@ -420,6 +485,7 @@
                     <navigationItem key="navigationItem" id="FIX-db-PWg"/>
                     <connections>
                         <outlet property="collectionView" destination="pZk-NG-Z87" id="41K-L0-a48"/>
+                        <outlet property="emptyStateView" destination="iVm-Bh-aCg" id="Tc3-dY-cuE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Ld-pj-daD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -444,6 +510,38 @@
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
+                                <view key="backgroundView" contentMode="scaleToFill" id="pdM-3m-F8e">
+                                    <rect key="frame" x="0.0" y="-118" width="393" height="852"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <subviews>
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="starred_empty" translatesAutoresizingMaskIntoConstraints="NO" id="TFp-iH-XTJ">
+                                            <rect key="frame" x="121.66666666666669" y="75" width="150" height="150"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="150" id="19W-QP-tyd"/>
+                                                <constraint firstAttribute="width" constant="150" id="1RC-LX-MZg"/>
+                                            </constraints>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hrf-Yo-Gab">
+                                            <rect key="frame" x="106" y="235" width="180" height="47"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="180" id="Fkm-yc-lX4"/>
+                                                <constraint firstAttribute="height" constant="47" id="Gle-07-8Zs"/>
+                                            </constraints>
+                                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
+                                            <color key="textColor" name="PrimaryColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" name="CreamBackground"/>
+                                    <constraints>
+                                        <constraint firstAttribute="trailing" secondItem="Hrf-Yo-Gab" secondAttribute="trailing" constant="107" id="0RF-gO-YVY"/>
+                                        <constraint firstAttribute="bottom" secondItem="Hrf-Yo-Gab" secondAttribute="bottom" constant="570" id="51N-UK-w6A"/>
+                                        <constraint firstItem="Hrf-Yo-Gab" firstAttribute="leading" secondItem="pdM-3m-F8e" secondAttribute="leading" constant="106" id="Ibf-6E-Hbp"/>
+                                        <constraint firstItem="TFp-iH-XTJ" firstAttribute="centerX" secondItem="pdM-3m-F8e" secondAttribute="centerX" id="N72-HT-Cox"/>
+                                        <constraint firstItem="TFp-iH-XTJ" firstAttribute="top" secondItem="pdM-3m-F8e" secondAttribute="top" constant="75" id="SP0-Co-tg7"/>
+                                        <constraint firstItem="Hrf-Yo-Gab" firstAttribute="top" secondItem="TFp-iH-XTJ" secondAttribute="bottom" constant="10" id="ac3-74-4t5"/>
+                                    </constraints>
+                                </view>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="StarredCell" id="tKF-DQ-xQy" customClass="StarredCell" customModule="Enehid" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="127.99999999999997" height="128"/>
@@ -475,6 +573,7 @@
                     <navigationItem key="navigationItem" id="k18-DL-JQL"/>
                     <connections>
                         <outlet property="collectionView" destination="Y0i-TV-Q16" id="jf3-NQ-PS7"/>
+                        <outlet property="emptyStateView" destination="pdM-3m-F8e" id="BKc-cg-Bm2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DEI-I4-zyU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -3476,6 +3575,7 @@
         <image name="map" catalog="system" width="128" height="112"/>
         <image name="megaphone" catalog="system" width="128" height="112"/>
         <image name="memories" catalog="system" width="128" height="119"/>
+        <image name="memories_empty" width="500" height="500"/>
         <image name="mouth" catalog="system" width="128" height="66"/>
         <image name="paperplane.fill" catalog="system" width="128" height="119"/>
         <image name="person" catalog="system" width="128" height="121"/>
@@ -3487,9 +3587,11 @@
         <image name="photo.fill.on.rectangle.fill" catalog="system" width="128" height="102"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <image name="plus.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="recommends_empty" width="500" height="500"/>
         <image name="rectangle.and.pencil.and.ellipsis" catalog="system" width="128" height="85"/>
         <image name="star" catalog="system" width="128" height="116"/>
         <image name="star.fill" catalog="system" width="128" height="116"/>
+        <image name="starred_empty" width="500" height="500"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <namedColor name="AccentRed">
             <color red="0.83137254901960789" green="0.19215686274509805" blue="0.10196078431372549" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
