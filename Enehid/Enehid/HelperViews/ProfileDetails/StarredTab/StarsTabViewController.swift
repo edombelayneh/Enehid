@@ -12,6 +12,7 @@ import FirebaseAuth
 
 class StarsTabViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, RefreshableTab {
     @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var emptyStateView: UIView!
     
     let db = Firestore.firestore()
     
@@ -83,6 +84,7 @@ class StarsTabViewController: UIViewController, UICollectionViewDelegate, UIColl
             
             group.notify(queue: .main) {
                 self.starred = fetchedMemories
+                self.emptyStateView.isHidden = !self.starred.isEmpty
                 self.collectionView.reloadData()
             }
         }

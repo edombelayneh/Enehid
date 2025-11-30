@@ -12,6 +12,7 @@ import CoreLocation
 
 class FeedViewController: RefreshableViewController, UITableViewDelegate, UICollectionViewDelegate {
     
+    @IBOutlet weak var emptyStateView: UIView!
     @IBOutlet weak var storyCollectionView: UICollectionView!
     @IBOutlet weak var feedTableView: UITableView!
     
@@ -44,6 +45,7 @@ class FeedViewController: RefreshableViewController, UITableViewDelegate, UIColl
         
         fetchFriendFeed {feedMemories in
             self.feedMemories = feedMemories
+            self.emptyStateView.isHidden = !self.feedMemories.isEmpty
             self.feedTableView.reloadData()
         }
         

@@ -12,6 +12,7 @@ import FirebaseAuth
 class FriendsViewController: RefreshableViewController, UITableViewDelegate {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var emptyStateView: UIView!
     
     let db = Firestore.firestore()
     let currentUID = Auth.auth().currentUser?.uid ?? ""
@@ -32,6 +33,7 @@ class FriendsViewController: RefreshableViewController, UITableViewDelegate {
         fetchFriends {user in
             DispatchQueue.main.async {
                 self.friends = user
+                self.emptyStateView.isHidden = !self.friends.isEmpty
                 self.tableView.reloadData()
             }
         }

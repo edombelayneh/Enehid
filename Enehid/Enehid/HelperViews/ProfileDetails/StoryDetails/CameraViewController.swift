@@ -18,16 +18,34 @@ class CameraViewController: UIViewController, UIImagePickerControllerDelegate, U
     
     @IBOutlet weak var previewView: UIView!
     @IBOutlet weak var libraryButton: UIButton!
+    @IBOutlet weak var captureButton: UIButton!
     
     let captureSession = AVCaptureSession()
     var photoOutput = AVCapturePhotoOutput()
     var previewLayer: AVCaptureVideoPreviewLayer!
     
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//        setupCamera()
+//        fetchLatestLibraryThumbnail()
+//    }
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCamera()
         fetchLatestLibraryThumbnail()
+        
+        // Set default icons (system or custom)
+        let galleryIcon = UIImage(systemName: "photo.on.rectangle")
+        let cameraIcon = UIImage(systemName: "camera.circle")
+        
+        libraryButton.setImage(galleryIcon, for: .normal)
+        captureButton.setImage(cameraIcon, for: .normal)
+        
+        libraryButton.imageView?.contentMode = .scaleAspectFit
+        captureButton.imageView?.contentMode = .scaleAspectFit
+
     }
+
     
     func setupCamera() {
         guard let camera = AVCaptureDevice.default(for: .video) else { return }
