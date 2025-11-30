@@ -3392,7 +3392,11 @@
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wBp-Tp-8rE">
-                                        <rect key="frame" x="24" y="771" width="56" height="47"/>
+                                        <rect key="frame" x="24" y="752" width="72" height="66"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="72" id="7St-hL-Ydb"/>
+                                        </constraints>
+                                        <color key="tintColor" name="PrimaryColor"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain">
                                             <imageReference key="image" image="photo.fill.on.rectangle.fill" catalog="system" symbolScale="large"/>
@@ -3403,7 +3407,11 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wey-en-0a2">
-                                        <rect key="frame" x="172" y="777" width="49.666666666666657" height="34.333333333333371"/>
+                                        <rect key="frame" x="159" y="752" width="77" height="59.333333333333371"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="77" id="Xgp-qU-aaz"/>
+                                        </constraints>
+                                        <color key="tintColor" name="PrimaryColor"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain">
                                             <imageReference key="image" image="circle.inset.filled" catalog="system" symbolScale="large"/>
@@ -3416,13 +3424,13 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstItem="wey-en-0a2" firstAttribute="leading" secondItem="wBp-Tp-8rE" secondAttribute="trailing" constant="92" id="7WN-A7-Q1n"/>
+                                    <constraint firstItem="wey-en-0a2" firstAttribute="top" secondItem="btV-ST-5Is" secondAttribute="top" constant="752" id="7Td-8q-h2R"/>
                                     <constraint firstItem="wBp-Tp-8rE" firstAttribute="leading" secondItem="btV-ST-5Is" secondAttribute="leading" constant="24" id="8qx-si-nmI"/>
-                                    <constraint firstAttribute="trailing" secondItem="wey-en-0a2" secondAttribute="trailing" constant="171.33000000000001" id="Bhp-tk-WHC"/>
-                                    <constraint firstItem="wBp-Tp-8rE" firstAttribute="top" secondItem="btV-ST-5Is" secondAttribute="top" constant="771" id="ZRx-dt-vn3"/>
+                                    <constraint firstItem="wey-en-0a2" firstAttribute="leading" secondItem="wBp-Tp-8rE" secondAttribute="trailing" constant="63" id="IRh-Tk-w7j"/>
+                                    <constraint firstItem="wBp-Tp-8rE" firstAttribute="top" secondItem="btV-ST-5Is" secondAttribute="top" constant="752" id="PE5-s0-4Z8"/>
+                                    <constraint firstAttribute="trailing" secondItem="wey-en-0a2" secondAttribute="trailing" constant="157" id="dCo-9P-qcZ"/>
                                     <constraint firstAttribute="bottom" secondItem="wBp-Tp-8rE" secondAttribute="bottom" constant="34" id="dG3-Zt-9Sn"/>
                                     <constraint firstAttribute="bottom" secondItem="wey-en-0a2" secondAttribute="bottom" constant="40.670000000000002" id="iDs-8s-gOI"/>
-                                    <constraint firstItem="wey-en-0a2" firstAttribute="top" secondItem="btV-ST-5Is" secondAttribute="top" constant="777" id="uba-OE-CIc"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -3437,6 +3445,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="dyl-X7-nN7"/>
                     <connections>
+                        <outlet property="captureButton" destination="wey-en-0a2" id="i9a-Rv-rud"/>
                         <outlet property="libraryButton" destination="wBp-Tp-8rE" id="BSE-Bq-Sc4"/>
                         <outlet property="previewView" destination="btV-ST-5Is" id="ebk-RA-hkC"/>
                     </connections>
