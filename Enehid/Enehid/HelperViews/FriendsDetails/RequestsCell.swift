@@ -13,11 +13,12 @@ class RequestsCell: UITableViewCell {
     @IBOutlet weak var addFriendButton: UIButton!
     @IBOutlet weak var bioLabel: UILabel!
     @IBOutlet weak var usernameLabel: UILabel!
-    
+    @IBOutlet weak var withdrawButton: UIButton!
     @IBOutlet weak var profilePicImageView: UIImageView!
     
     var onAddTapped: (() -> Void)?
     var onDenyTapped: (() -> Void)?
+    var onWithdrawTapped: (() -> Void)?
     
     override func awakeFromNib() {
         addShadowToAvatar(profilePicImageView)
@@ -37,5 +38,10 @@ class RequestsCell: UITableViewCell {
     
     @IBAction func onTapDenyButton(_ sender: UIButton) {
         onDenyTapped?()
+    }
+    
+    
+    @IBAction func onTapWithdrawButton(_ sender: UIButton) {
+        onWithdrawTapped?()
     }
 }

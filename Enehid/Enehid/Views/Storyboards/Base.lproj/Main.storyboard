@@ -2595,6 +2595,18 @@
                                                         <constraint firstAttribute="height" constant="65" id="shq-Dr-71V"/>
                                                     </constraints>
                                                 </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ALp-fO-JsZ">
+                                                    <rect key="frame" x="281" y="29" width="97" height="35"/>
+                                                    <color key="tintColor" red="0.89019608500000003" green="0.77254903320000001" blue="0.82745099070000006" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="gray" title="Withdraw" cornerStyle="capsule">
+                                                        <color key="baseForegroundColor" name="AccentRed"/>
+                                                        <color key="baseBackgroundColor" red="0.89019608500000003" green="0.77254903320000001" blue="0.82745099070000006" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                    </buttonConfiguration>
+                                                    <connections>
+                                                        <action selector="onTapWithdrawButton:" destination="gOP-k5-gO8" eventType="touchUpInside" id="plS-oM-J49"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" name="SoftPurple"/>
                                             <constraints>
@@ -2602,15 +2614,19 @@
                                                 <constraint firstItem="7vE-gW-S1F" firstAttribute="top" secondItem="hEQ-2y-twA" secondAttribute="top" constant="13" id="AHe-la-M2B"/>
                                                 <constraint firstItem="LTu-cL-lja" firstAttribute="leading" secondItem="7vE-gW-S1F" secondAttribute="trailing" constant="11" id="FwM-y3-x8L"/>
                                                 <constraint firstItem="Yww-AZ-GlY" firstAttribute="leading" secondItem="7vE-gW-S1F" secondAttribute="trailing" constant="11" id="GTw-MW-Tua"/>
+                                                <constraint firstAttribute="trailing" secondItem="ALp-fO-JsZ" secondAttribute="trailing" constant="15" id="K5J-qv-zOA"/>
                                                 <constraint firstItem="9dr-x0-DCd" firstAttribute="leading" secondItem="C5f-TA-iTH" secondAttribute="trailing" constant="10" id="Lwb-NI-fxd"/>
                                                 <constraint firstItem="C5f-TA-iTH" firstAttribute="leading" secondItem="Yww-AZ-GlY" secondAttribute="trailing" constant="19" id="MLe-85-d3p"/>
+                                                <constraint firstItem="ALp-fO-JsZ" firstAttribute="leading" secondItem="Yww-AZ-GlY" secondAttribute="trailing" constant="10" id="MN8-Oz-ATU"/>
                                                 <constraint firstItem="7vE-gW-S1F" firstAttribute="leading" secondItem="hEQ-2y-twA" secondAttribute="leading" constant="15" id="Tlz-0u-3mI"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="C5f-TA-iTH" secondAttribute="bottom" constant="18" id="XzO-Zf-lqB"/>
                                                 <constraint firstAttribute="trailing" secondItem="9dr-x0-DCd" secondAttribute="trailing" constant="15" id="YKv-Pm-FeV"/>
+                                                <constraint firstItem="ALp-fO-JsZ" firstAttribute="top" secondItem="hEQ-2y-twA" secondAttribute="top" constant="29" id="Zsa-dr-1uD"/>
                                                 <constraint firstItem="Yww-AZ-GlY" firstAttribute="top" secondItem="hEQ-2y-twA" secondAttribute="topMargin" constant="10" id="kcr-zP-6ah"/>
                                                 <constraint firstAttribute="bottom" secondItem="7vE-gW-S1F" secondAttribute="bottom" constant="14" id="pDa-ds-gCa"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="LTu-cL-lja" secondAttribute="bottom" constant="17" id="qaM-6d-3Gf"/>
                                                 <constraint firstItem="C5f-TA-iTH" firstAttribute="top" secondItem="hEQ-2y-twA" secondAttribute="topMargin" constant="17" id="rT6-SJ-FWw"/>
+                                                <constraint firstAttribute="bottom" secondItem="ALp-fO-JsZ" secondAttribute="bottom" constant="28" id="s7u-4N-eo6"/>
                                                 <constraint firstItem="9dr-x0-DCd" firstAttribute="baseline" secondItem="C5f-TA-iTH" secondAttribute="baseline" id="sJY-fm-oqq"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -2620,6 +2636,7 @@
                                             <outlet property="denyFriendButton" destination="9dr-x0-DCd" id="HeI-BE-66e"/>
                                             <outlet property="profilePicImageView" destination="7vE-gW-S1F" id="Pzl-Oi-ABg"/>
                                             <outlet property="usernameLabel" destination="Yww-AZ-GlY" id="UbE-UM-0I7"/>
+                                            <outlet property="withdrawButton" destination="ALp-fO-JsZ" id="gb6-5Z-CWd"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
