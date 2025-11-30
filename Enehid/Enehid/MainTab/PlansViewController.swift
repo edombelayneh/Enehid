@@ -11,6 +11,7 @@ import FirebaseFirestore
 
 class PlansViewController: RefreshableViewController, UITableViewDelegate {
     
+    @IBOutlet weak var emptyStateView: UIView!
     @IBOutlet weak var plansTableView: UITableView!
     
     enum PlanSection: Int, CaseIterable {
@@ -36,8 +37,6 @@ class PlansViewController: RefreshableViewController, UITableViewDelegate {
         plansTableView.dataSource = self
         // Do any additional setup after loading the view.
         plansTableView.sectionHeaderHeight = 20
-        //        plansTableView.separatorStyle = .none
-        //        plansTableView.backgroundColor = UIColor.systemGroupedBackground
         plansTableView.contentInset.bottom = 20
         plansTableView.register(PlanCell.self, forCellReuseIdentifier: "PlanCell")
         
@@ -168,6 +167,10 @@ class PlansViewController: RefreshableViewController, UITableViewDelegate {
             .pending: pending,
             .past: past
         ]
+        
+        let totalPlanCount = upcoming.count + pending.count + past.count
+        self.emptyStateView.isHidden = totalPlanCount > 0
+        self.plansTableView.isHidden = totalPlanCount == 0
 
         self.plansTableView.reloadData()
     }
