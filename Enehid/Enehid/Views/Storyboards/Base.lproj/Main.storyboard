@@ -345,10 +345,9 @@
                                                 <constraint firstAttribute="width" constant="150" id="uOi-z9-Mbp"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5lS-mj-5Ec">
-                                            <rect key="frame" x="106" y="235" width="180" height="47"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nothing here yet...enehid to your first memory!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5lS-mj-5Ec">
+                                            <rect key="frame" x="106" y="235" width="180" height="61"/>
                                             <constraints>
-                                                <constraint firstAttribute="height" constant="47" id="w8b-gL-WOF"/>
                                                 <constraint firstAttribute="width" constant="180" id="zsB-ao-fS2"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
@@ -358,10 +357,10 @@
                                     </subviews>
                                     <color key="backgroundColor" name="CreamBackground"/>
                                     <constraints>
-                                        <constraint firstAttribute="bottom" secondItem="5lS-mj-5Ec" secondAttribute="bottom" constant="570" id="51V-eC-xNe"/>
                                         <constraint firstAttribute="trailing" secondItem="5lS-mj-5Ec" secondAttribute="trailing" constant="107" id="5E4-CR-2wH"/>
                                         <constraint firstItem="BLw-lD-NKD" firstAttribute="centerX" secondItem="ly7-9U-wna" secondAttribute="centerX" id="8wQ-uD-Bx8"/>
                                         <constraint firstItem="5lS-mj-5Ec" firstAttribute="leading" secondItem="ly7-9U-wna" secondAttribute="leading" constant="106" id="Bbe-5n-aH4"/>
+                                        <constraint firstAttribute="bottom" secondItem="5lS-mj-5Ec" secondAttribute="bottom" constant="556" id="N67-2w-K1Q"/>
                                         <constraint firstItem="5lS-mj-5Ec" firstAttribute="top" secondItem="BLw-lD-NKD" secondAttribute="bottom" constant="10" id="bzy-zX-F1C"/>
                                         <constraint firstItem="BLw-lD-NKD" firstAttribute="top" secondItem="ly7-9U-wna" secondAttribute="top" constant="75" id="wIK-pG-E5q"/>
                                     </constraints>
@@ -433,7 +432,7 @@
                                                 <constraint firstAttribute="width" constant="150" id="I6x-84-lMB"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MYO-Lo-gyg">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="We’ve got ideas, enehid to see them!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MYO-Lo-gyg">
                                             <rect key="frame" x="106" y="235" width="180" height="47"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="47" id="9KM-Ui-9ix"/>
@@ -521,11 +520,10 @@
                                                 <constraint firstAttribute="width" constant="150" id="1RC-LX-MZg"/>
                                             </constraints>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hrf-Yo-Gab">
-                                            <rect key="frame" x="106" y="235" width="180" height="47"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nothing starred...enehid to what you love!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hrf-Yo-Gab">
+                                            <rect key="frame" x="106" y="235" width="180" height="61"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="180" id="Fkm-yc-lX4"/>
-                                                <constraint firstAttribute="height" constant="47" id="Gle-07-8Zs"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                             <color key="textColor" name="PrimaryColor"/>
@@ -535,11 +533,11 @@
                                     <color key="backgroundColor" name="CreamBackground"/>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="Hrf-Yo-Gab" secondAttribute="trailing" constant="107" id="0RF-gO-YVY"/>
-                                        <constraint firstAttribute="bottom" secondItem="Hrf-Yo-Gab" secondAttribute="bottom" constant="570" id="51N-UK-w6A"/>
                                         <constraint firstItem="Hrf-Yo-Gab" firstAttribute="leading" secondItem="pdM-3m-F8e" secondAttribute="leading" constant="106" id="Ibf-6E-Hbp"/>
                                         <constraint firstItem="TFp-iH-XTJ" firstAttribute="centerX" secondItem="pdM-3m-F8e" secondAttribute="centerX" id="N72-HT-Cox"/>
                                         <constraint firstItem="TFp-iH-XTJ" firstAttribute="top" secondItem="pdM-3m-F8e" secondAttribute="top" constant="75" id="SP0-Co-tg7"/>
                                         <constraint firstItem="Hrf-Yo-Gab" firstAttribute="top" secondItem="TFp-iH-XTJ" secondAttribute="bottom" constant="10" id="ac3-74-4t5"/>
+                                        <constraint firstAttribute="bottom" secondItem="Hrf-Yo-Gab" secondAttribute="bottom" constant="556" id="ygM-ZA-vPS"/>
                                     </constraints>
                                 </view>
                                 <cells>
@@ -984,11 +982,10 @@
                                             <constraint firstAttribute="width" constant="200" id="Zwf-5y-evP"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Sh-2m-J0b">
-                                        <rect key="frame" x="106" y="536" width="180" height="47"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Nobody pinned yet, enehid and start connecting!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Sh-2m-J0b">
+                                        <rect key="frame" x="106" y="536" width="180" height="61"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="180" id="7Lw-2N-CeN"/>
-                                            <constraint firstAttribute="height" constant="47" id="Ufy-Qg-WIu"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                         <color key="textColor" name="PrimaryColor"/>
@@ -1001,7 +998,7 @@
                                     <constraint firstItem="0Sh-2m-J0b" firstAttribute="top" secondItem="d8G-aY-rjr" secondAttribute="bottom" constant="10" id="jWB-EN-Onj"/>
                                     <constraint firstItem="d8G-aY-rjr" firstAttribute="centerX" secondItem="dB5-7X-Dao" secondAttribute="centerX" id="lBi-6k-lIN"/>
                                     <constraint firstItem="0Sh-2m-J0b" firstAttribute="leading" secondItem="dB5-7X-Dao" secondAttribute="leading" constant="106" id="lOa-UW-qh0"/>
-                                    <constraint firstAttribute="bottom" secondItem="0Sh-2m-J0b" secondAttribute="bottom" constant="269" id="s6u-aW-e1X"/>
+                                    <constraint firstAttribute="bottom" secondItem="0Sh-2m-J0b" secondAttribute="bottom" constant="255" id="nnD-RG-98N"/>
                                     <constraint firstAttribute="trailing" secondItem="0Sh-2m-J0b" secondAttribute="trailing" constant="107" id="xrb-Y5-azd"/>
                                 </constraints>
                             </view>
@@ -1784,7 +1781,7 @@
                                             <constraint firstAttribute="width" constant="200" id="X2E-Ms-3B9"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EXd-EL-2RS">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your feed starts with your friends, enehid?" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EXd-EL-2RS">
                                         <rect key="frame" x="106" y="536" width="180" height="47"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="47" id="fD0-gw-J52"/>
@@ -1978,7 +1975,7 @@
                                             <constraint firstAttribute="width" constant="200" id="TzD-Pa-1Ik"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let's go make memories together!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7hV-Tb-PqS">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The calendar’s open...enehid to fill it!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7hV-Tb-PqS">
                                         <rect key="frame" x="106" y="536" width="180" height="47"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="47" id="Ddm-cb-Zpt"/>
