@@ -1338,7 +1338,7 @@
             <objects>
                 <viewController storyboardIdentifier="CommentViewController" hidesBottomBarWhenPushed="YES" id="yhk-Bq-kVT" customClass="CommentViewController" customModule="Enehid" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="nhq-3D-R6D">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="783"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="G0l-lN-FNk">
@@ -2565,8 +2565,7 @@
                                                         <imageReference key="image" image="checkmark" catalog="system" symbolScale="small"/>
                                                     </buttonConfiguration>
                                                     <connections>
-                                                        <action selector="onTapAddButton:" destination="gOP-k5-gO8" eventType="touchUpInside" id="p5v-aD-Q5h"/>
-                                                        <action selector="onTapAddFriend:" destination="gOP-k5-gO8" eventType="touchUpInside" id="O7C-sd-ngx"/>
+                                                        <action selector="onTapAddButton:" destination="gOP-k5-gO8" eventType="touchUpInside" id="MuG-Vf-gCe"/>
                                                     </connections>
                                                 </button>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9dr-x0-DCd">
@@ -2581,8 +2580,7 @@
                                                         <imageReference key="image" image="xmark" catalog="system" symbolScale="small"/>
                                                     </buttonConfiguration>
                                                     <connections>
-                                                        <action selector="onTapAddFriend:" destination="gOP-k5-gO8" eventType="touchUpInside" id="V7T-PN-SRh"/>
-                                                        <action selector="onTapDenyButton:" destination="gOP-k5-gO8" eventType="touchUpInside" id="kg9-Bw-SZy"/>
+                                                        <action selector="onTapDenyButton:" destination="gOP-k5-gO8" eventType="touchUpInside" id="d9R-aL-MzJ"/>
                                                     </connections>
                                                 </button>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="7vE-gW-S1F">
