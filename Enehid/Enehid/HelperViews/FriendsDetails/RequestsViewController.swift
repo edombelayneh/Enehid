@@ -50,6 +50,39 @@ class RequestsViewController: UIViewController, UITableViewDelegate {
      }
      */
     
+//    func fetchRequests(completion: @escaping ([User], [User]) -> Void) {
+//        guard let currentUID = Auth.auth().currentUser?.uid else {
+//            print("❌ Not logged in")
+//            completion([], [])
+//            return
+//        }
+//        
+//        db.collection("users").document(currentUID).getDocument { snapshot, error in
+//            if let error = error {
+//                print("❌ Couldn’t fetch user: \(error.localizedDescription)")
+//                completion([], [])
+//                return
+//            }
+//            
+//            guard let data = snapshot?.data() else {
+//                completion([], [])
+//                return
+//            }
+//            
+//            let incomingMap = data["incomingRequests"] as? [String: String] ?? [:]
+//            let outgoingMap = data["outgoingRequests"] as? [String: String] ?? [:]
+//            
+//            let incomingUsers = incomingMap.map { (uid, username) in
+//                User(id: uid, username: username, email: "")
+//            }
+//            
+//            let outgoingUsers = outgoingMap.map { (uid, username) in
+//                User(id: uid, username: username, email: "")
+//            }
+//            
+//            completion(incomingUsers, outgoingUsers)
+//        }
+//    }
     func fetchRequests(completion: @escaping ([User], [User]) -> Void) {
         guard let currentUID = Auth.auth().currentUser?.uid else {
             print("❌ Not logged in")
@@ -72,17 +105,34 @@ class RequestsViewController: UIViewController, UITableViewDelegate {
             let incomingMap = data["incomingRequests"] as? [String: String] ?? [:]
             let outgoingMap = data["outgoingRequests"] as? [String: String] ?? [:]
             
-            let incomingUsers = incomingMap.map { (uid, username) in
-                User(id: uid, username: username, email: "")
+            let dispatchGroup = DispatchGroup()
+            var incomingUsers: [User] = []
+            var outgoingUsers: [User] = []
+            
+            for (uid, username) in incomingMap {
+                dispatchGroup.enter()
+                self.db.collection("users").document(uid).getDocument { docSnapshot, error in
+                    defer { dispatchGroup.leave() }
+                    let profileURL = docSnapshot?.data()?["profilePictureURL"] as? String ?? ""
+                    incomingUsers.append(User(id: uid, username: username, email: "", profilePictureURL: profileURL))
+                }
             }
             
-            let outgoingUsers = outgoingMap.map { (uid, username) in
-                User(id: uid, username: username, email: "")
+            for (uid, username) in outgoingMap {
+                dispatchGroup.enter()
+                self.db.collection("users").document(uid).getDocument { docSnapshot, error in
+                    defer { dispatchGroup.leave() }
+                    let profileURL = docSnapshot?.data()?["profilePictureURL"] as? String ?? ""
+                    outgoingUsers.append(User(id: uid, username: username, email: "", profilePictureURL: profileURL))
+                }
             }
             
-            completion(incomingUsers, outgoingUsers)
+            dispatchGroup.notify(queue: .main) {
+                completion(incomingUsers, outgoingUsers)
+            }
         }
     }
+
     
     
     func fetchHangoutCount(for user: User, completion: @escaping (Int) -> Void) {
