@@ -55,7 +55,6 @@ class RequestsCell: UITableViewCell {
         onDenyTapped?()
     }
     
-    
     @IBAction func onTapWithdrawButton(_ sender: UIButton) {
         onWithdrawTapped?()
     }
